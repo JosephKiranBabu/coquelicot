@@ -69,6 +69,10 @@ __END__
     %base{ :href => base_href }
     %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css',
            :media => "screen, projection" }
+    %script{ :type => 'text/javascript', :src => 'javascripts/jquery.min.js' }
+    %script{ :type => 'text/javascript', :src => 'javascripts/jquery.lightBoxFu.js' }
+    %script{ :type => 'text/javascript', :src => 'javascripts/jquery.uploadProgress.js' }
+    %script{ :type => 'text/javascript', :src => 'javascripts/coquelicot.js' }
   %body
     #container
       = yield
@@ -105,3 +109,13 @@ a, a:visited
   background-color: red
   color: white
   border: black solid 1px
+
+#progress
+  margin: 8px
+  width: 220px
+  height: 19px
+
+#progressbar
+  background: url('images/ajax-loader.gif') no-repeat
+  width: 0px
+  height: 19px
