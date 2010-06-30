@@ -47,13 +47,27 @@ post '/upload' do
   redirect "ready/#{name}"
 end
 
+helpers do
+  def base_href
+    url = request.scheme + "://"
+    url << request.host
+    if request.scheme == "https" && request.port != 443 ||
+        request.scheme == "http" && request.port != 80
+      url << ":#{request.port}"
+    end
+    url << request.script_name
+    "#{url}/"
+  end
+end
+
 __END__
 
 @@ layout
 %html
   %head
     %title coquelicot
-    %link{ :rel => 'stylesheet', :href => "#{request.script_name}/style.css", :type => 'text/css',
+    %base{ :href => base_href }
+    %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css',
            :media => "screen, projection" }
   %body
     #container
