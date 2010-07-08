@@ -1,7 +1,16 @@
 require 'sinatra'
 require 'haml'
+require 'digest/sha1'
+require 'singleton'
 
 enable :inline_templates
+
+set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
+
+def password_match?(password)
+  return TRUE if settings.upload_password.nil?
+  (not password.nil?) && Digest::SHA1.hexdigest(password) == settings.upload_password
+end
 
 def uploaded_file(file)
   "#{options.root}/files/#{file}"
@@ -35,6 +44,9 @@ get '/:name' do |name|
 end
 
 post '/upload' do
+  unless password_match? params[:upload_password] then
+    return 403
+  end
   if params[:file] then
     tmpfile = params[:file][:tempfile]
     name = params[:file][:filename]

@@ -5,7 +5,10 @@ require 'spec'
 require 'rack/test'
 require 'hpricot'
 
+UPLOAD_PASSWORD = 'secret'
+
 set :environment, :test
+set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
 
 describe 'Coquelicot' do
   include Rack::Test::Methods
@@ -22,13 +25,15 @@ describe 'Coquelicot' do
   end
 
   it "should accept an uploaded file" do
-    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby')
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => UPLOAD_PASSWORD
     last_response.redirect?.should be_true
     last_response['Location'].should eql("ready/#{File.basename(__FILE__)}")
   end
 
   it "should allow retrieval of an uploaded file" do
-    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby')
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => UPLOAD_PASSWORD
     follow_redirect!
     last_response.should be_ok
     doc = Hpricot(last_response.body)
@@ -40,7 +45,16 @@ describe 'Coquelicot' do
     last_response.body.should eql(File.new(__FILE__).read)
   end
 
-  it "should prevent upload without a password"
+  it "should prevent upload without a password" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby')
+    last_response.status.should eql(403)
+  end
+
+  it "should prevent upload with a wrong password" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => "bad"
+    last_response.status.should eql(403)
+  end
 
   it "should not store an uploaded file in cleartext"
 
