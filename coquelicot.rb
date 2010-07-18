@@ -3,13 +3,15 @@ require 'haml'
 require 'digest/sha1'
 require 'base64'
 require 'openssl'
-require 'singleton'
+require 'yaml'
 
 enable :inline_templates
 
 set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
 
 class StoredFile
+  attr_reader :meta
+
   def self.open(path, pass)
     StoredFile.new(path, pass)
   end
@@ -18,7 +20,7 @@ class StoredFile
     # output content
     yield @initial_content
     @initial_content = nil
-    while "" != (buf = @file.read(BUFFER_LEN))
+    until (buf = @file.read(BUFFER_LEN)).nil?
       yield @cipher.update(buf)
     end
     yield @cipher.final
@@ -26,37 +28,40 @@ class StoredFile
     @cipher = nil
   end
 
-  def self.create(path, pass, meta, content)
-    File.new(path, 'w') do |file|
-      salt = gen_salt
-      clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
-                     "Salt" => Base64.encode64(salt).strip }
-      YAML.dump(clear_meta, file)
-      file.write YAML_START
+  def self.create(src, pass, meta)
+    salt = gen_salt
+    clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
+                   "Salt" => Base64.encode64(salt).strip }
+    yield YAML.dump(clear_meta) + YAML_START
 
-      cipher = get_cipher(pass, salt, :encrypt)
-      file << cipher.update(YAML.dump(meta) + YAML_START)
-      while '' != (buf = content.read(BUFFER_LEN)) do
-        file << cipher.update(buf)
-      end
-      file << cipher.final
+    cipher = get_cipher(pass, salt, :encrypt)
+    yield cipher.update(YAML.dump(meta) + YAML_START)
+    src.rewind
+    while not (buf = src.read(BUFFER_LEN)).nil?
+      yield cipher.update(buf)
     end
+    yield cipher.final
   end
 
 private
 
-  YAML_START = "---\n"
+  YAML_START = "--- \n"
   CIPHER = 'AES-256-CBC'
+  SALT_LEN = 8
   BUFFER_LEN = 4096
   COQUELICOT_VERSION = "1.0"
 
   def self.get_cipher(pass, salt, method)
-    hmac = PKCS5.pbkdf2_hmac_sha1(pass, salt, 2000, 48)
+    hmac = OpenSSL::PKCS5.pbkdf2_hmac_sha1(pass, salt, 2000, 48)
     cipher = OpenSSL::Cipher.new CIPHER
-    cipher.call(method)
+    cipher.method(method).call
     cipher.key = hmac[0..31]
     cipher.iv = hmac[32..-1]
     cipher
+  end
+
+  def self.gen_salt
+    OpenSSL::Random::random_bytes(SALT_LEN)
   end
 
   def initialize(path, pass)
@@ -70,7 +75,8 @@ private
   end
 
   def parse_clear_meta
-    while YAML_START != (line = @file.readline) do
+    meta = ''
+    until YAML_START == (line = @file.readline) do
       meta += line
     end
     @meta = YAML.load(meta)
@@ -80,24 +86,31 @@ private
   end
 
   def init_decrypt_cipher(pass)
-    salt = Base64.decode(@meta["Salt"])
-    @cipher = get_cipher(pass, salt, :decrypt)
+    salt = Base64.decode64(@meta["Salt"])
+    @cipher = StoredFile::get_cipher(pass, salt, :decrypt)
   end
 
   def parse_meta
-    buf = @file.read(BUFFER_LEN)
     yaml = ''
-    yaml << @cipher.update(buf)
-    unless yaml.start_with? YAML_START
-      raise "bad key"
+    buf = @file.read(BUFFER_LEN)
+    content = @cipher.update(buf)
+    raise "bad key" unless content.start_with? YAML_START
+    yaml << YAML_START
+    block = content.split(YAML_START, 3)
+    yaml << block[1]
+    if block.length == 3 then
+      @initial_content = block[2]
+      @meta.merge! YAML.load(yaml)
+      return
     end
-    while "" != (buf = @file.read(BUFFER_LEN))
-      block = @cipher.update(buf).split(/^---$/, 2)
+
+    until (buf = @file.read(BUFFER_LEN)).nil? do
+      block = @cipher.update(buf).split(YAML_START, 3)
       yaml << block[0]
-      loop unless block.length == 2
-      @meta.merge(YAML.load(yaml))
-      @initial_content = block[1]
+      break if block.length == 2
     end
+    @initial_content = block[1]
+    @meta.merge! YAML.load(yaml)
   end
 
   def close
@@ -127,7 +140,7 @@ end
 get '/ready/:name' do |name|
   path = uploaded_file(name)
   unless File.exists? path then
-    return 404
+    not_found
   end
   base = request.url.gsub(/\/ready\/[^\/]*$/, '')
   @url = "#{base}/#{name}"
@@ -137,14 +150,19 @@ end
 get '/:name' do |name|
   path = uploaded_file(name)
   unless File.exists? path then
-    return 404
+    not_found
   end
-  send_file path
+  file = StoredFile.open(path, 'XXXsecret')
+  last_modified File.mtime(path).httpdate
+  attachment file.meta['Filename']
+  response['Content-Length'] = "#{file.meta['Length']}"
+  response['Content-Type'] = file.meta['Content-Type'] || 'application/octet-stream'
+  throw :halt, [200, file]
 end
 
 post '/upload' do
   unless password_match? params[:upload_password] then
-    return 403
+    error 403
   end
   if params[:file] then
     tmpfile = params[:file][:tempfile]
@@ -154,7 +172,16 @@ post '/upload' do
     @error = "No file selected"
     return haml(:index)
   end
-  FileUtils::cp(tmpfile.path, uploaded_file(name))
+  src = params[:file][:tempfile]
+  File.open(uploaded_file(name), 'w') do |dest|
+    StoredFile.create(
+     src,
+     'XXXsecret',
+     { "Filename" => params[:file][:filename],
+       "Length" => src.stat.size,
+       "Content-Type" => params[:file][:type]
+     }) { |data| dest.write data }
+  end
   redirect "ready/#{name}"
 end
 
