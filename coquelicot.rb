@@ -5,16 +5,17 @@ require 'base64'
 require 'openssl'
 require 'yaml'
 require 'lockfile'
+require 'singleton'
 
 enable :inline_templates
 
 set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
 set :filename_length, 20
-set :lockfile, Proc.new { Lockfile.new "#{depot_path}/.lock", 
-                                       :timeout => 60,
-                                       :max_age => 8,
-                                       :refresh => 2,
-                                       :debug   => false }
+set :random_pass_length, 16
+set :lockfile_options, { :timeout => 60,
+                         :max_age => 8,
+                         :refresh => 2,
+                         :debug   => false }
 
 class StoredFile
   attr_reader :meta
@@ -33,6 +34,10 @@ class StoredFile
     yield @cipher.final
     @cipher.reset
     @cipher = nil
+  end
+
+  def mtime
+    @file.mtime
   end
 
   def self.create(src, pass, meta)
@@ -126,28 +131,126 @@ private
   end
 end
 
+class Depot
+  include Singleton
+
+  attr_accessor :path, :lockfile_options, :filename_length
+
+  def add_file(src, pass, options)
+    dst = nil
+    lockfile.lock do
+      dst = gen_random_file_name
+      File.open(full_path(dst), 'w').close
+    end
+    begin
+      File.open(full_path(dst), 'w') do |dest|
+        StoredFile.create(src, pass, options) { |data| dest.write data }
+      end
+    rescue
+      File.unlink full_path(dst)
+      raise
+    end
+    link = gen_random_file_name
+    add_link(link, dst)
+    link
+  end
+
+  def get_file(link, pass)
+    name = read_link(link)
+    return nil if name.nil?
+    StoredFile::open(full_path(name), pass)
+  end
+
+  def file_exists?(link)
+    name = read_link(link)
+    return !name.nil?
+  end
+
+private
+
+  def lockfile
+    Lockfile.new "#{@path}/.lock", @lockfile_options
+  end
+
+  def links_path
+    "#{@path}/.links"
+  end
+
+  def add_link(src, dst)
+    lockfile.lock do
+      File.open(links_path, 'a') do |f|
+        f.write("#{src} #{dst}\n")
+      end
+    end
+  end
+
+  def remove_link(src)
+    lockfile.lock do
+      links = []
+      File.open(links_path, 'r+') do |f|
+        f.readlines.each do |l|
+          links << l unless l.start_with? "#{src} "
+        end
+        f.rewind
+        f.truncate(0)
+        f.write links.join
+      end
+    end
+  end
+
+  def read_link(src)
+    dst = nil
+    lockfile.lock do
+      File.open(links_path) do |f|
+        begin
+          line = f.readline
+          if line.start_with? "#{src} " then
+            dst = line.split[1]
+            break
+          end
+        end until line.empty?
+      end
+    end
+    dst
+  end
+
+  def gen_random_file_name
+    begin
+      name = gen_random_base32(@filename_length)
+    end while File.exists?(full_path(name))
+    name
+  end
+
+  def full_path(name)
+    "#{@path}/#{name}"
+  end
+end
+def depot
+  @depot unless @depot.nil?
+
+  @depot = Depot.instance
+  @depot.path = options.depot_path if @depot.path.nil?
+  @depot.lockfile_options = options.lockfile_options if @depot.lockfile_options.nil?
+  @depot.filename_length = options.filename_length if @depot.filename_length.nil?
+  @depot
+end
+
 # Like RFC 4648 (Base32)
 FILENAME_CHARS = %w(a b c d e f g h i j k l m n o p q r s t u v w x y z 2 3 4 5 6 7)
-def gen_random_file_name
-  name = nil
-  options.lockfile.lock do
-    begin
-      name = ''
-      OpenSSL::Random::random_bytes(options.filename_length).each_byte do |i|
-        name << FILENAME_CHARS[i % FILENAME_CHARS.length]
-      end
-    end while name.empty? or File.exists?(uploaded_file(name))
+def gen_random_base32(length)
+  name = ''
+  OpenSSL::Random::random_bytes(length).each_byte do |i|
+    name << FILENAME_CHARS[i % FILENAME_CHARS.length]
   end
   name
+end
+def gen_random_pass
+  gen_random_base32(options.random_pass_length)
 end
 
 def password_match?(password)
   return TRUE if settings.upload_password.nil?
   (not password.nil?) && Digest::SHA1.hexdigest(password) == settings.upload_password
-end
-
-def uploaded_file(file)
-  "#{options.depot_path}/#{file}"
 end
 
 get '/style.css' do
@@ -159,23 +262,20 @@ get '/' do
   haml :index
 end
 
-get '/ready/:name' do |name|
-  path = uploaded_file(name)
-  unless File.exists? path then
+get '/ready/:link' do |link|
+  unless depot.file_exists? link then
     not_found
   end
   base = request.url.gsub(/\/ready\/[^\/]*$/, '')
-  @url = "#{base}/#{name}"
+  @url = "#{base}/#{link}"
   haml :ready
 end
 
-get '/:name' do |name|
-  path = uploaded_file(name)
-  unless File.exists? path then
-    not_found
-  end
-  file = StoredFile.open(path, 'XXXsecret')
-  last_modified File.mtime(path).httpdate
+get '/:link' do |link|
+  file = depot.get_file(link, 'XXXsecret')
+  not_found if file.nil?
+
+  last_modified file.mtime.httpdate
   attachment file.meta['Filename']
   response['Content-Length'] = "#{file.meta['Length']}"
   response['Content-Type'] = file.meta['Content-Type'] || 'application/octet-stream'
@@ -195,17 +295,13 @@ post '/upload' do
     return haml(:index)
   end
   src = params[:file][:tempfile]
-  dst = gen_random_file_name
-  File.open(uploaded_file(dst), 'w') do |dest|
-    StoredFile.create(
-     src,
-     'XXXsecret',
+  link = depot.add_file(
+     src, 'XXXsecret',
      { "Filename" => params[:file][:filename],
        "Length" => src.stat.size,
        "Content-Type" => params[:file][:type]
-     }) { |data| dest.write data }
-  end
-  redirect "ready/#{dst}"
+     })
+  redirect "ready/#{link}"
 end
 
 helpers do

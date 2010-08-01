@@ -12,12 +12,6 @@ UPLOAD_PASSWORD = 'secret'
 set :environment, :test
 set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
 
-module Depot
-  def Depot.path=(path) @@path = path end
-  def Depot.path()      @@path        end
-end
-set :depot_path, Proc.new { Depot.path }
-
 describe 'Coquelicot' do
   include Rack::Test::Methods
 
@@ -26,11 +20,11 @@ describe 'Coquelicot' do
   end
 
   before do
-    Depot.path = Dir.mktmpdir('coquelicot')
+    Depot.instance.path = Dir.mktmpdir('coquelicot') #"#{Time.now.to_f}"
   end
 
   after do
-    FileUtils.remove_entry_secure Depot.path
+    FileUtils.remove_entry_secure Depot.instance.path
   end
 
   it "should offer an upload form" do
@@ -76,7 +70,7 @@ describe 'Coquelicot' do
     post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
                     'upload_password' => UPLOAD_PASSWORD
     last_response.redirect?.should be_true
-    files = Dir.glob("#{Depot.path}/*")
+    files = Dir.glob("#{Depot.instance.path}/*")
     files.should have(1).items
     File.new(files[0]).read().should_not include('should not store an uploaded file')
   end
@@ -88,7 +82,15 @@ describe 'Coquelicot' do
     last_response['Location'].should_not include(File.basename(__FILE__))
   end
 
-  it "should store files with a different name than then one in URL"
+  it "should store files with a different name than then one in URL" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    url_name = last_response['Location'].split('/')[-1]
+    files = Dir.glob("#{Depot.instance.path}/*")
+    files.should have(1).items
+    url_name.should_not eql(File.basename(files[0]))
+  end
 
   it "should encode the encryption key in URL when no password has been specified"
 
