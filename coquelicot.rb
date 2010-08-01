@@ -325,7 +325,8 @@ end
 
 post '/:link' do |link|
   pass = params[:file_key]
-  403 unless send_stored_file(link, pass)
+  return 403 if pass.nil? or pass.empty?
+  return 403 unless send_stored_file(link, pass)
 end
 
 helpers do
