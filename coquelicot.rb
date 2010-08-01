@@ -222,6 +222,7 @@ private
   end
 
   def full_path(name)
+    raise "Wrong name" unless name.each_char.collect { |c| FILENAME_CHARS.include? c }.all?
     "#{@path}/#{name}"
   end
 end
@@ -272,18 +273,6 @@ get '/ready/:link' do |link|
   haml :ready
 end
 
-get '/:link' do |link|
-  link, pass = link.split '-' if link.include? '-'
-  file = depot.get_file(link, pass)
-  not_found if file.nil?
-
-  last_modified file.mtime.httpdate
-  attachment file.meta['Filename']
-  response['Content-Length'] = "#{file.meta['Length']}"
-  response['Content-Type'] = file.meta['Content-Type'] || 'application/octet-stream'
-  throw :halt, [200, file]
-end
-
 post '/upload' do
   unless password_match? params[:upload_password] then
     error 403
@@ -296,15 +285,45 @@ post '/upload' do
     @error = "No file selected"
     return haml(:index)
   end
+  if params[:file_key] then
+    pass = params[:file_key]
+  else
+    pass = gen_random_pass
+  end
   src = params[:file][:tempfile]
-  pass = gen_random_pass
   link = depot.add_file(
      src, pass,
      { "Filename" => params[:file][:filename],
        "Length" => src.stat.size,
        "Content-Type" => params[:file][:type]
      })
-  redirect "ready/#{link}-#{pass}"
+  redirect "ready/#{link}-#{pass}" if params[:file_key].nil?
+  redirect "ready/#{link}"
+end
+
+def send_stored_file(link, pass)
+  file = depot.get_file(link, pass)
+  return false if file.nil?
+
+  last_modified file.mtime.httpdate
+  attachment file.meta['Filename']
+  response['Content-Length'] = "#{file.meta['Length']}"
+  response['Content-Type'] = file.meta['Content-Type'] || 'application/octet-stream'
+  throw :halt, [200, file]
+end
+
+get '/:link' do |link|
+  if link.include? '-'
+    link, pass = link.split '-'
+    not_found unless send_stored_file(link, pass)
+  end
+  not_found unless depot.file_exists? link
+  haml :file_key
+end
+
+post '/:link' do |link|
+  pass = params[:file_key]
+  403 unless send_stored_file(link, pass)
 end
 
 helpers do
@@ -352,6 +371,14 @@ __END__
 %h1 Pass this on!
 .url
   %a{ :href => @url }= @url
+
+@@ file_key
+%h1 Enter file key…
+%form{ :action => @link, :method => 'post' }
+  .field
+    %input{ :type => 'file_key', :name => 'file_key' }
+  .field
+    %input{ :type => 'submit', :value => 'Get file' }
 
 @@ style
 $green: #00ff26
