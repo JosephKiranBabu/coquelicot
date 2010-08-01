@@ -149,7 +149,20 @@ describe 'Coquelicot' do
     last_response.status.should eql(403)
   end
 
-  it "should not allow retrieval of a password protected file with a wrong password"
+  it "should not allow retrieval of a password protected file with a wrong password" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'file_key' => 'somethingSecret',
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    follow_redirect!
+    last_response.should be_ok
+    doc = Hpricot(last_response.body)
+    url = (doc/'a').collect { |a| a.attributes['href'] }.
+      select { |h| h.start_with? "http://#{last_request.host}/" }[0]
+    get url
+    post url, 'file_key' => 'BAD'
+    last_response.status.should eql(403)
+  end
 
   it "should not allow retrieval after the time limit has expired"
 

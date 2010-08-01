@@ -17,6 +17,8 @@ set :lockfile_options, { :timeout => 60,
                          :refresh => 2,
                          :debug   => false }
 
+class BadKey < StandardError; end
+
 class StoredFile
   attr_reader :meta
 
@@ -106,7 +108,7 @@ private
     yaml = ''
     buf = @file.read(BUFFER_LEN)
     content = @cipher.update(buf)
-    raise "bad key" unless content.start_with? YAML_START
+    raise BadKey unless content.start_with? YAML_START
     yaml << YAML_START
     block = content.split(YAML_START, 3)
     yaml << block[1]
@@ -326,7 +328,11 @@ end
 post '/:link' do |link|
   pass = params[:file_key]
   return 403 if pass.nil? or pass.empty?
-  return 403 unless send_stored_file(link, pass)
+  begin
+    return 403 unless send_stored_file(link, pass)
+  rescue BadKey => ex
+    403
+  end
 end
 
 helpers do
