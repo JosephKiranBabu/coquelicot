@@ -263,16 +263,18 @@ get '/' do
 end
 
 get '/ready/:link' do |link|
+  link, pass = link.split '-' if link.include? '-'
   unless depot.file_exists? link then
     not_found
   end
   base = request.url.gsub(/\/ready\/[^\/]*$/, '')
-  @url = "#{base}/#{link}"
+  @url = "#{base}/#{link}-#{pass}"
   haml :ready
 end
 
 get '/:link' do |link|
-  file = depot.get_file(link, 'XXXsecret')
+  link, pass = link.split '-' if link.include? '-'
+  file = depot.get_file(link, pass)
   not_found if file.nil?
 
   last_modified file.mtime.httpdate
@@ -295,13 +297,14 @@ post '/upload' do
     return haml(:index)
   end
   src = params[:file][:tempfile]
+  pass = gen_random_pass
   link = depot.add_file(
-     src, 'XXXsecret',
+     src, pass,
      { "Filename" => params[:file][:filename],
        "Length" => src.stat.size,
        "Content-Type" => params[:file][:type]
      })
-  redirect "ready/#{link}"
+  redirect "ready/#{link}-#{pass}"
 end
 
 helpers do

@@ -92,9 +92,15 @@ describe 'Coquelicot' do
     url_name.should_not eql(File.basename(files[0]))
   end
 
-  it "should encode the encryption key in URL when no password has been specified"
+  it "should encode the encryption key in URL when no password has been specified" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    url_name = last_response['Location'].split('/')[-1]
+    url_name.split('-').should have(2).items
+  end
 
-  it "should not encode the encryption key in URL when no password has been specified"
+  it "should not encode the encryption key in URL when a password has been specified"
 
   it "should give a random password when asked"
 
