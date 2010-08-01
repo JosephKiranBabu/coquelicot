@@ -125,7 +125,7 @@ def password_match?(password)
 end
 
 def uploaded_file(file)
-  "#{options.root}/files/#{file}"
+  "#{options.depot_path}/#{file}"
 end
 
 get '/style.css' do

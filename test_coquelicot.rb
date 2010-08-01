@@ -1,20 +1,36 @@
 $:.unshift File.join(File.dirname(__FILE__), '../rack-test/lib')
 
+require 'sinatra'
 require 'coquelicot'
 require 'spec'
 require 'rack/test'
 require 'hpricot'
+require 'tmpdir'
 
 UPLOAD_PASSWORD = 'secret'
 
 set :environment, :test
 set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
 
+module Depot
+  def Depot.path=(path) @@path = path end
+  def Depot.path()      @@path        end
+end
+set :depot_path, Proc.new { Depot.path }
+
 describe 'Coquelicot' do
   include Rack::Test::Methods
 
   def app
     Sinatra::Application
+  end
+
+  before do
+    Depot.path = Dir.mktmpdir('coquelicot')
+  end
+
+  after do
+    FileUtils.remove_entry_secure Depot.path
   end
 
   it "should offer an upload form" do
