@@ -167,4 +167,6 @@ describe 'Coquelicot' do
   it "should not allow retrieval after the time limit has expired"
 
   it "should cleanup expired files"
+
+  it "should map extra base32 characters to filenames"
 end
