@@ -111,9 +111,30 @@ describe 'Coquelicot' do
 
   it "should give a random password when asked"
 
-  it "should allow retrieval of a password protected file"
+  it "should allow retrieval of a password protected file" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'file_key' => 'somethingSecret',
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    follow_redirect!
+    last_response.should be_ok
+    doc = Hpricot(last_response.body)
+    url = (doc/'a').collect { |a| a.attributes['href'] }.
+      select { |h| h.start_with? "http://#{last_request.host}/" }[0]
+    get url
+    last_response.should be_ok
+    doc = Hpricot(last_response.body)
+    (doc/'input#file_key').should have(1).items
+    url = (doc/'form')[0].attributes['action']
+    post url, 'file_key' => 'somethingSecret'
+    last_response.should be_ok
+    last_response['Content-Type'].should eql('text/x-script.ruby')
+    last_response.body.should eql(File.new(__FILE__).read)
+  end
 
   it "should not allow retrieval of a password protected file without the password"
+
+  it "should not allow retrieval of a password protected file with a wrong password"
 
   it "should not allow retrieval after the time limit has expired"
 

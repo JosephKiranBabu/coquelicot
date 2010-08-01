@@ -269,7 +269,8 @@ get '/ready/:link' do |link|
     not_found
   end
   base = request.url.gsub(/\/ready\/[^\/]*$/, '')
-  @url = "#{base}/#{link}-#{pass}"
+  @url = "#{base}/#{link}-#{pass}" unless pass.nil?
+  @url ||= "#{base}/#{link}"
   haml :ready
 end
 
@@ -285,10 +286,10 @@ post '/upload' do
     @error = "No file selected"
     return haml(:index)
   end
-  if params[:file_key] then
-    pass = params[:file_key]
-  else
+  if params[:file_key].nil? or params[:file_key].empty?then
     pass = gen_random_pass
+  else
+    pass = params[:file_key]
   end
   src = params[:file][:tempfile]
   link = depot.add_file(
@@ -297,7 +298,7 @@ post '/upload' do
        "Length" => src.stat.size,
        "Content-Type" => params[:file][:type]
      })
-  redirect "ready/#{link}-#{pass}" if params[:file_key].nil?
+  redirect "ready/#{link}-#{pass}" if params[:file_key].nil? or params[:file_key].empty?
   redirect "ready/#{link}"
 end
 
@@ -318,7 +319,8 @@ get '/:link' do |link|
     not_found unless send_stored_file(link, pass)
   end
   not_found unless depot.file_exists? link
-  haml :file_key
+  @link = link
+  haml :enter_file_key
 end
 
 post '/:link' do |link|
@@ -372,11 +374,11 @@ __END__
 .url
   %a{ :href => @url }= @url
 
-@@ file_key
+@@ enter_file_key
 %h1 Enter file key…
 %form{ :action => @link, :method => 'post' }
   .field
-    %input{ :type => 'file_key', :name => 'file_key' }
+    %input{ :type => 'text', :id => 'file_key', :name => 'file_key' }
   .field
     %input{ :type => 'submit', :value => 'Get file' }
 
