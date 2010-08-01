@@ -44,7 +44,7 @@ describe 'Coquelicot' do
     post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
                     'upload_password' => UPLOAD_PASSWORD
     last_response.redirect?.should be_true
-    last_response['Location'].should eql("ready/#{File.basename(__FILE__)}")
+    last_response['Location'].start_with?('ready/').should be_true
   end
 
   it "should allow retrieval of an uploaded file" do
@@ -81,7 +81,12 @@ describe 'Coquelicot' do
     File.new(files[0]).read().should_not include('should not store an uploaded file')
   end
 
-  it "should generate a random URL to retrieve a file"
+  it "should generate a random URL to retrieve a file" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    last_response['Location'].should_not include(File.basename(__FILE__))
+  end
 
   it "should store files with a different name than then one in URL"
 

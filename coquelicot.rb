@@ -4,10 +4,17 @@ require 'digest/sha1'
 require 'base64'
 require 'openssl'
 require 'yaml'
+require 'lockfile'
 
 enable :inline_templates
 
 set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
+set :filename_length, 20
+set :lockfile, Proc.new { Lockfile.new "#{depot_path}/.lock", 
+                                       :timeout => 60,
+                                       :max_age => 8,
+                                       :refresh => 2,
+                                       :debug   => false }
 
 class StoredFile
   attr_reader :meta
@@ -119,6 +126,21 @@ private
   end
 end
 
+# Like RFC 4648 (Base32)
+FILENAME_CHARS = %w(a b c d e f g h i j k l m n o p q r s t u v w x y z 2 3 4 5 6 7)
+def gen_random_file_name
+  name = nil
+  options.lockfile.lock do
+    begin
+      name = ''
+      OpenSSL::Random::random_bytes(options.filename_length).each_byte do |i|
+        name << FILENAME_CHARS[i % FILENAME_CHARS.length]
+      end
+    end while name.empty? or File.exists?(uploaded_file(name))
+  end
+  name
+end
+
 def password_match?(password)
   return TRUE if settings.upload_password.nil?
   (not password.nil?) && Digest::SHA1.hexdigest(password) == settings.upload_password
@@ -173,7 +195,8 @@ post '/upload' do
     return haml(:index)
   end
   src = params[:file][:tempfile]
-  File.open(uploaded_file(name), 'w') do |dest|
+  dst = gen_random_file_name
+  File.open(uploaded_file(dst), 'w') do |dest|
     StoredFile.create(
      src,
      'XXXsecret',
@@ -182,7 +205,7 @@ post '/upload' do
        "Content-Type" => params[:file][:type]
      }) { |data| dest.write data }
   end
-  redirect "ready/#{name}"
+  redirect "ready/#{dst}"
 end
 
 helpers do
