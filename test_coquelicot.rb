@@ -72,7 +72,14 @@ describe 'Coquelicot' do
     last_response.status.should eql(403)
   end
 
-  it "should not store an uploaded file in cleartext"
+  it "should not store an uploaded file in cleartext" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    files = Dir.glob("#{Depot.path}/*")
+    files.should have(1).items
+    File.new(files[0]).read().should_not include('should not store an uploaded file')
+  end
 
   it "should generate a random URL to retrieve a file"
 
