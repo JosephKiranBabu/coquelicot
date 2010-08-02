@@ -159,7 +159,6 @@ describe 'Coquelicot' do
     doc = Hpricot(last_response.body)
     url = (doc/'a').collect { |a| a.attributes['href'] }.
       select { |h| h.start_with? "http://#{last_request.host}/" }[0]
-    get url
     post url, 'file_key' => 'BAD'
     last_response.status.should eql(403)
   end
