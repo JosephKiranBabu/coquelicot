@@ -182,7 +182,20 @@ describe 'Coquelicot' do
     end
   end
 
-  it "should cleanup expired files"
+  it "should cleanup expired files" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'expire' => 60,  # 1 hour
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    follow_redirect!
+    last_response.should be_ok
+    Dir.glob("#{Depot.instance.path}/*").should have(1).items
+    # let's be tomorrow
+    Timecop.travel(Date.today + 1) do
+      Depot.instance.gc!
+      Dir.glob("#{Depot.instance.path}/*").should have(0).items
+    end
+  end
 
   it "should map extra base32 characters to filenames"
 end

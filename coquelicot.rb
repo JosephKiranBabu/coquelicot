@@ -21,6 +21,8 @@ set :lockfile_options, { :timeout => 60,
 class BadKey < StandardError; end
 
 class StoredFile
+  BUFFER_LEN = 4096
+
   attr_reader :meta, :expire_at
 
   def self.open(path, pass = nil)
@@ -64,7 +66,6 @@ private
   YAML_START = "--- \n"
   CIPHER = 'AES-256-CBC'
   SALT_LEN = 8
-  BUFFER_LEN = 4096
   COQUELICOT_VERSION = "1.0"
 
   def self.get_cipher(pass, salt, method)
@@ -172,6 +173,12 @@ class Depot
     return !name.nil?
   end
 
+  def gc!
+    files.each do |name|
+      remove_file(name) if Time.now > StoredFile::open(full_path(name)).expire_at
+    end
+  end
+
 private
 
   def lockfile
@@ -190,18 +197,22 @@ private
     end
   end
 
-  def remove_link(src)
+  def remove_from_links(&block)
     lockfile.lock do
       links = []
       File.open(links_path, 'r+') do |f|
         f.readlines.each do |l|
-          links << l unless l.start_with? "#{src} "
+          links << l unless yield l
         end
         f.rewind
         f.truncate(0)
         f.write links.join
       end
     end
+  end
+
+  def remove_link(src)
+    remove_from_links { |l| l.start_with? "#{src} " }
   end
 
   def read_link(src)
@@ -218,6 +229,29 @@ private
       end
     end
     dst
+  end
+
+  def remove_file(name)
+    # zero the content before unlinking
+    File.open(full_path(name), 'r+') do |f|
+      f.seek 0, IO::SEEK_END
+      length = f.tell
+      f.rewind
+      while length > 0 do
+        write_len = [StoredFile::BUFFER_LEN, length].min
+        length -= f.write("\0" * write_len)
+      end
+    end
+    File.unlink full_path(name)
+    remove_from_links { |l| l.end_with? " #{name}" }
+  end
+
+  def files
+    lockfile.lock do
+      File.open(links_path) do |f|
+        f.readlines.collect { |l| l.split[1] }
+      end
+    end
   end
 
   def gen_random_file_name
