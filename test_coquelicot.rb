@@ -197,5 +197,20 @@ describe 'Coquelicot' do
     end
   end
 
-  it "should map extra base32 characters to filenames"
+  it "should map extra base32 characters to filenames" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'expire' => 60,  # 1 hour
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    follow_redirect!
+    last_response.should be_ok
+    doc = Hpricot(last_response.body)
+    url = (doc/'a').collect { |a| a.attributes['href'] }.
+      select { |h| h.start_with? "http://#{last_request.host}/" }[0]
+    splitted = url.split('/')
+    name = splitted[-1].upcase.gsub(/O/, '0').gsub(/L/, '1')
+    get "#{splitted[0..-2].join '/'}/#{name}"
+    last_response.should be_ok
+    last_response['Content-Type'].should eql('text/x-script.ruby')
+  end
 end

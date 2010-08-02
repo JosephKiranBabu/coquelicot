@@ -288,6 +288,14 @@ end
 def gen_random_pass
   gen_random_base32(options.random_pass_length)
 end
+def remap_base32_extra_characters(str)
+  map = {}
+  FILENAME_CHARS.each { |c| map[c] = c; map[c.upcase] = c }
+  map.merge!({ '1' => 'l', '0' => 'o' })
+  result = ''
+  str.each_char { |c| result << map[c] }
+  result
+end
 
 def password_match?(password)
   return TRUE if settings.upload_password.nil?
@@ -364,10 +372,13 @@ def send_stored_file(link, pass)
 end
 
 get '/:link-:pass' do |link, pass|
+  link = remap_base32_extra_characters(link)
+  pass = remap_base32_extra_characters(pass)
   not_found unless send_stored_file(link, pass)
 end
 
 get '/:link' do |link|
+  link = remap_base32_extra_characters(link)
   not_found unless depot.file_exists? link
   @link = link
   haml :enter_file_key
