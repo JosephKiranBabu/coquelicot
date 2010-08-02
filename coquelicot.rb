@@ -439,6 +439,14 @@ __END__
   %body
     #container
       = yield
+    #footer
+      %span Coquelicot © 2010 potager.org
+      %span
+        —
+        %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' } AGPLv3
+        —
+      %span
+        %code git clone #{base_href}git
 
 @@ index
 %h1 Share a file!
@@ -576,3 +584,10 @@ h1
   background: url('images/ajax-loader.gif') no-repeat
   width: 0px
   height: 19px
+
+#footer
+  margin-top: 7em
+  padding-top: 1em
+  border-top: dashed 1px black
+  text-align: center
+  font-size: small
