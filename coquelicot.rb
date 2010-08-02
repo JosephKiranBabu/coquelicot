@@ -433,7 +433,7 @@ __END__
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.lightBoxFu.js' }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.uploadProgress.js' }
     :javascript
-      var generateRandomPassword = 'Generate random password';
+      var generateRandomPassword = 'Generate random';
       var generatingRandomPassword = 'Generating…';
     %script{ :type => 'text/javascript', :src => 'javascripts/coquelicot.js' }
   %body
@@ -568,6 +568,9 @@ h1
   font-family: monospace
   font-size: large
   color: black
+
+#gen_pass
+  font-size: small
 
 .field
   clear: left
