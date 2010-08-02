@@ -363,11 +363,11 @@ def send_stored_file(link, pass)
   throw :halt, [200, file]
 end
 
+get '/:link-:pass' do |link, pass|
+  not_found unless send_stored_file(link, pass)
+end
+
 get '/:link' do |link|
-  if link.include? '-'
-    link, pass = link.split '-'
-    not_found unless send_stored_file(link, pass)
-  end
   not_found unless depot.file_exists? link
   @link = link
   haml :enter_file_key
