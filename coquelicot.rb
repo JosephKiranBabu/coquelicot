@@ -446,7 +446,7 @@ __END__
         %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' } AGPLv3
         —
       %span
-        %code git clone #{base_href}git
+        %code git clone #{base_href}coquelicot.git
 
 @@ index
 %h1 Share a file!
