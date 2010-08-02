@@ -433,12 +433,16 @@ __END__
   .field
     %input{ :type => 'file', :name => 'file' }
   .field
+    %input{ :type => 'password', :name => 'upload_password' }
+  .field
     %select{ :name => 'expire' }
       %option{ :value => 5            } 5 minutes
       %option{ :value => 60           } 1 hour
       %option{ :value => 60 * 24      } 1 day
       %option{ :value => 60 * 24 * 7  } 1 week
       %option{ :value => 60 * 24 * 30 } 1 month
+  .field
+    %input{ :type => 'password', :name => 'file_key' }
   .field
     %input{ :type => 'submit', :value => 'Send file' }
 
