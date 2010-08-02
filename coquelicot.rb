@@ -313,12 +313,19 @@ end
 
 get '/ready/:link' do |link|
   link, pass = link.split '-' if link.include? '-'
-  unless depot.file_exists? link then
+  begin
+    file = depot.get_file(link, nil)
+  rescue Errno::ENOENT => ex
     not_found
   end
-  base = request.url.gsub(/\/ready\/[^\/]*$/, '')
-  @url = "#{base}/#{link}-#{pass}" unless pass.nil?
-  @url ||= "#{base}/#{link}"
+  @expire_at = file.expire_at
+  @base = request.url.gsub(/\/ready\/[^\/]*$/, '')
+  @name = "#{link}"
+  unless pass.nil?
+    @name << "-#{pass}"
+    @unprotected = true
+  end 
+  @url = "#{@base}/#{@name}"
   haml :ready
 end
 
@@ -410,6 +417,8 @@ end
 __END__
 
 @@ layout
+!!! XML
+!!! Strict
 %html
   %head
     %title coquelicot
@@ -425,43 +434,60 @@ __END__
       = yield
 
 @@ index
-%h1 Upload!
+%h1 Share a file!
 - unless @error.nil?
   .error= @error
 %form#upload{ :enctype => 'multipart/form-data',
               :action  => 'upload', :method => 'post' }
   .field
-    %input{ :type => 'file', :name => 'file' }
+    %label{ :for => 'upload_password' } Upload password:
+    %input.input{ :type => 'password', :id => 'upload_password', :name => 'upload_password' }
   .field
-    %input{ :type => 'password', :name => 'upload_password' }
+    %label{ :for => 'file' } File:
+    %input.input{ :type => 'file', id => 'file', :name => 'file' }
   .field
-    %select{ :name => 'expire' }
+    %label{ :for => 'expire' } Available for:
+    %select.input{ :id => 'expire',:name => 'expire' }
       %option{ :value => 5            } 5 minutes
       %option{ :value => 60           } 1 hour
       %option{ :value => 60 * 24      } 1 day
       %option{ :value => 60 * 24 * 7  } 1 week
       %option{ :value => 60 * 24 * 30 } 1 month
   .field
-    %input{ :type => 'password', :name => 'file_key' }
+    %label{ :for => 'file_key' } Download password:
+    %input.input{ :type => 'password', :id => 'file_key', :name => 'file_key' }
   .field
-    %input{ :type => 'submit', :value => 'Send file' }
+    .submit
+      %input.submit{ :type => 'submit', :value => 'Share!' }
 
 @@ ready
 %h1 Pass this on!
-.url
-  %a{ :href => @url }= @url
+#content
+  .url
+    %a{ :href => @url }
+      %span.base> #{@base}/
+      %span.name= @name
+  - unless @unprotected
+    %p A password is required to download this file.
+  %p The file will be available until #{@expire_at}.
+  .again
+    %a{ :href => base_href } Share another file…
 
 @@ enter_file_key
-%h1 Enter file key…
-%form{ :action => @link, :method => 'post' }
-  .field
-    %input{ :type => 'text', :id => 'file_key', :name => 'file_key' }
-  .field
-    %input{ :type => 'submit', :value => 'Get file' }
+%h1 Enter download password…
+#content
+  %form{ :action => @link, :method => 'post' }
+    .field
+      %label{ :for => 'file_key' } Password:
+      %input{ :type => 'text', :id => 'file_key', :name => 'file_key' }
+    .field
+      .submit
+        %input{ :type => 'submit', :value => 'Get file' }
 
 @@ expired
 %h1 Too late…
-%p Sorry, file has expired.
+#content
+  %p Sorry, file has expired.
 
 @@ style
 $green: #00ff26
@@ -473,12 +499,61 @@ body
 
 a, a:visited
   text-decoration: underline
-  color: white
+  color: blue
 
 .error
   background-color: red
   color: white
   border: black solid 1px
+
+h1
+  margin-top: 0.1ex
+  border-bottom: solid 1px #ccc
+  text-align: center
+
+#container
+  width: 550px
+  margin: 2em auto
+  -moz-border-radius: 25px
+  -webkit-border-radius: 25px
+  background: white
+  border: solid 1px black
+  padding: 5px 25px
+
+.url
+  text-align: center
+
+.url a
+  text-decoration: none
+  color: black
+
+.url .base
+  display: block
+  font-size: small
+
+.url .name
+  display: block
+  font-size: x-large
+  white-space: nowrap
+
+.again
+  margin-top: 1ex
+  text-align: right
+
+.field label
+  float: left
+  width: 12em
+  text-align: right
+
+.input
+  float: left
+  width: 15em
+
+.field
+  clear: left
+
+.submit
+  text-align: center
 
 #progress
   margin: 8px
