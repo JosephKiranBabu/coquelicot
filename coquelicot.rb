@@ -10,6 +10,7 @@ require 'singleton'
 enable :inline_templates
 
 set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
+set :default_expire, 60 # 1 hour
 set :filename_length, 20
 set :random_pass_length, 16
 set :lockfile_options, { :timeout => 60,
@@ -20,9 +21,9 @@ set :lockfile_options, { :timeout => 60,
 class BadKey < StandardError; end
 
 class StoredFile
-  attr_reader :meta
+  attr_reader :meta, :expire_at
 
-  def self.open(path, pass)
+  def self.open(path, pass = nil)
     StoredFile.new(path, pass)
   end
 
@@ -45,7 +46,8 @@ class StoredFile
   def self.create(src, pass, meta)
     salt = gen_salt
     clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
-                   "Salt" => Base64.encode64(salt).strip }
+                   "Salt" => Base64.encode64(salt).strip,
+                   "Expire-at" => meta.delete('Expire-at') }
     yield YAML.dump(clear_meta) + YAML_START
 
     cipher = get_cipher(pass, salt, :encrypt)
@@ -84,6 +86,7 @@ private
       raise "unknown file, read #{buf.inspect}"
     end
     parse_clear_meta
+    return if pass.nil?
     init_decrypt_cipher pass
     parse_meta
   end
@@ -97,6 +100,7 @@ private
     if @meta["Coquelicot"].nil? or @meta["Coquelicot"] != COQUELICOT_VERSION then
       raise "unknown file"
     end
+    @expire_at = Time.at(@meta['Expire-at'].to_i)
   end
 
   def init_decrypt_cipher(pass)
@@ -288,6 +292,10 @@ post '/upload' do
     @error = "No file selected"
     return haml(:index)
   end
+  if params[:expire].nil? or params[:expire].to_i == 0 then
+    params[:expire] = options.default_expire
+  end
+  expire_at = Time.now + 60 * params[:expire].to_i
   if params[:file_key].nil? or params[:file_key].empty?then
     pass = gen_random_pass
   else
@@ -296,7 +304,8 @@ post '/upload' do
   src = params[:file][:tempfile]
   link = depot.add_file(
      src, pass,
-     { "Filename" => params[:file][:filename],
+     { "Expire-at" => expire_at.strftime('%s'),
+       "Filename" => params[:file][:filename],
        "Length" => src.stat.size,
        "Content-Type" => params[:file][:type]
      })
@@ -304,9 +313,14 @@ post '/upload' do
   redirect "ready/#{link}"
 end
 
+def expired
+  throw :halt, [410, haml(:expired)]
+end
+
 def send_stored_file(link, pass)
   file = depot.get_file(link, pass)
   return false if file.nil?
+  return expired if Time.now > file.expire_at
 
   last_modified file.mtime.httpdate
   attachment file.meta['Filename']
@@ -374,6 +388,13 @@ __END__
   .field
     %input{ :type => 'file', :name => 'file' }
   .field
+    %select{ :name => 'expire' }
+      %option{ :value => 5            } 5 minutes
+      %option{ :value => 60           } 1 hour
+      %option{ :value => 60 * 24      } 1 day
+      %option{ :value => 60 * 24 * 7  } 1 week
+      %option{ :value => 60 * 24 * 30 } 1 month
+  .field
     %input{ :type => 'submit', :value => 'Send file' }
 
 @@ ready
@@ -388,6 +409,10 @@ __END__
     %input{ :type => 'text', :id => 'file_key', :name => 'file_key' }
   .field
     %input{ :type => 'submit', :value => 'Get file' }
+
+@@ expired
+%h1 Too late…
+%p Sorry, file has expired.
 
 @@ style
 $green: #00ff26

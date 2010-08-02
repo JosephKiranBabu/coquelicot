@@ -1,9 +1,11 @@
 $:.unshift File.join(File.dirname(__FILE__), '../rack-test/lib')
+$:.unshift File.join(File.dirname(__FILE__), '../timecop/lib')
 
 require 'sinatra'
 require 'coquelicot'
 require 'spec'
 require 'rack/test'
+require 'timecop'
 require 'hpricot'
 require 'tmpdir'
 
@@ -163,7 +165,22 @@ describe 'Coquelicot' do
     last_response.status.should eql(403)
   end
 
-  it "should not allow retrieval after the time limit has expired"
+  it "should not allow retrieval after the time limit has expired" do
+    post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
+                    'expire' => 60,  # 1 hour
+                    'upload_password' => UPLOAD_PASSWORD
+    last_response.redirect?.should be_true
+    follow_redirect!
+    last_response.should be_ok
+    doc = Hpricot(last_response.body)
+    url = (doc/'a').collect { |a| a.attributes['href'] }.
+      select { |h| h.start_with? "http://#{last_request.host}/" }[0]
+    # let's be tomorrow
+    Timecop.travel(Date.today + 1) do
+      get url
+      last_response.status.should eql(410)
+    end
+  end
 
   it "should cleanup expired files"
 
