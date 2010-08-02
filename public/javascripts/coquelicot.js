@@ -30,3 +30,20 @@ $(function($) {
     progressUrl: "progress"
   });
 });
+$(document).ready(function() {
+  var link = $('<a href="#" id="gen_pass" />');
+  link.text(generateRandomPassword);
+  var file_key = $('#file_key');
+  file_key.after(link);
+  link.click(function() {
+    link.text(generatingRandomPassword);
+    $.get('random_pass', function(pass) {
+      file_key.val(pass);
+      file_key.hide();
+      var show = $('<div class="random-pass" />');
+      show.text(pass);
+      link.before(show);
+      link.remove();
+    });
+  });
+});

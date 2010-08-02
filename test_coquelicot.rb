@@ -111,8 +111,6 @@ describe 'Coquelicot' do
     url_name.split('-').should have(1).items
   end
 
-  it "should give a random password when asked"
-
   it "should allow retrieval of a password protected file" do
     post '/upload', 'file' => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
                     'file_key' => 'somethingSecret',

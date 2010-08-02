@@ -311,6 +311,10 @@ get '/' do
   haml :index
 end
 
+get '/random_pass' do
+  "#{gen_random_pass}"
+end
+
 get '/ready/:link' do |link|
   link, pass = link.split '-' if link.include? '-'
   begin
@@ -428,6 +432,9 @@ __END__
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.min.js' }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.lightBoxFu.js' }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.uploadProgress.js' }
+    :javascript
+      var generateRandomPassword = 'Generate random password';
+      var generatingRandomPassword = 'Generating…';
     %script{ :type => 'text/javascript', :src => 'javascripts/coquelicot.js' }
   %body
     #container
@@ -545,9 +552,14 @@ h1
   width: 12em
   text-align: right
 
-.input
+.input, .random-pass
   float: left
   width: 15em
+
+.random-pass
+  font-family: monospace
+  font-size: large
+  color: black
 
 .field
   clear: left
