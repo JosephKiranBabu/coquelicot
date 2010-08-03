@@ -1,0 +1,26 @@
+!!! XML
+!!! Strict
+%html
+  %head
+    %title coquelicot
+    %base{ :href => base_href }
+    %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css',
+           :media => "screen, projection" }
+    %script{ :type => 'text/javascript', :src => 'javascripts/jquery.min.js' }
+    %script{ :type => 'text/javascript', :src => 'javascripts/jquery.lightBoxFu.js' }
+    %script{ :type => 'text/javascript', :src => 'javascripts/jquery.uploadProgress.js' }
+    :javascript
+      var generateRandomPassword = 'Generate random';
+      var generatingRandomPassword = 'Generating…';
+    %script{ :type => 'text/javascript', :src => 'javascripts/coquelicot.js' }
+  %body
+    #container
+      = yield
+    #footer
+      %span Coquelicot © 2010 potager.org
+      %span
+        —
+        %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' } AGPLv3
+        —
+      %span
+        %code git clone #{base_href}coquelicot.git
