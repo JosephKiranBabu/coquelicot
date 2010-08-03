@@ -82,9 +82,14 @@ Coquelicot is written in Ruby using the Sinatra web framework.
 On Debian, one can fulfill its dependencies by issueing:
 
     apt-get install libsinatra-ruby1.8 libopenssl-ruby1.8 \
-                    libhaml-ruby1.8 liblockfile-ruby
+                    libhaml-ruby1.8 liblockfile-ruby libgettext-ruby1.8 \
+                    rake
 
-Then you need to figure out the best way to host a Rack application
+Then create the translation catalog through:
+
+    rake makemo
+
+Finally you need to figure out the best way to host a Rack application
 depending on your setup. *evil grin*
 
 Test suite
@@ -104,10 +109,6 @@ Then, running the test suite is just a matter of typing:
 
 Future
 ------
-
- * Internationalization
-
-   Coquelicot should be i18n'ed to display users' preferred language.
 
  * Integrate other authentication systems for uploads
 

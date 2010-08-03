@@ -1,3 +1,5 @@
+$:.unshift File.join(File.dirname(__FILE__), 'lib')
+
 require 'sinatra'
 require 'haml'
 require 'digest/sha1'
@@ -6,6 +8,8 @@ require 'openssl'
 require 'yaml'
 require 'lockfile'
 require 'singleton'
+require 'gettext'
+require 'haml_gettext'
 
 set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
 set :default_expire, 60 # 1 hour
@@ -298,6 +302,11 @@ end
 def password_match?(password)
   return TRUE if settings.upload_password.nil?
   (not password.nil?) && Digest::SHA1.hexdigest(password) == settings.upload_password
+end
+
+GetText::bindtextdomain('coquelicot')
+before do
+  GetText::set_current_locale(params[:lang] || request.env['HTTP_ACCEPT_LANGUAGE'] || 'en')
 end
 
 get '/style.css' do

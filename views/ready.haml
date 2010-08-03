@@ -2,7 +2,7 @@
 #content
   .url
     %a{ :href => @url }
-      %span.base> #{@base}/
+      %span.base>= "#{@base}/"
       %span.name= @name
   - unless @unprotected
     %p A password is required to download this file.
