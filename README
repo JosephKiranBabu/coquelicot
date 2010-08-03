@@ -1,0 +1,189 @@
+Coquelicot
+==========
+
+Coquelicot is a "one-click" file sharing web application with specific
+thoughts on protecting users privacy.
+
+Basic principle: users can upload a file to the server, it return they
+get a unique URL which can be shared to others in order to download the
+file.
+
+Coquelicot aims to protect, to some extents, users and system
+administrators from disclosure of the files exchanged from passive
+and not so active attackers.
+
+Features
+--------
+
+ * Uploading a file is protected by a common password
+
+   In order to prevent random Internet users to eat bandwidth and disk
+   space, uploading a file to share is protected by a common password.
+
+ * Mandatory expiration
+
+   When uploading, a time limit has to be specified. The file will be
+   unavailable once this limit has been reached.
+
+ * Upload progress bar
+
+   If the web server tracks upload progress, users having javascript
+   enabled will see a nice progress bar during the file upload.
+
+ * Downgrade nicely
+
+   The application works fine without javascript or CSS.
+
+ * Download URL are hand-writing compatible
+
+   URLs generated to download files uses the Base32 character set. This
+   set is specifically designed to overcome misread of 'l', '1', '0' and
+   'O' characters. Coquelicot will automatically convert case and
+   ambiguous characters to facilitate URL exchanges through
+   hand-writing.
+
+ * Files are stored encrypted on the server
+
+   Upon upload, files are written to the disk using symmetric
+   encryption. The encryption key is _not_ stored directly by
+   Coquelicot. It is either generated randomly and given as part of the
+   download URL, or specified by the uploader.
+
+ * Download can be protected by a password
+
+   When uploading, a password can be specified which will be used as
+   the encryption key. In order to download the file, the password
+   must be entered through in a POST'ed form, preventing the password
+   from appearing in the server logs.
+
+ * Files are stored with a random name
+
+   To prevent disclosure of the shared file name, it is stored encrypted
+   together with the file content. On the server, this encrypted file is
+   stored with a random name.
+
+ * Download URLs do not reflect stored file names
+
+   The random names given in download URLs do not map directly to file
+   names on the server. This prevent server logs from giving a direct
+   mapping to the shared files.
+
+ * File content is zero'ed before removal
+
+   When a file has expired, it is removed from the server. In order
+   to make it harder to retrieve its content through filesystem
+   analysis, it is filled with zeroes first.
+
+Setup
+-----
+
+Coquelicot is written in Ruby using the Sinatra web framework.
+
+On Debian, one can fulfill its dependencies by issueing:
+
+    apt-get install libsinatra-ruby1.8 libopenssl-ruby1.8 \
+                    libhaml-ruby1.8 liblockfile-ruby
+
+Then you need to figure out the best way to host a Rack application
+depending on your setup. *evil grin*
+
+Test suite
+----------
+
+Coquelicot test suite is written using RSpec.
+
+On Debian, you will need those extra packages:
+
+    apt-get install librspec-ruby1.8 libhpricot-ruby1.8
+
+You will also need the unpackaged gems "timecop" and "rack-test".
+
+Then, running the test suite is just a matter of typing:
+
+    spec test_coquelicot.rb
+
+Future
+------
+
+ * Integrate other authentication systems for uploads
+
+   A common password is a pretty limited authentication scheme.
+   One could like to also configure no password or integrate with
+   webmails or other authentication system.
+
+ * One-time download
+
+   An user might want to allow exactly _one_ download of a file,
+   to more closely replace an email attachment.
+
+ * More flexible expiration
+
+   It might be interesting to also offer a calendar for specifying
+   an exact date after which the file will be unavailable.
+
+ * Upper-bound expiration time
+
+   Malicious users could specify an arbitrary number of minutes before
+   the file is expired. This should be limited by an upper-bound.
+
+ * Hide file size (padding)
+
+   There is currently a real close mapping from original file size to
+   stored file size. Original file size will also be recorded in server
+   logs. Padding could be used to improve this situation.
+
+ * Make a Gem
+
+   Most Ruby stuff is installed using Gem, so Coquelicot should be one.
+
+ * Package for Debian
+
+   A Debian package would be nice to spread Coquelicot setups.
+
+ * Describe more setups
+
+   Describe how to setup Coquelicot with mod_passenger, Mongrel and
+   other webservers.
+
+Storage details
+---------------
+
+Files are stored in the directory specified by the 'depot_path'
+setting.
+
+The format is the following:
+
+    --- 
+    Coquelicot: "1.0"
+    Salt: <8 bytes stored as Base64>
+    Expire-at: <expiration time in seconds since epoch>
+    --- 
+    <encrypted data>
+
+Encryption is done using OpenSSL. Cipher is AES-256-CBC with key and IV
+created using the pbkdf2_hmac_sha1() implementation of PKCS5. The later
+is fead using the former 'Salt' and the given passphrase.
+
+Once decrypted, content has the following format:
+
+    --- 
+    Filename: "<original file name>"
+    Content-Type: "<MIME type>"
+    Length: <file length is bytes>
+    --- 
+    <original bytes forming the file content>
+
+Headers must be parseable using the YAML standard.
+
+In order to map download URLs to file name, a simple text file ".links"
+is used. It contains a line for each file in the form:
+
+    <URL name> <file name>
+
+Authors
+-------
+
+Coquelicot © 2010 potager.org <jardiniers@potager.org>
+
+Coquelicot is distributed under the GNU Affero General Public License
+version 3. See LICENSE for details.
