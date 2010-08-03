@@ -105,6 +105,10 @@ Then, running the test suite is just a matter of typing:
 Future
 ------
 
+ * Internationalization
+
+   Coquelicot should be i18n'ed to display users' preferred language.
+
  * Integrate other authentication systems for uploads
 
    A common password is a pretty limited authentication scheme.
