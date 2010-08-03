@@ -101,7 +101,7 @@ private
     if @meta["Coquelicot"].nil? or @meta["Coquelicot"] != COQUELICOT_VERSION then
       raise "unknown file"
     end
-    @expire_at = Time.at(@meta['Expire-at'].to_i)
+    @expire_at = Time.at(@meta['Expire-at'])
   end
 
   def init_decrypt_cipher(pass)
@@ -357,7 +357,7 @@ post '/upload' do
   src = params[:file][:tempfile]
   link = depot.add_file(
      src, pass,
-     { "Expire-at" => expire_at.strftime('%s'),
+     { "Expire-at" => expire_at.to_i,
        "Filename" => params[:file][:filename],
        "Length" => src.stat.size,
        "Content-Type" => params[:file][:type]
