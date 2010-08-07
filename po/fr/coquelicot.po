@@ -86,11 +86,11 @@ msgstr "1 mois"
 
 #: views/index.haml:28
 msgid "One time download:"
-msgstr ""
+msgstr "Téléchargement unique :"
 
 #: views/index.haml:32
 msgid "Remove after one download"
-msgstr ""
+msgstr "Effacer après un téléchargement"
 
 #: views/index.haml:33
 msgid "Download password:"
