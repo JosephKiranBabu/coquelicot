@@ -52,6 +52,25 @@ class StoredFile
     @expire_at < Time.now
   end
 
+  def one_time_only?
+    @meta['One-time-only'] && @meta['One-time-only'] == 'true'
+  end
+
+  def exclusively(&block)
+    old_path = @path
+    begin
+      new_path = "#{old_path}.#{gen_random_base32(16)}"
+    end while File.exists? new_path
+    File.rename(old_path, new_path)
+    @path = new_path
+    File.open(old_path, 'w').close
+    begin
+      yield
+    ensure
+      File.rename(new_path, old_path)
+    end
+  end
+
   def self.create(src, pass, meta)
     salt = gen_salt
     clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
@@ -377,6 +396,7 @@ post '/upload' do
     params[:expire] = options.default_expire
   end
   expire_at = Time.now + 60 * params[:expire].to_i
+  one_time_only = params[:one_time] and params[:one_time] == 'true'
   if params[:file_key].nil? or params[:file_key].empty?then
     pass = gen_random_pass
   else
@@ -386,9 +406,10 @@ post '/upload' do
   link = depot.add_file(
      src, pass,
      { "Expire-at" => expire_at.to_i,
+       "One-time-only" => one_time_only,
        "Filename" => params[:file][:filename],
        "Length" => src.stat.size,
-       "Content-Type" => params[:file][:type]
+       "Content-Type" => params[:file][:type],
      })
   redirect "ready/#{link}-#{pass}" if params[:file_key].nil? or params[:file_key].empty?
   redirect "ready/#{link}"
@@ -398,11 +419,7 @@ def expired
   throw :halt, [410, haml(:expired)]
 end
 
-def send_stored_file(link, pass)
-  file = depot.get_file(link, pass)
-  return false if file.nil?
-  return expired if file.expired?
-
+def send_stored_file(file)
   last_modified file.created_at.httpdate
   attachment file.meta['Filename']
   response['Content-Length'] = "#{file.meta['Length']}"
@@ -410,10 +427,23 @@ def send_stored_file(link, pass)
   throw :halt, [200, file]
 end
 
+def send_link(link, pass)
+  file = depot.get_file(link, pass)
+  return false if file.nil?
+  return expired if file.expired?
+
+  return send_stored_file(file) unless file.one_time_only?
+
+  file.exclusively do
+    begin  send_stored_file(file)
+    ensure file.empty!            end
+  end
+end
+
 get '/:link-:pass' do |link, pass|
   link = remap_base32_extra_characters(link)
   pass = remap_base32_extra_characters(pass)
-  not_found unless send_stored_file(link, pass)
+  not_found unless send_link(link, pass)
 end
 
 get '/:link' do |link|
@@ -427,7 +457,8 @@ post '/:link' do |link|
   pass = params[:file_key]
   return 403 if pass.nil? or pass.empty?
   begin
-    return 403 unless send_stored_file(link, pass)
+    # send Forbidden even if file is not found
+    return 403 unless send_link(link, pass)
   rescue BadKey => ex
     403
   end

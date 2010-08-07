@@ -6,14 +6,47 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2010-08-03 19:12+0200\n"
+"POT-Creation-Date: 2010-08-07 15:23+0200\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: views/ready.haml:1
+msgid "Pass this on!"
+msgstr "À transmettre !"
+
+#: views/layout.haml:1
+msgid "coquelicot"
+msgstr "coquelicot"
+
+#: views/layout.haml:7
+msgid "Generate random"
+msgstr "Générer aléatoirement"
+
+#: views/layout.haml:7
+msgid "Generating…"
+msgstr "Génération…"
+
+#: views/layout.haml:7
+msgid "Coquelicot © 2010 potager.org"
+msgstr "Coquelicot © 2010 potager.org"
+
+#: views/layout.haml:8 views/layout.haml:10
+msgid "—"
+msgstr "—"
+
+#: views/layout.haml:9
+msgid "AGPLv3"
+msgstr "AGPLv3"
+
+#: views/layout.haml:11
+msgid "git clone #{base_href}coquelicot.git"
+msgstr "git clone #{base_href}coquelicot.git"
 
 #: views/index.haml:1
 msgid "Share a file!"
@@ -52,48 +85,16 @@ msgid "1 month"
 msgstr "1 mois"
 
 #: views/index.haml:28
+msgid "One time download:"
+msgstr ""
+
+#: views/index.haml:32
+msgid "Remove after one download"
+msgstr ""
+
+#: views/index.haml:33
 msgid "Download password:"
 msgstr "Passe pour le téléchargement :"
-
-#: views/expired.haml:1
-msgid "Too late…"
-msgstr "Trop tard…"
-
-#: views/expired.haml:2
-msgid "Sorry, file has expired."
-msgstr "Désolé, le fichier a expiré."
-
-#: views/layout.haml:1
-msgid "coquelicot"
-msgstr "coquelicot"
-
-#: views/layout.haml:7
-msgid "Generate random"
-msgstr "Générer aléatoirement"
-
-#: views/layout.haml:7
-msgid "Generating…"
-msgstr "Génération…"
-
-#: views/layout.haml:7
-msgid "Coquelicot © 2010 potager.org"
-msgstr "Coquelicot © 2010 potager.org"
-
-#: views/layout.haml:8 views/layout.haml:10
-msgid "—"
-msgstr "—"
-
-#: views/layout.haml:9
-msgid "AGPLv3"
-msgstr "AGPLv3"
-
-#: views/layout.haml:11
-msgid "git clone #{base_href}coquelicot.git"
-msgstr "git clone #{base_href}coquelicot.git"
-
-#: views/ready.haml:1
-msgid "Pass this on!"
-msgstr "À transmettre !"
 
 #: views/enter_file_key.haml:1
 msgid "Enter download password…"
@@ -102,3 +103,11 @@ msgstr "Entrer le passe de téléchargement…"
 #: views/enter_file_key.haml:4
 msgid "Password:"
 msgstr "Passe :"
+
+#: views/expired.haml:1
+msgid "Too late…"
+msgstr "Trop tard…"
+
+#: views/expired.haml:2
+msgid "Sorry, file has expired."
+msgstr "Désolé, le fichier a expiré."

@@ -28,6 +28,11 @@ Features
    During a configurable period of time, trying to download the file
    will return a page saying "too late" instead of "not found".
 
+ * Support for one-time download
+
+   An user might want to allow exactly _one_ download of a file,
+   to more closely replace an email attachment.
+
  * Upload progress bar
 
    If the web server tracks upload progress, users having javascript
@@ -119,11 +124,6 @@ Future
    One could like to also configure no password or integrate with
    webmails or other authentication system.
 
- * One-time download
-
-   An user might want to allow exactly _one_ download of a file,
-   to more closely replace an email attachment.
-
  * More flexible expiration
 
    It might be interesting to also offer a calendar for specifying
@@ -179,6 +179,7 @@ Once decrypted, content has the following format:
     Filename: "<original file name>"
     Content-Type: "<MIME type>"
     Length: <file length is bytes>
+    One-time-only: <true|false>
     --- 
     <original bytes forming the file content>
 

@@ -110,6 +110,16 @@ describe 'Coquelicot' do
     url_name.split('-').should have(1).items
   end
 
+  it "should only allow one time download to be retrieved once" do
+    url = upload :one_time => true
+    get url
+    last_response.should be_ok
+    last_response['Content-Type'].should eql('text/x-script.ruby')
+    last_response.body.should eql(File.new(__FILE__).read)
+    get url
+    last_response.status.should eql(410)
+  end
+
   it "should allow retrieval of a password protected file" do
     url = upload :file_key => 'somethingSecret'
     get url
