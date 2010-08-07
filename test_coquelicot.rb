@@ -57,6 +57,15 @@ describe 'Coquelicot' do
     last_response.body.should eql(File.new(__FILE__).read)
   end
 
+  it "should correctly set Last-Modified header when downloading" do
+    url = upload
+    get url
+    last_modified = last_response['Last-Modified']
+    last_modified.should_not be_nil
+    get url
+    last_response['Last-Modified'].should eql(last_modified)
+  end
+
   it "should prevent upload without a password" do
     url = upload :upload_password => ''
     url.should be_nil

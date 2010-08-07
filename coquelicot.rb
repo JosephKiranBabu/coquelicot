@@ -43,19 +43,21 @@ class StoredFile
     @cipher = nil
   end
 
-  def mtime
-    @file.mtime
+  def created_at
+    Time.at(@meta['Created-at'])
   end
 
   def self.create(src, pass, meta)
     salt = gen_salt
     clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
                    "Salt" => Base64.encode64(salt).strip,
-                   "Expire-at" => meta.delete('Expire-at') }
+                   "Expire-at" => meta.delete('Expire-at'),
+                 }
     yield YAML.dump(clear_meta) + YAML_START
 
     cipher = get_cipher(pass, salt, :encrypt)
-    yield cipher.update(YAML.dump(meta) + YAML_START)
+    yield cipher.update(YAML.dump(meta.merge("Created-at" => Time.now.to_i)) +
+                        YAML_START)
     src.rewind
     while not (buf = src.read(BUFFER_LEN)).nil?
       yield cipher.update(buf)
@@ -382,7 +384,7 @@ def send_stored_file(link, pass)
   return false if file.nil?
   return expired if Time.now > file.expire_at
 
-  last_modified file.mtime.httpdate
+  last_modified file.created_at.httpdate
   attachment file.meta['Filename']
   response['Content-Length'] = "#{file.meta['Length']}"
   response['Content-Type'] = file.meta['Content-Type'] || 'application/octet-stream'

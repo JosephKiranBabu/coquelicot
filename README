@@ -172,6 +172,7 @@ is fead using the former 'Salt' and the given passphrase.
 Once decrypted, content has the following format:
 
     --- 
+    Created-at: <upload time in seconds since epoch>
     Filename: "<original file name>"
     Content-Type: "<MIME type>"
     Length: <file length is bytes>
