@@ -13,6 +13,7 @@ require 'haml_gettext'
 
 set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
 set :default_expire, 60 # 1 hour
+set :gone_period, 10080 # 1 week
 set :filename_length, 20
 set :random_pass_length, 16
 set :lockfile_options, { :timeout => 60,
@@ -25,7 +26,7 @@ class BadKey < StandardError; end
 class StoredFile
   BUFFER_LEN = 4096
 
-  attr_reader :meta, :expire_at
+  attr_reader :path, :meta, :expire_at
 
   def self.open(path, pass = nil)
     StoredFile.new(path, pass)
@@ -47,6 +48,10 @@ class StoredFile
     Time.at(@meta['Created-at'])
   end
 
+  def expired?
+    @expire_at < Time.now
+  end
+
   def self.create(src, pass, meta)
     salt = gen_salt
     clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
@@ -63,6 +68,21 @@ class StoredFile
       yield cipher.update(buf)
     end
     yield cipher.final
+  end
+
+  def empty!
+    # zero the content before truncating
+    File.open(@path, 'r+') do |f|
+      f.seek 0, IO::SEEK_END
+      length = f.tell
+      f.rewind
+      while length > 0 do
+        write_len = [StoredFile::BUFFER_LEN, length].min
+        length -= f.write("\0" * write_len)
+      end
+      f.fsync
+    end
+    File.truncate(@path, 0)
   end
 
 private
@@ -86,7 +106,13 @@ private
   end
 
   def initialize(path, pass)
-    @file = File.open(path)
+    @path = path
+    @file = File.open(@path)
+    if @file.lstat.size == 0 then
+      @expire_at = Time.now - 1
+      return
+    end
+
     if YAML_START != (buf = @file.read(YAML_START.length)) then
       raise "unknown file, read #{buf.inspect}"
     end
@@ -145,7 +171,7 @@ end
 class Depot
   include Singleton
 
-  attr_accessor :path, :lockfile_options, :filename_length
+  attr_accessor :path, :lockfile_options, :filename_length, :gone_period
 
   def add_file(src, pass, options)
     dst = nil
@@ -166,7 +192,7 @@ class Depot
     link
   end
 
-  def get_file(link, pass)
+  def get_file(link, pass=nil)
     name = read_link(link)
     return nil if name.nil?
     StoredFile::open(full_path(name), pass)
@@ -179,7 +205,14 @@ class Depot
 
   def gc!
     files.each do |name|
-      remove_file(name) if Time.now > StoredFile::open(full_path(name)).expire_at
+      path = full_path(name)
+      if File.lstat(path).size > 0
+        file = StoredFile::open path
+        file.empty! if file.expired?
+      elsif Time.now - File.lstat(path).mtime > (gone_period * 60)
+        remove_from_links { |l| l.strip.end_with? " #{name}" }
+        File.unlink path
+      end
     end
   end
 
@@ -224,7 +257,7 @@ private
     lockfile.lock do
       File.open(links_path) do |f|
         begin
-          line = f.readline
+          line = f.readline rescue break
           if line.start_with? "#{src} " then
             dst = line.split[1]
             break
@@ -233,21 +266,6 @@ private
       end
     end
     dst
-  end
-
-  def remove_file(name)
-    # zero the content before unlinking
-    File.open(full_path(name), 'r+') do |f|
-      f.seek 0, IO::SEEK_END
-      length = f.tell
-      f.rewind
-      while length > 0 do
-        write_len = [StoredFile::BUFFER_LEN, length].min
-        length -= f.write("\0" * write_len)
-      end
-    end
-    File.unlink full_path(name)
-    remove_from_links { |l| l.end_with? " #{name}" }
   end
 
   def files
@@ -277,6 +295,7 @@ def depot
   @depot.path = options.depot_path if @depot.path.nil?
   @depot.lockfile_options = options.lockfile_options if @depot.lockfile_options.nil?
   @depot.filename_length = options.filename_length if @depot.filename_length.nil?
+  @depot.gone_period = options.gone_period if @depot.gone_period.nil?
   @depot
 end
 
@@ -382,7 +401,7 @@ end
 def send_stored_file(link, pass)
   file = depot.get_file(link, pass)
   return false if file.nil?
-  return expired if Time.now > file.expire_at
+  return expired if file.expired?
 
   last_modified file.created_at.httpdate
   attachment file.meta['Filename']

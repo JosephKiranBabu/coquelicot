@@ -148,12 +148,22 @@ describe 'Coquelicot' do
   end
 
   it "should cleanup expired files" do
-    upload :expire => 60 # 1 hour
+    url = upload :expire => 60, :file_key => 'test' # 1 hour
+    url_name = url.split('/')[-1]
     Dir.glob("#{Depot.instance.path}/*").should have(1).items
     # let's be tomorrow
     Timecop.travel(Date.today + 1) do
       Depot.instance.gc!
+      files = Dir.glob("#{Depot.instance.path}/*")
+      files.should have(1).items
+      File.lstat(files[0]).size.should eql(0)
+      Depot.instance.get_file(url_name).expired?.should be_true
+    end
+    # let's be after 'gone' period
+    Timecop.travel(Time.now + (Depot.instance.gone_period * 60)) do
+      Depot.instance.gc!
       Dir.glob("#{Depot.instance.path}/*").should have(0).items
+      Depot.instance.get_file(url_name).should be_nil
     end
   end
 
