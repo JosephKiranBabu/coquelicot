@@ -2,7 +2,7 @@ $:.unshift File.join(File.dirname(__FILE__), '../rack-test/lib')
 $:.unshift File.join(File.dirname(__FILE__), '../timecop/lib')
 
 require 'sinatra'
-require 'coquelicot'
+require 'coquelicot_app'
 require 'spec'
 require 'rack/test'
 require 'timecop'
@@ -35,11 +35,11 @@ describe 'Coquelicot' do
   end
 
   before do
-    Depot.instance.path = Dir.mktmpdir('coquelicot') #"#{Time.now.to_f}"
+    Coquelicot.setup :depot_path => Dir.mktmpdir('coquelicot') #"#{Time.now.to_f}"
   end
 
   after do
-    FileUtils.remove_entry_secure Depot.instance.path
+    FileUtils.remove_entry_secure Coquelicot.depot.path
   end
 
   it "should offer an upload form" do
@@ -80,7 +80,7 @@ describe 'Coquelicot' do
 
   it "should not store an uploaded file in cleartext" do
     upload
-    files = Dir.glob("#{Depot.instance.path}/*")
+    files = Dir.glob("#{Coquelicot.depot.path}/*")
     files.should have(1).items
     File.new(files[0]).read().should_not include('should not store an uploaded file')
   end
@@ -93,7 +93,7 @@ describe 'Coquelicot' do
   it "should store files with a different name than then one in URL" do
     url = upload
     url_name = url.split('/')[-1]
-    files = Dir.glob("#{Depot.instance.path}/*")
+    files = Dir.glob("#{Coquelicot.depot.path}/*")
     files.should have(1).items
     url_name.should_not eql(File.basename(files[0]))
   end
@@ -160,20 +160,20 @@ describe 'Coquelicot' do
   it "should cleanup expired files" do
     url = upload :expire => 60, :file_key => 'test' # 1 hour
     url_name = url.split('/')[-1]
-    Dir.glob("#{Depot.instance.path}/*").should have(1).items
+    Dir.glob("#{Coquelicot.depot.path}/*").should have(1).items
     # let's be tomorrow
     Timecop.travel(Date.today + 1) do
-      Depot.instance.gc!
-      files = Dir.glob("#{Depot.instance.path}/*")
+      Coquelicot.depot.gc!
+      files = Dir.glob("#{Coquelicot.depot.path}/*")
       files.should have(1).items
       File.lstat(files[0]).size.should eql(0)
-      Depot.instance.get_file(url_name).expired?.should be_true
+      Coquelicot.depot.get_file(url_name).expired?.should be_true
     end
     # let's be after 'gone' period
-    Timecop.travel(Time.now + (Depot.instance.gone_period * 60)) do
-      Depot.instance.gc!
-      Dir.glob("#{Depot.instance.path}/*").should have(0).items
-      Depot.instance.get_file(url_name).should be_nil
+    Timecop.travel(Time.now + (Coquelicot.settings.gone_period * 60)) do
+      Coquelicot.depot.gc!
+      Dir.glob("#{Coquelicot.depot.path}/*").should have(0).items
+      Coquelicot.depot.get_file(url_name).should be_nil
     end
   end
 

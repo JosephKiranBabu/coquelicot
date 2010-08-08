@@ -2,8 +2,8 @@ require 'sinatra'
 
 set :environment, :development
 set :raise_errors, true
-set :depot_path, Proc.new { File.join(public, "../files") }
 disable :run
 
-require 'coquelicot'
+require 'coquelicot_app'
+Coquelicot.setup :depot_path => File.expand("#{options.root}/../files")
 run Sinatra::Application
