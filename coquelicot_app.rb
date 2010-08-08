@@ -97,17 +97,51 @@ def send_stored_file(file)
   throw :halt, [200, file]
 end
 
+module Coquelicot
+  class StoredFile
+    def lockfile
+      @lockfile ||= Lockfile.new "#{File.expand_path(@path)}.lock", :timeout => 4
+    end
+
+    def each
+      # output content
+      yield @initial_content
+      @initial_content = nil
+      until (buf = @file.read(BUFFER_LEN)).nil?
+        yield @cipher.update(buf)
+      end
+      yield @cipher.final
+      @fully_sent = true
+    end
+
+    def close
+      if @cipher
+        @cipher.reset
+        @cipher = nil
+      end
+      @file.close
+      if one_time_only?
+        empty! if @fully_sent
+        lockfile.unlock
+      end
+    end
+  end
+end
+
 def send_link(link, pass)
   file = Coquelicot.depot.get_file(link, pass)
   return false if file.nil?
   return expired if file.expired?
 
-  return send_stored_file(file) unless file.one_time_only?
-
-  file.exclusively do
-    begin  send_stored_file(file)
-    ensure file.empty!            end
+  if file.one_time_only?
+    begin
+      # unlocking done in file.close
+      file.lockfile.lock
+    rescue Lockfile::TimeoutLockError
+      error 409, "Download currently in progress"
+    end
   end
+  send_stored_file(file)
 end
 
 get '/:link-:pass' do |link, pass|

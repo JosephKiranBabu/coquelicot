@@ -15,18 +15,6 @@ module Coquelicot
       StoredFile.new(path, pass)
     end
 
-    def each
-      # output content
-      yield @initial_content
-      @initial_content = nil
-      until (buf = @file.read(BUFFER_LEN)).nil?
-        yield @cipher.update(buf)
-      end
-      yield @cipher.final
-      @cipher.reset
-      @cipher = nil
-    end
-
     def created_at
       Time.at(@meta['Created-at'])
     end
@@ -37,21 +25,6 @@ module Coquelicot
 
     def one_time_only?
       @meta['One-time-only'] && @meta['One-time-only'] == 'true'
-    end
-
-    def exclusively(&block)
-      old_path = @path
-      begin
-        new_path = "#{old_path}.#{Coquelicot.gen_random_base32(16)}"
-      end while File.exists? new_path
-      File.rename(old_path, new_path)
-      @path = new_path
-      File.open(old_path, 'w').close
-      begin
-        yield
-      ensure
-        File.rename(new_path, old_path)
-      end
     end
 
     def self.create(src, pass, meta)
@@ -163,19 +136,9 @@ module Coquelicot
       @initial_content = block[1]
       @meta.merge! YAML.load(yaml)
     end
-
-    def close
-      @cipher.reset unless @cipher.nil?
-      @file.close
-    end
   end
 
   class Depot
-    LOCKFILE_OPTIONS = { :timeout => 60,
-                         :max_age => 8,
-                         :refresh => 2,
-                         :debug   => false }
-
     attr_reader :path
 
     def initialize(path)
@@ -226,6 +189,11 @@ module Coquelicot
     end
 
   private
+
+    LOCKFILE_OPTIONS = { :timeout => 60,
+                         :max_age => 8,
+                         :refresh => 2,
+                         :debug   => false }
 
     def lockfile
       Lockfile.new "#{@path}/.lock", LOCKFILE_OPTIONS

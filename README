@@ -31,7 +31,8 @@ Features
  * Support for one-time download
 
    An user might want to allow exactly _one_ download of a file,
-   to more closely replace an email attachment.
+   to more closely replace an email attachment. The file will be removed after
+   the first complete download and concurrent download are prevented.
 
  * Upload progress bar
 
