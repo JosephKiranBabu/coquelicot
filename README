@@ -116,6 +116,15 @@ Then, running the test suite is just a matter of typing:
 
     spec test_coquelicot.rb
 
+Migrate from Jyraphe
+--------------------
+
+Jyraphe [1] is another free software web file sharing application.
+Coquelicot provides a migration script to import Jyraphe 0.5 repositories in
+`tools/migrate_jyraphe.rb`.
+
+[1] http://home.gna.org/jyraphe/
+
 Future
 ------
 
