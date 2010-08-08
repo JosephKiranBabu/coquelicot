@@ -120,6 +120,14 @@ describe 'Coquelicot' do
     last_response.status.should eql(410)
   end
 
+  it "should have files zero'ed after 'one time' download" do
+    url = upload :one_time => true
+    get url
+    files = Dir.glob("#{Coquelicot.depot.path}/*")
+    files.should have(1).items
+    File.lstat(files[0]).size.should eql(0)
+  end
+
   it "should allow retrieval of a password protected file" do
     url = upload :file_key => 'somethingSecret'
     get url
