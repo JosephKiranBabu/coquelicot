@@ -139,11 +139,6 @@ Future
    It might be interesting to also offer a calendar for specifying
    an exact date after which the file will be unavailable.
 
- * Upper-bound expiration time
-
-   Malicious users could specify an arbitrary number of minutes before
-   the file is expired. This should be limited by an upper-bound.
-
  * Hide file size (padding)
 
    There is currently a real close mapping from original file size to

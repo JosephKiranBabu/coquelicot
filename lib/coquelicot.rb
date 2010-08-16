@@ -267,6 +267,7 @@ module Coquelicot
   end
 
   DEFAULT_SETTINGS = { :default_expire => 60,
+                       :maximum_expire => 60 * 24 * 30, # 1 month
                        :gone_period => 10080,
                        :filename_length => 20,
                        :random_pass_length => 16,

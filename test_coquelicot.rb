@@ -165,6 +165,11 @@ describe 'Coquelicot' do
     end
   end
 
+  it "should not allow an expiration time longer than the maximum" do
+    upload :expire => 60 * 24 * 31 * 12 # 1 year
+    last_response.status.should eql(403)
+  end
+
   it "should cleanup expired files" do
     url = upload :expire => 60, :file_key => 'test' # 1 hour
     url_name = url.split('/')[-1]

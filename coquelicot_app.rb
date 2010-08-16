@@ -64,6 +64,8 @@ post '/upload' do
   end
   if params[:expire].nil? or params[:expire].to_i == 0 then
     params[:expire] = Coquelicot.settings.default_expire
+  elsif params[:expire].to_i > Coquelicot.settings.maximum_expire then
+    error 403
   end
   expire_at = Time.now + 60 * params[:expire].to_i
   one_time_only = params[:one_time] and params[:one_time] == 'true'
