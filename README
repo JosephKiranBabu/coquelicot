@@ -101,6 +101,9 @@ Then create the translation catalog through:
 Finally you need to figure out the best way to host a Rack application
 depending on your setup. *evil grin*
 
+Coquelicot is intended to be run on a fully encrypted system and accessible
+only through HTTPS.
+
 Test suite
 ----------
 
