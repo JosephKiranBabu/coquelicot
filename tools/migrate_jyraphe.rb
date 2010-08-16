@@ -45,7 +45,8 @@ class JyrapheMigrator
           random_pass = Coquelicot::gen_random_pass
         end
         expire_at = link_file.readline.strip.to_i
-        expire_at = (Time.now + 60 * 24 * 30).to_i if expire_at <= 0 #XXX: replace with config
+        expire_at = [Time.now + Coquelicot.settings.maximum_expire,
+                     expire_at].min if expire_at <= 0
         begin
           coquelicot_link = File.open("#{@var}/files/#{filename}") do |src|
             Coquelicot::depot.add_file(
