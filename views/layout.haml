@@ -10,8 +10,9 @@
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.lightBoxFu.js' }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.uploadProgress.js' }
     :javascript
-      var generateRandomPassword = _('Generate random');
-      var generatingRandomPassword = _('Generating…');
+      var i18n = { generateRandomPassword: _('Generate random'),
+                   generatingRandomPassword: _('Generating…'),
+                 };
     %script{ :type => 'text/javascript', :src => 'javascripts/coquelicot.js' }
   %body
     #container

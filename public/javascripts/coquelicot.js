@@ -32,11 +32,11 @@ $(function($) {
 });
 $(document).ready(function() {
   var link = $('<a href="#" id="gen_pass" />');
-  link.text(generateRandomPassword);
+  link.text(i18n.generateRandomPassword);
   var file_key = $('#file_key');
   file_key.after(link);
   link.click(function() {
-    link.text(generatingRandomPassword);
+    link.text(i18n.generatingRandomPassword);
     $.get('random_pass', function(pass) {
       file_key.val(pass);
       file_key.hide();
