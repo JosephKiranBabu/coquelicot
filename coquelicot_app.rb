@@ -2,6 +2,7 @@ $:.unshift File.join(File.dirname(__FILE__), 'lib')
 
 require 'sinatra'
 require 'haml'
+require 'sass'
 require 'digest/sha1'
 require 'gettext'
 require 'coquelicot'
