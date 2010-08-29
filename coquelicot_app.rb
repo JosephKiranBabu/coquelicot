@@ -50,6 +50,14 @@ get '/ready/:link' do |link|
   haml :ready
 end
 
+post '/authenticate' do
+  pass unless request.xhr?
+  unless password_match? params[:upload_password] then
+    error 403, "Forbidden"
+  end
+  'OK'
+end
+
 post '/upload' do
   unless password_match? params[:upload_password] then
     error 403

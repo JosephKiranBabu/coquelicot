@@ -3,9 +3,10 @@
   .error= @error
 %form#upload{ :enctype => 'multipart/form-data',
               :action  => 'upload', :method => 'post' }
-  .field
-    %label{ :for => 'upload_password' } Upload password:
-    %input.input{ :type => 'password', :id => 'upload_password', :name => 'upload_password' }
+  #upload-authentication
+    .field
+      %label{ :for => 'upload_password' } Upload password:
+      %input.input{ :type => 'password', :id => 'upload_password', :name => 'upload_password' }
   .field
     %label{ :for => 'file' } File:
     %input.input{ :type => 'file', :id => 'file', :name => 'file' }

@@ -46,4 +46,37 @@ $(document).ready(function() {
       link.remove();
     });
   });
+
+  var authForm = $('<form></form>')
+  var authDiv = $('#upload-authentication').remove();
+  var lb = $.lightBoxFu;
+  authForm.bind('submit', function() {
+    var uploadPassword = $('#upload_password');
+    jQuery.ajax({
+      type: 'POST',
+      url: 'authenticate',
+      dataType: 'text',
+      data: { upload_password: uploadPassword.val() },
+      complete: function(res, status) {
+        if (status === 'success') {
+          var hiddenField = $('<input type="hidden" name="upload_password" />');
+          hiddenField.val(uploadPassword.val());
+          $('#upload').append(hiddenField);
+          lb.close();
+        } else if (res.responseText == 'Forbidden') {
+          $('#auth-message').text('Please try again!');
+        } else {
+          $('#auth-message').text('Error: ' + alert(status));
+        }
+        uploadPassword.val('');
+      }
+    });
+    return false;
+  });
+  lb.open({
+    html: authForm.append(authDiv).append('<div id="auth-message"></div>'),
+    width: "300px",
+    closeOnClick: false
+  });
+  $('#upload_password').focus();
 });

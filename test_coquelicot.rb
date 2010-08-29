@@ -78,6 +78,18 @@ describe 'Coquelicot' do
     last_response.status.should eql(403)
   end
 
+  it "should allow AJAX upload password verification" do
+    request "/authenticate", :method => "POST", :xhr => true,
+                             :params => { :upload_password => UPLOAD_PASSWORD }
+    last_response.should be_ok
+    request "/authenticate", :method => "POST", :xhr => true,
+                             :params => { :upload_password => '' }
+    last_response.status.should eql(403)
+    request "/authenticate", :method => "POST", :xhr => true,
+                             :params => { :upload_password => 'wrong' }
+    last_response.status.should eql(403)
+  end
+
   it "should not store an uploaded file in cleartext" do
     upload
     files = Dir.glob("#{Coquelicot.depot.path}/*")
