@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2010-08-07 15:23+0200\n"
+"POT-Creation-Date: 2010-08-29 18:20+0200\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
@@ -31,6 +31,26 @@ msgstr "Générer aléatoirement"
 #: views/layout.haml:7
 msgid "Generating…"
 msgstr "Génération…"
+
+#: views/layout.haml:7
+msgid "Please try again!"
+msgstr "Allez, essaye encore !"
+
+#: views/layout.haml:7
+msgid "Error: "
+msgstr "Erreur :"
+
+#: views/layout.haml:7
+msgid "Upload starting..."
+msgstr "Démarrage de l’envoi..."
+
+#: views/layout.haml:7
+msgid "Uploading: "
+msgstr "Envoi :"
+
+#: views/layout.haml:7
+msgid "kB"
+msgstr "ko"
 
 #: views/layout.haml:7
 msgid "Coquelicot © 2010 potager.org"
@@ -68,31 +88,31 @@ msgstr "Disponible pendant :"
 msgid "5 minutes"
 msgstr "5 minutes"
 
-#: views/index.haml:20
+#: views/index.haml:21
 msgid "1 hour"
 msgstr "1 heure"
 
-#: views/index.haml:22
+#: views/index.haml:23
 msgid "1 day"
 msgstr "1 jour"
 
-#: views/index.haml:24
+#: views/index.haml:25
 msgid "1 week"
 msgstr "1 semaine"
 
-#: views/index.haml:26
+#: views/index.haml:27
 msgid "1 month"
 msgstr "1 mois"
 
-#: views/index.haml:28
+#: views/index.haml:29
 msgid "One time download:"
 msgstr "Téléchargement unique :"
 
-#: views/index.haml:32
+#: views/index.haml:30
 msgid "Remove after one download"
 msgstr "Effacer après un téléchargement"
 
-#: views/index.haml:33
+#: views/index.haml:31
 msgid "Download password:"
 msgstr "Passe pour le téléchargement :"
 

@@ -11,13 +11,13 @@ $(function($) {
         width: "250px",
         closeOnClick: false
       });
-      jQuery('#received').html("Upload starting.");
+      jQuery('#received').html(i18n.uploadStarting);
       jQuery('#percent').html("0%");
     },
     uploading: function(upload) {
       // update upload info on each /progress response
-      jQuery('#received').html("Uploading: " + parseInt(upload.received / 1024) + "/");
-      jQuery('#size').html(parseInt(upload.size / 1024) + " kB");
+      jQuery('#received').html(i18n.uploading + parseInt(upload.received / 1024) + "/");
+      jQuery('#size').html(parseInt(upload.size / 1024) + ' ' + i18n.kb);
       jQuery('#percent').html(upload.percents + "%");
     },
     interval: 2000,
@@ -64,9 +64,9 @@ $(document).ready(function() {
           $('#upload').append(hiddenField);
           lb.close();
         } else if (res.responseText == 'Forbidden') {
-          $('#auth-message').text('Please try again!');
+          $('#auth-message').text(i18n.pleaseTryAgain);
         } else {
-          $('#auth-message').text('Error: ' + alert(status));
+          $('#auth-message').text(i18n.error + alert(status));
         }
         uploadPassword.val('');
       }
