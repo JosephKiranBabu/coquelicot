@@ -1,16 +1,16 @@
 Coquelicot
 ==========
 
-Coquelicot is a "one-click" file sharing web application with specific
-thoughts on protecting users privacy.
+Coquelicot is a "one-click" file sharing web application with a specific
+focus on protecting users' privacy.
 
-Basic principle: users can upload a file to the server, it return they
-get a unique URL which can be shared to others in order to download the
-file.
+Basic principle: users can upload a file to the server, in return they
+get a unique URL which can be shared with others in order to download
+the file.
 
-Coquelicot aims to protect, to some extents, users and system
-administrators from disclosure of the files exchanged from passive
-and not so active attackers.
+Coquelicot aims to protect, to some extend, users and system
+administrators from disclosure of the files exchanged from passive and
+not so active attackers.
 
 Features
 --------
@@ -18,7 +18,8 @@ Features
  * Uploading a file is protected by a common password
 
    In order to prevent random Internet users to eat bandwidth and disk
-   space, uploading a file to share is protected by a common password.
+   space, uploading a file for sharing is protected by a common
+   password.
 
  * Mandatory expiration
 
@@ -53,7 +54,7 @@ Features
 
  * Files are stored encrypted on the server
 
-   Upon upload, files are written to the disk using symmetric
+   While being uploaded, files are written to the disk using symmetric
    encryption. The encryption key is _not_ stored directly by
    Coquelicot. It is either generated randomly and given as part of the
    download URL, or specified by the uploader.
@@ -81,14 +82,14 @@ Features
 
    When a file has expired, it is removed from the server. In order
    to make it harder to retrieve its content through filesystem
-   analysis, it is filled with zeroes first.
+   analysis, it is filled with zeros first.
 
 Setup
 -----
 
 Coquelicot is written in Ruby using the Sinatra web framework.
 
-On Debian, one can fulfill its dependencies by issueing:
+On Debian, one can fulfill its dependencies by issuing:
 
     apt-get install libsinatra-ruby1.8 libopenssl-ruby1.8 \
                     libhaml-ruby1.8 liblockfile-ruby libgettext-ruby1.8 \
@@ -178,7 +179,7 @@ The format is the following:
 
 Encryption is done using OpenSSL. Cipher is AES-256-CBC with key and IV
 created using the pbkdf2_hmac_sha1() implementation of PKCS5. The later
-is fead using the former 'Salt' and the given passphrase.
+is fed using the former 'Salt' and the given passphrase.
 
 Once decrypted, content has the following format:
 
