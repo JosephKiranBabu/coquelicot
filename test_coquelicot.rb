@@ -1,7 +1,6 @@
 $:.unshift File.join(File.dirname(__FILE__), '../rack-test/lib')
 $:.unshift File.join(File.dirname(__FILE__), '../timecop/lib')
 
-require 'sinatra'
 require 'coquelicot_app'
 require 'spec'
 require 'rack/test'
@@ -11,14 +10,11 @@ require 'tmpdir'
 
 UPLOAD_PASSWORD = 'secret'
 
-set :environment, :test
-set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
-
 describe 'Coquelicot' do
   include Rack::Test::Methods
 
   def app
-    Sinatra::Application
+    Coquelicot::Application
   end
 
   def upload(opts={})
@@ -35,6 +31,9 @@ describe 'Coquelicot' do
   end
 
   before do
+    app.set :environment, :test
+    app.set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
+
     Coquelicot.setup :depot_path => Dir.mktmpdir('coquelicot') #"#{Time.now.to_f}"
   end
 
