@@ -30,7 +30,7 @@ $(function($) {
     progressUrl: "progress"
   });
 });
-$(document).ready(function() {
+function authenticate() {
   var link = $('<a href="#" id="gen_pass" />');
   link.text(i18n.generateRandomPassword);
   var file_key = $('#file_key');
@@ -79,4 +79,4 @@ $(document).ready(function() {
     closeOnClick: false
   });
   $('#upload_password').focus();
-});
+}
