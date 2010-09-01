@@ -33,8 +33,7 @@ describe 'Coquelicot' do
   before do
     app.set :environment, :test
     app.set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
-
-    Coquelicot.setup :depot_path => Dir.mktmpdir('coquelicot') #"#{Time.now.to_f}"
+    app.set :depot_path, Dir.mktmpdir('coquelicot')
   end
 
   after do

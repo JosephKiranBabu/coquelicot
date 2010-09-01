@@ -88,7 +88,7 @@ def main
     exit 1
   end
 
-  Coquelicot.setup :depot_path => coquelicot_depot
+  Coquelicot::Application.set :depot_path, coquelicot_depot
   JyrapheMigrator.new(jyraphe_var).process
 end
 

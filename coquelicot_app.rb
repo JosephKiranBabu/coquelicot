@@ -38,8 +38,25 @@ module Coquelicot
     end
   end
 
+  class << self
+    def settings
+      (class << self; Application; end)
+    end
+    def depot
+      @depot = Depot.new(settings.depot_path) if @depot.nil? || settings.depot_path != @depot.path
+      @depot
+    end
+  end
+
   class Application < Sinatra::Base
+    set :app_file, __FILE__
     set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
+    set :default_expire, 60
+    set :maximum_expire, 60 * 24 * 30 # 1 month
+    set :gone_period, 10080
+    set :filename_length, 20
+    set :random_pass_length, 16
+    set :depot_path, Proc.new { File.join(root, 'files') }
 
     def password_match?(password)
       return TRUE if settings.upload_password.nil?
@@ -103,8 +120,8 @@ module Coquelicot
         return haml(:index)
       end
       if params[:expire].nil? or params[:expire].to_i == 0 then
-        params[:expire] = Coquelicot.settings.default_expire
-      elsif params[:expire].to_i > Coquelicot.settings.maximum_expire then
+        params[:expire] = settings.default_expire
+      elsif params[:expire].to_i > settings.maximum_expire then
         error 403
       end
       expire_at = Time.now + 60 * params[:expire].to_i

@@ -266,35 +266,10 @@ module Coquelicot
     end
   end
 
-  DEFAULT_SETTINGS = { :default_expire => 60,
-                       :maximum_expire => 60 * 24 * 30, # 1 month
-                       :gone_period => 10080,
-                       :filename_length => 20,
-                       :random_pass_length => 16,
-                    }
-
   # Like RFC 4648 (Base32)
   FILENAME_CHARS = %w(a b c d e f g h i j k l m n o p q r s t u v w x y z 2 3 4 5 6 7)
 
   class << self
-
-    def setup(settings)
-      @settings = DEFAULT_SETTINGS.merge(settings)
-      @settings.each_key do |k|
-        @settings.class.send(:define_method, k) { self[k] }
-      end
-      @depot = nil
-      @settings
-    end
-
-    def settings
-      @settings ||= setup({})
-    end
-
-    def depot
-      @depot ||= Depot.new(settings.depot_path)
-    end
-
     def gen_random_base32(length)
       name = ''
       OpenSSL::Random::random_bytes(length).each_byte do |i|
