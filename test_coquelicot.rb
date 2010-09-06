@@ -131,22 +131,28 @@ describe 'Coquelicot' do
     url_name.split('-').should have(1).items
   end
 
-  it "should only allow one time download to be retrieved once" do
-    url = upload :one_time => true
-    get url
-    last_response.should be_ok
-    last_response['Content-Type'].should eql('text/x-script.ruby')
-    last_response.body.should eql(File.new(__FILE__).read)
-    get url
-    last_response.status.should eql(410)
-  end
+  context "when a 'one time download' has been retrieved" do
+    before(:each) do
+      @url = upload :one_time => true
+      get @url
+    end
 
-  it "should have files zero'ed after 'one time' download" do
-    url = upload :one_time => true
-    get url
-    files = Dir.glob("#{Coquelicot.depot.path}/*")
-    files.should have(1).items
-    File.lstat(files[0]).size.should eql(0)
+    it "should be the same as the uploaded file" do
+      last_response.should be_ok
+      last_response['Content-Type'].should eql('text/x-script.ruby')
+      last_response.body.should eql(File.new(__FILE__).read)
+    end
+
+    it "should not be downloadable any more" do
+      get @url
+      last_response.status.should eql(410)
+    end
+
+    it "should have zero'ed the file on the server" do
+      files = Dir.glob("#{Coquelicot.depot.path}/*")
+      files.should have(1).items
+      File.lstat(files[0]).size.should eql(0)
+    end
   end
 
   it "should allow retrieval of a password protected file" do
