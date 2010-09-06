@@ -55,6 +55,17 @@ describe 'Coquelicot' do
     last_response.body.should eql(File.new(__FILE__).read)
   end
 
+  it "should refuse an empty file" do
+    empty_file = Tempfile.new('empty')
+    begin
+      url = upload :file => Rack::Test::UploadedFile.new(empty_file.path, 'text/plain')
+      url.should be_nil
+      last_response.redirect?.should be_false
+    ensure
+      empty_file.close true
+    end
+  end
+
   it "should correctly set Last-Modified header when downloading" do
     url = upload
     get url

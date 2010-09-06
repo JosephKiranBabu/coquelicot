@@ -119,6 +119,10 @@ module Coquelicot
         @error = "No file selected"
         return haml(:index)
       end
+      if tmpfile.lstat.size == 0 then
+        @error = "#{name} is empty"
+        return haml(:index)
+      end
       if params[:expire].nil? or params[:expire].to_i == 0 then
         params[:expire] = settings.default_expire
       elsif params[:expire].to_i > settings.maximum_expire then
