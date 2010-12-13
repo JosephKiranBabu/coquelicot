@@ -21,6 +21,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+require 'json'
+
 class Haml::Engine
   include GetText
 
@@ -46,7 +48,7 @@ class Haml::Engine
   end
   def push_flat_javascript(line)
     text = line.full.dup
-    text.gsub!(/_\('(([^']|\\')+)'\)/) {|m| '\''+_($1)+'\''}
+    text.gsub!(/_\('(([^']|\\')+)'\)/) {|m| _($1).to_json }
     @filter_buffer << "#{text}\n"
   end
   def push_flat(line)
