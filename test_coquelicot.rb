@@ -1,6 +1,3 @@
-$:.unshift File.join(File.dirname(__FILE__), '../rack-test/lib')
-$:.unshift File.join(File.dirname(__FILE__), '../timecop/lib')
-
 require 'coquelicot_app'
 require 'spec'
 require 'rack/test'
