@@ -240,7 +240,7 @@ module Coquelicot
               break
             end
           end until line.empty?
-        end
+        end if File.exists?(links_path)
       end
       dst
     end
@@ -285,7 +285,7 @@ module Coquelicot
       FILENAME_CHARS.each { |c| map[c] = c; map[c.upcase] = c }
       map.merge!({ '1' => 'l', '0' => 'o' })
       result = ''
-      str.each_char { |c| result << map[c] }
+      str.each_char { |c| result << map[c] if map[c] }
       result
     end
   end
