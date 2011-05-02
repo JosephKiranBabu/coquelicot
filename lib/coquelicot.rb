@@ -24,7 +24,7 @@ module Coquelicot
     end
 
     def one_time_only?
-      @meta['One-time-only'] && @meta['One-time-only'] == 'true'
+      @meta['One-time-only'] == 'true'
     end
 
     def self.create(src, pass, meta)
