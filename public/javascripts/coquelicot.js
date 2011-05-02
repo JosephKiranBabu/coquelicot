@@ -51,16 +51,17 @@ function authenticate() {
   var authDiv = $('#upload-authentication').remove();
   var lb = $.lightBoxFu;
   authForm.bind('submit', function() {
-    var uploadPassword = $('#upload_password');
     jQuery.ajax({
       type: 'POST',
       url: 'authenticate',
       dataType: 'text',
-      data: { upload_password: uploadPassword.val() },
+      data: {
+        'upload_token': authenticationData.call()
+      },
       complete: function(res, status) {
         if (status === 'success') {
-          var hiddenField = $('<input type="hidden" name="upload_password" />');
-          hiddenField.val(uploadPassword.val());
+          var hiddenField = $('<input type="hidden" name="upload_token" />');
+          hiddenField.val(JSON.stringify(authenticationData.call()));
           $('#upload').append(hiddenField);
           lb.close();
         } else if (res.responseText == 'Forbidden') {
@@ -68,7 +69,7 @@ function authenticate() {
         } else {
           $('#auth-message').text(i18n.error + alert(status));
         }
-        uploadPassword.val('');
+        authenticationReset();
       }
     });
     return false;
@@ -78,5 +79,9 @@ function authenticate() {
     width: "300px",
     closeOnClick: false
   });
-  $('#upload_password').focus();
+  authenticationFocus();
+}
+
+function authenticationReset(){
+    $('#upload_token').val('');
 }

@@ -6,9 +6,8 @@
 %form#upload{ :enctype => 'multipart/form-data',
               :action  => 'upload', :method => 'post' }
   #upload-authentication
-    .field
-      %label{ :for => 'upload_password' } Upload password:
-      %input.input{ :type => 'password', :id => 'upload_password', :name => 'upload_password' }
+    %script{ :type => 'text/javascript', :src => "javascripts/coquelicot.auth.#{auth_method}.js" }
+    = render :haml, :"auth/#{auth_method}", :layout => false
   .field
     %label{ :for => 'file' } File:
     %input.input{ :type => 'file', :id => 'file', :name => 'file' }

@@ -16,7 +16,7 @@ describe 'Coquelicot' do
 
   def upload(opts={})
     opts = { :file => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
-             :upload_password => UPLOAD_PASSWORD
+             :upload_token => JSON.dump({ 'upload_password' => UPLOAD_PASSWORD})
            }.merge(opts)
     post '/upload', opts
     return nil unless last_response.redirect?
@@ -29,7 +29,7 @@ describe 'Coquelicot' do
 
   before do
     app.set :environment, :test
-    app.set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
+    app.authentication_method :simplepass, :upload_password => Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
     app.set :depot_path, Dir.mktmpdir('coquelicot')
   end
 
@@ -114,26 +114,26 @@ describe 'Coquelicot' do
   end
 
   it "should prevent upload without a password" do
-    url = upload :upload_password => ''
+    url = upload :upload_token => JSON.dump({'upload_password' => ''})
     url.should be_nil
     last_response.status.should eql(403)
   end
 
   it "should prevent upload with a wrong password" do
-    url = upload :upload_password => "bad"
+    url = upload :upload_token => JSON.dump({'upload_password' => 'bad'})
     url.should be_nil
     last_response.status.should eql(403)
   end
 
   it "should allow AJAX upload password verification" do
     request "/authenticate", :method => "POST", :xhr => true,
-                             :params => { :upload_password => UPLOAD_PASSWORD }
+                             :params => { :upload_token => { 'upload_password' => UPLOAD_PASSWORD } }
     last_response.should be_ok
     request "/authenticate", :method => "POST", :xhr => true,
-                             :params => { :upload_password => '' }
+                             :params => { :upload_token => '{}' }
     last_response.status.should eql(403)
     request "/authenticate", :method => "POST", :xhr => true,
-                             :params => { :upload_password => 'wrong' }
+                             :params => { :upload_token => JSON.dump({'upload_password' => 'wrong'}) }
     last_response.status.should eql(403)
   end
 

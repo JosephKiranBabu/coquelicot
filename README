@@ -14,8 +14,14 @@ not so active attackers.
 
 Features
 --------
+ * Support for different authentication methods
 
- * Uploading a file is protected by a common password
+   It is possible to integrate your own authentication mechanisms. Such a 
+   mechanism, needs to implement a single method and provide some JS, as well 
+   as some template partial to render the common fields. For more information
+   have a look at the notes below.
+
+ * Simplepass mechanism: Uploading a file is protected by a common password
 
    In order to prevent random Internet users to eat bandwidth and disk
    space, uploading a file for sharing is protected by a common
@@ -132,11 +138,11 @@ Coquelicot provides a migration script to import Jyraphe 0.5 repositories in
 Future
 ------
 
- * Integrate other authentication systems for uploads
+ * Read settings from a configuration file.
 
-   A common password is a pretty limited authentication scheme.
-   One could like to also configure no password or integrate with
-   webmails or other authentication system.
+   Currently settings, such as the authentication mechanism and its options
+   need to be specified within the application. Coquelicot should load its
+   settings from a configuration file.
 
  * More flexible expiration
 
@@ -200,6 +206,44 @@ In order to map download URLs to file name, a simple text file ".links"
 is used. It contains a line for each file in the form:
 
     <URL name> <file name>
+
+Authentication Mechanisms
+-------------------------
+
+It is possible to authenticate users against your own common authentication
+mechanism.
+
+Such an authentication mechanism needs to provide the following 3 files:
+    
+* lib/coquelicot/auth/METHOD.rb
+* public/javascripts/coquelicot.auth.METHOD.js
+* views/auth/METHOD.haml
+    
+Their responsibilities are as followed:
+    
+lib/coquelicot/auth/METHOD.rb:
+    
+A module implementing the actual authentication. This module must
+implement one method called `authenticate` which will get all the
+parameters as an argument. To simplify your interaction with the field 
+`upload_token`, that might be serialized as json, we deserialize it prior
+to passing it to the `authenticate` method.
+    
+public/javascripts/coquelicot.auth.METHOD.js:
+    
+We expect 2 javascript methods in that file:
+    
+* authenticationData(): Return a hash of all the necessary data to
+                        authenticate on the app side.
+* authenticationFocus(): Set the focus on the first authentication form
+                         field
+    
+views/auth/METHOD.haml:
+    
+Render the necessary form fields that will be used for authentication.
+    
+The authentication method can be set in the application settings
+including mandatory options for this method.
 
 Authors
 -------

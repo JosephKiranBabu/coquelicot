@@ -49,8 +49,14 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
+    def self.authentication_method(method,options={})
+      require "coquelicot/auth/#{method}"
+      set :auth_method, method
+      include (eval "Coquelicot::Auth::#{method.to_s.capitalize}")
+      options.each{|k,v| set k,v }
+    end
+
     set :app_file, __FILE__
-    set :upload_password, '0e5f7d398e6f9cd1f6bac5cc823e363aec636495'
     set :default_expire, 60
     set :maximum_expire, 60 * 24 * 30 # 1 month
     set :gone_period, 10080
@@ -58,10 +64,7 @@ module Coquelicot
     set :random_pass_length, 16
     set :depot_path, Proc.new { File.join(root, 'files') }
 
-    def password_match?(password)
-      return TRUE if settings.upload_password.nil?
-      (not password.nil?) && Digest::SHA1.hexdigest(password) == settings.upload_password
-    end
+    authentication_method :simplepass, :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
 
     GetText::bindtextdomain('coquelicot')
     before do
@@ -101,14 +104,16 @@ module Coquelicot
 
     post '/authenticate' do
       pass unless request.xhr?
-      unless password_match? params[:upload_password] then
+      unless authenticate(params) then
         error 403, "Forbidden"
       end
       'OK'
     end
 
     post '/upload' do
-      unless password_match? params[:upload_password] then
+      # if JS is disabled upload_token might be nil
+      params['upload_token'] = JSON.parse(params['upload_token']) unless params['upload_token'].nil?
+      unless authenticate(params) then
         error 403
       end
       if params[:file] then
@@ -210,6 +215,10 @@ module Coquelicot
         end
         url << request.script_name
         "#{url}/"
+      end
+
+      def auth_method
+        Coquelicot.settings.auth_method
       end
     end
   end
