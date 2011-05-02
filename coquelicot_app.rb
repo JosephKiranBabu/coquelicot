@@ -204,6 +204,10 @@ module Coquelicot
         "#{url}/"
       end
 
+      def clone_url
+        settings.respond_to?(:clone_url) ? settings.clone_url : "#{base_href}coquelicot.git"
+      end
+
       def auth_method
         Coquelicot.settings.auth_method
       end

@@ -29,6 +29,8 @@ module Coquelicot::Configure
         'gone_period' => 10080,
         'filename_length' => 20,
         'random_pass_length' => 16,
+        'about_text' => '',
+        'additional_css' => '',
         'depot_path' => Proc.new { File.join(root, 'files') },
         'authentication_method' => {
           'name' => 'simplepass',

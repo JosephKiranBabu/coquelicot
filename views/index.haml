@@ -3,6 +3,8 @@
 %h1 Share a file!
 - unless @error.nil?
   .error= @error
+- unless settings.about_text.empty?
+  %p.about #{settings.about_text}
 %form#upload{ :enctype => 'multipart/form-data',
               :action  => 'upload', :method => 'post' }
   #upload-authentication

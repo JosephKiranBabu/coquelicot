@@ -76,7 +76,7 @@ function authenticate() {
   });
   lb.open({
     html: authForm.append(authDiv).append('<div id="auth-message"></div>'),
-    width: "300px",
+    width: "430px",
     closeOnClick: false
   });
   authenticationFocus();

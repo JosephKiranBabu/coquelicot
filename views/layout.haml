@@ -7,6 +7,8 @@
     %base{ :href => base_href }
     %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css',
            :media => "screen, projection" }
+    - unless settings.additional_css.empty?
+      %link{ :rel => 'stylesheet', :href => "#{settings.additional_css}", :type => 'text/css', :media => "screen, projection" }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.min.js' }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.lightBoxFu.js' }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.uploadProgress.js' }
@@ -30,4 +32,4 @@
         %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' } AGPLv3
         —
       %span
-        %code git clone #{base_href}coquelicot.git
+        %code git clone #{clone_url}
