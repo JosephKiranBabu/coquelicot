@@ -27,6 +27,12 @@ Features
    space, uploading a file for sharing is protected by a common
    password.
 
+ * IMAP mechanism: Uploading is protected by an imap login
+
+   As a protection mechanism we can enable login via imap credentials. The user
+   will be asked to provide her imap credentials and we will perform an imap
+   login in order to authenticate the user.
+
  * Mandatory expiration
 
    When uploading, a time limit has to be specified. The file will be
@@ -111,6 +117,29 @@ depending on your setup. *evil grin*
 Coquelicot is intended to be run on a fully encrypted system and accessible
 only through HTTPS.
 
+Configuration
+-------------
+
+By default Coquelicot is configured to authenticate with the simplepass mechanism
+and some other reasonable defaults. 
+It is possible to overwrite these settings from a configuration file named
+settings.yml that will be used if it is present in the conf directory of the
+application.
+
+All available settings with their default values are documented in
+conf/settings-default.yml
+
+Further settings example:
+
+* conf/settings-simplepass.yml: Shows how to change the default password for the 
+                                simplepass mechanism.
+
+* conf/settings-imap.yml: Necessary configuration for the imap authentication
+                          mechanism. 
+
+You can copy one of these examples to conf/settings.yml and adjust them according
+to your environment.
+
 Test suite
 ----------
 
@@ -137,12 +166,6 @@ Coquelicot provides a migration script to import Jyraphe 0.5 repositories in
 
 Future
 ------
-
- * Read settings from a configuration file.
-
-   Currently settings, such as the authentication mechanism and its options
-   need to be specified within the application. Coquelicot should load its
-   settings from a configuration file.
 
  * More flexible expiration
 
@@ -249,6 +272,7 @@ Authors
 -------
 
 Coquelicot © 2010 potager.org <jardiniers@potager.org>
+mh © 2011 immerda.ch <mh+coquelicot@immerda.ch>
 
 Coquelicot is distributed under the GNU Affero General Public License
 version 3. See LICENSE for details.

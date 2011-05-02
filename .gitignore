@@ -2,3 +2,4 @@ files/
 locale/
 tmp/restart.txt
 tmp/always_restart.txt
+conf/settings.yml

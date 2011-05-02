@@ -1,0 +1,4 @@
+authentication_method:
+  name: imap
+  imap_server: 'imap.example.com'
+  imap_port: 993

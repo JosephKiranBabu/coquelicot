@@ -6,6 +6,7 @@ require 'sass'
 require 'digest/sha1'
 require 'gettext'
 require 'coquelicot'
+require 'coquelicot/configure'
 require 'haml_gettext'
 
 module Coquelicot
@@ -49,22 +50,8 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
-    def self.authentication_method(method,options={})
-      require "coquelicot/auth/#{method}"
-      set :auth_method, method
-      include (eval "Coquelicot::Auth::#{method.to_s.capitalize}")
-      options.each{|k,v| set k,v }
-    end
-
     set :app_file, __FILE__
-    set :default_expire, 60
-    set :maximum_expire, 60 * 24 * 30 # 1 month
-    set :gone_period, 10080
-    set :filename_length, 20
-    set :random_pass_length, 16
-    set :depot_path, Proc.new { File.join(root, 'files') }
-
-    authentication_method :simplepass, :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
+    include Coquelicot::Configure
 
     GetText::bindtextdomain('coquelicot')
     before do

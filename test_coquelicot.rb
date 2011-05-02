@@ -28,8 +28,11 @@ describe 'Coquelicot' do
   end
 
   before do
+    # set a special test password
+    app.set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
+
     app.set :environment, :test
-    app.authentication_method :simplepass, :upload_password => Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
+
     app.set :depot_path, Dir.mktmpdir('coquelicot')
   end
 

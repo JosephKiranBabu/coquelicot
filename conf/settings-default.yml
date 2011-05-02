@@ -1,0 +1,10 @@
+default_expire: 60
+# 43200 == 60 * 24 * 30 == 1 month
+maximum_expire: 43200
+gone_period: 10080
+filename_length: 20
+random_pass_length: 16
+depot_path: './files'
+authentication_method:
+  name: 'simplepass'
+  upload_password: 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'          
