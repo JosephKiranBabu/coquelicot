@@ -4,6 +4,7 @@ gem "rack", "~>1.1"
 gem "haml", "~>3.0.15"
 gem "lockfile", "~>1.4.3"
 gem "gettext", "~>2.1.0"
+gem "json"
 
 
 group :test do
