@@ -140,6 +140,11 @@ Further settings example:
 You can copy one of these examples to conf/settings.yml and adjust them according
 to your environment.
 
+Garbage collection
+------------------
+
+To cleanup files automatically when they expired, coquelicot comes with a cleanup script, that does the garbage collection for you. The easiest way is to add ext/coquelicot_gc.rb as a cron job that runs every 5 minutes (or so).
+
 Test suite
 ----------
 
