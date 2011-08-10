@@ -101,7 +101,7 @@ module Coquelicot
       # if JS is disabled upload_token might be nil
       params['upload_token'] = JSON.parse(params['upload_token']) unless params['upload_token'].nil?
       unless authenticate(params) then
-        error 403
+        error 403, "Forbidden"
       end
       if params[:file] then
         tmpfile = params[:file][:tempfile]
