@@ -14,24 +14,23 @@ not so active attackers.
 
 Features
 --------
+
  * Support for different authentication methods
 
-   It is possible to integrate your own authentication mechanisms. Such a 
-   mechanism, needs to implement a single method and provide some JS, as well 
-   as some template partial to render the common fields. For more information
-   have a look at the notes below.
+   In order to prevent random Internet users to eat bandwidth and
+   disk space, Coquelicot limits upload to authenticated users.
+   It currently ships with two authentication mechanisms:
 
- * Simplepass mechanism: Uploading a file is protected by a common password
+    - "simplepass": users will need to provide a global, pre-shared,
+      password;
+    - "imap": users will need to provide a login and a password,
+      those credentials will be used to authenticate against an existing
+      IMAP server.
 
-   In order to prevent random Internet users to eat bandwidth and disk
-   space, uploading a file for sharing is protected by a common
-   password.
-
- * IMAP mechanism: Uploading is protected by an imap login
-
-   As a protection mechanism we can enable login via imap credentials. The user
-   will be asked to provide her imap credentials and we will perform an imap
-   login in order to authenticate the user.
+   It is possible to integrate more authentication mechanisms by
+   implementing a single method, some Javascript, and a template partial
+   to render the common fields. For more information have a look at the
+   notes below.
 
  * Mandatory expiration
 
@@ -43,9 +42,9 @@ Features
 
  * Support for one-time download
 
-   An user might want to allow exactly _one_ download of a file,
-   to more closely replace an email attachment. The file will be removed after
-   the first complete download and concurrent download are prevented.
+   An user might want to allow exactly _one_ download of a file, to more
+   closely replace an email attachment. The file will be removed after
+   the first complete download and concurrent downloads are prevented.
 
  * Upload progress bar
 
@@ -120,30 +119,34 @@ only through HTTPS.
 Configuration
 -------------
 
-By default Coquelicot is configured to authenticate with the simplepass mechanism
-and some other reasonable defaults. 
-It is possible to overwrite these settings from a configuration file named
-settings.yml that will be used if it is present in the conf directory of the
-application.
+By default Coquelicot is configured to authenticate with the
+"simplepass" mechanism and some other reasonable defaults.
+
+It is possible to overwrite these settings from a configuration file
+named `settings.yml` that will be used if it is present in the `conf`
+directory of the application.
 
 All available settings with their default values are documented in
-conf/settings-default.yml
+`conf/settings-default.yml`.
 
 Further settings example:
 
-* conf/settings-simplepass.yml: Shows how to change the default password for the 
-                                simplepass mechanism.
+ * `conf/settings-simplepass.yml`: shows how to change the default
+   password for the "simplepass" mechanism.
 
-* conf/settings-imap.yml: Necessary configuration for the imap authentication
-                          mechanism. 
+ * `conf/settings-imap.yml`: necessary configuration for the "imap"
+   authentication mechanism.
 
-You can copy one of these examples to conf/settings.yml and adjust them according
-to your environment.
+You can copy one of these examples to `conf/settings.yml` and adjust them
+according to your environment.
 
 Garbage collection
 ------------------
 
-To cleanup files automatically when they expired, coquelicot comes with a cleanup script, that does the garbage collection for you. The easiest way is to add ext/coquelicot_gc.rb as a cron job that runs every 5 minutes (or so).
+To cleanup files automatically when they expired, coquelicot comes with
+a cleanup script, that does the garbage collection for you. The easiest
+way is to add `ext/coquelicot_gc.rb` as a cron job that runs every 5
+minutes (or so).
 
 Test suite
 ----------
@@ -241,43 +244,38 @@ Authentication Mechanisms
 It is possible to authenticate users against your own common authentication
 mechanism.
 
-Such an authentication mechanism needs to provide the following 3 files:
-    
-* lib/coquelicot/auth/METHOD.rb
-* public/javascripts/coquelicot.auth.METHOD.js
-* views/auth/METHOD.haml
-    
-Their responsibilities are as followed:
-    
-lib/coquelicot/auth/METHOD.rb:
-    
-A module implementing the actual authentication. This module must
-implement one method called `authenticate` which will get all the
-parameters as an argument. To simplify your interaction with the field 
-`upload_token`, that might be serialized as json, we deserialize it prior
-to passing it to the `authenticate` method.
-    
-public/javascripts/coquelicot.auth.METHOD.js:
-    
-We expect 2 javascript methods in that file:
-    
-* authenticationData(): Return a hash of all the necessary data to
-                        authenticate on the app side.
-* authenticationFocus(): Set the focus on the first authentication form
-                         field
-    
-views/auth/METHOD.haml:
-    
-Render the necessary form fields that will be used for authentication.
-    
-The authentication method can be set in the application settings
-including mandatory options for this method.
+Such an authentication mechanism needs to provide the following 3 files,
+with the following responsabilities:
+
+ * `lib/coquelicot/auth/<METHOD>.rb`:
+
+   A module implementing the actual authentication. This module must
+   implement one method called `authenticate` which will get all the
+   parameters as an argument. To simplify your interaction with the
+   field `upload_token`, that might be serialized as json, we
+   deserialize it prior to passing it to the `authenticate` method.
+
+ * `public/javascripts/coquelicot.auth.<METHOD>.js:`
+
+    We expect 2 javascript methods in that file:
+
+    - `authenticationData()`: returns a hash of all the necessary data
+      to authenticate on the app side.
+    - `authenticationFocus()`: set the focus on the first authentication
+      form field.
+
+ * `views/auth/<METHOD>.haml`:
+
+   Render the necessary form fields that will be used for authentication.
+
+   The authentication method can be set in the application settings
+   including mandatory options for this method.
 
 Authors
 -------
 
-Coquelicot © 2010 potager.org <jardiniers@potager.org>
-mh © 2011 immerda.ch <mh+coquelicot@immerda.ch>
+Coquelicot © 2010-2012 potager.org <jardiniers@potager.org>
+           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
 
 Coquelicot is distributed under the GNU Affero General Public License
 version 3. See LICENSE for details.
