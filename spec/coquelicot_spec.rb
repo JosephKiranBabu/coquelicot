@@ -1,9 +1,16 @@
-require 'coquelicot_app'
-require 'spec'
+ENV['RACK_ENV'] = 'test'
+
+require 'rubygems'
+require 'bundler'
+Bundler.setup
+
 require 'rack/test'
+require 'rspec'
 require 'timecop'
 require 'hpricot'
 require 'tmpdir'
+
+require 'coquelicot_app'
 
 UPLOAD_PASSWORD = 'secret'
 

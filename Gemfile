@@ -8,7 +8,7 @@ gem "json"
 
 
 group :test do
-  gem "rspec", "1.3.0"
+  gem "rspec", "~>2.0"
   gem "hpricot", "~>0.8.2"
   gem "timecop", "~>0.3.5"
   gem "rack-test", "~>0.5.7"

@@ -153,15 +153,14 @@ Test suite
 
 Coquelicot test suite is written using RSpec.
 
-On Debian, you will need those extra packages:
+As Coquelicot uses Bundle, you first need to install the proper
+dependencies using:
 
-    apt-get install librspec-ruby1.8 libhpricot-ruby1.8
-
-You will also need the unpackaged gems "timecop" and "rack-test".
+    bundle install
 
 Then, running the test suite is just a matter of typing:
 
-    spec spec/coquelicot_spec.rb
+    bundle exec rspec
 
 Migrate from Jyraphe
 --------------------
