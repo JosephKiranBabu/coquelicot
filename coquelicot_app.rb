@@ -58,6 +58,10 @@ module Coquelicot
       GetText::set_current_locale(params[:lang] || request.env['HTTP_ACCEPT_LANGUAGE'] || 'en')
     end
 
+    not_found do
+      'Not found'
+    end
+
     get '/style.css' do
       content_type 'text/css', :charset => 'utf-8'
       sass :style
@@ -72,6 +76,8 @@ module Coquelicot
     end
 
     get '/ready/:link' do |link|
+      not_found if link.nil?
+
       link, pass = link.split '-' if link.include? '-'
       begin
         file = Coquelicot.depot.get_file(link, nil)
@@ -169,12 +175,16 @@ module Coquelicot
     end
 
     get '/:link-:pass' do |link, pass|
+      not_found if link.nil? || pass.nil?
+
       link = Coquelicot.remap_base32_extra_characters(link)
       pass = Coquelicot.remap_base32_extra_characters(pass)
       not_found unless send_link(link, pass)
     end
 
     get '/:link' do |link|
+      not_found if link.nil?
+
       link = Coquelicot.remap_base32_extra_characters(link)
       not_found unless Coquelicot.depot.file_exists? link
       @link = link
