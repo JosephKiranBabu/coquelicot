@@ -148,19 +148,25 @@ a cleanup script, that does the garbage collection for you. The easiest
 way is to add `ext/coquelicot_gc.rb` as a cron job that runs every 5
 minutes (or so).
 
-Test suite
-----------
+Test and development
+--------------------
 
-Coquelicot test suite is written using RSpec.
-
-As Coquelicot uses Bundle, you first need to install the proper
-dependencies using:
+As Coquelicot uses Bundle, the first step to work on Coquelicot
+is installing the proper dependencies by issuing:
 
     bundle install
 
-Then, running the test suite is just a matter of typing:
+Coquelicot test suite is written using RSpec. Running the test suite is just a
+matter of typing:
 
     bundle exec rspec
+
+To update the translation source files, use:
+
+    bundle exec rake updatepo
+
+This will update `po/coquelicot.pot` and merge the new strings in the various
+`po/*/coquelicot.po` files.
 
 Migrate from Jyraphe
 --------------------
