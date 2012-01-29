@@ -161,7 +161,7 @@ You will also need the unpackaged gems "timecop" and "rack-test".
 
 Then, running the test suite is just a matter of typing:
 
-    spec test_coquelicot.rb
+    spec spec/coquelicot_spec.rb
 
 Migrate from Jyraphe
 --------------------
