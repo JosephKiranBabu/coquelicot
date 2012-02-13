@@ -6,7 +6,7 @@ task :updatepo do
   require 'haml_parser'
   GetText.update_pofiles(
     "coquelicot",
-    Dir.glob("views/**/*.{rb,haml}") << "coquelicot_app.rb",
+    Dir.glob("views/**/*.{rb,haml}") << "lib/coquelicot/app.rb",
     "coquelicot 1.0.0")
 end
 

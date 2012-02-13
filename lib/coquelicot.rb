@@ -3,6 +3,10 @@ require 'lockfile'
 require 'openssl'
 require 'yaml'
 
+require 'coquelicot/auth'
+require 'coquelicot/configure'
+require 'coquelicot/app'
+
 module Coquelicot
   class BadKey < StandardError; end
 

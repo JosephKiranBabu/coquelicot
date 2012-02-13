@@ -1,3 +1,3 @@
-require 'coquelicot_app'
+require 'coquelicot'
 
 run Coquelicot::Application

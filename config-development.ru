@@ -1,4 +1,4 @@
-require 'coquelicot_app'
+require 'coquelicot'
 
 app = Coquelicot::Application
 

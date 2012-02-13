@@ -1,13 +1,8 @@
-$:.unshift File.join(File.dirname(__FILE__), 'lib')
-
 require 'sinatra/base'
 require 'haml'
 require 'sass'
 require 'digest/sha1'
 require 'gettext'
-require 'coquelicot'
-require 'coquelicot/auth'
-require 'coquelicot/configure'
 require 'haml_gettext'
 
 module Coquelicot
@@ -51,7 +46,7 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
-    set :app_file, __FILE__
+    set :root, Proc.new { app_file && File.expand_path('../../..', app_file) }
     include Coquelicot::Configure
 
     GetText::bindtextdomain('coquelicot')

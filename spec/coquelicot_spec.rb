@@ -10,7 +10,7 @@ require 'timecop'
 require 'hpricot'
 require 'tmpdir'
 
-require 'coquelicot_app'
+require 'coquelicot'
 
 UPLOAD_PASSWORD = 'secret'
 
