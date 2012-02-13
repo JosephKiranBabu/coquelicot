@@ -35,8 +35,8 @@ describe 'Coquelicot' do
   end
 
   before do
-    # set a special test password
-    app.set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
+    app.set :authentication_method, { :name => :simplepass,
+                                      :upload_password => Digest::SHA1.hexdigest(UPLOAD_PASSWORD) }
 
     app.set :environment, :test
   end
