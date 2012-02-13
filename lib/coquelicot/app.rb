@@ -6,35 +6,6 @@ require 'gettext'
 require 'haml_gettext'
 
 module Coquelicot
-  class StoredFile
-    def lockfile
-      @lockfile ||= Lockfile.new "#{File.expand_path(@path)}.lock", :timeout => 4
-    end
-
-    def each
-      # output content
-      yield @initial_content
-      @initial_content = nil
-      until (buf = @file.read(BUFFER_LEN)).nil?
-        yield @cipher.update(buf)
-      end
-      yield @cipher.final
-      @fully_sent = true
-    end
-
-    def close
-      if @cipher
-        @cipher.reset
-        @cipher = nil
-      end
-      @file.close
-      if one_time_only?
-        empty! if @fully_sent
-        lockfile.unlock
-      end
-    end
-  end
-
   class << self
     def settings
       (class << self; Application; end)

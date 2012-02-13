@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Coquelicot
   module Configure
     def self.included(c)

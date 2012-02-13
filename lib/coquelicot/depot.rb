@@ -1,3 +1,6 @@
+require 'lockfile'
+require 'openssl'
+
 module Coquelicot
   class Depot
     attr_reader :path

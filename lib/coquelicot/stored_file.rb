@@ -1,3 +1,7 @@
+require 'base64'
+require 'openssl'
+require 'yaml'
+
 module Coquelicot
   class BadKey < StandardError; end
 
@@ -53,6 +57,34 @@ module Coquelicot
         f.fsync
       end
       File.truncate(@path, 0)
+    end
+
+    def lockfile
+      @lockfile ||= Lockfile.new "#{File.expand_path(@path)}.lock", :timeout => 4
+    end
+
+    # used by Rack streaming mechanism
+    def each
+      # output content
+      yield @initial_content
+      @initial_content = nil
+      until (buf = @file.read(BUFFER_LEN)).nil?
+        yield @cipher.update(buf)
+      end
+      yield @cipher.final
+      @fully_sent = true
+    end
+
+    def close
+      if @cipher
+        @cipher.reset
+        @cipher = nil
+      end
+      @file.close
+      if one_time_only?
+        empty! if @fully_sent
+        lockfile.unlock
+      end
     end
 
   private
