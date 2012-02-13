@@ -255,4 +255,23 @@ describe 'Coquelicot' do
       end
     end
   end
+
+  context "when using 'imap' authentication mechanism" do
+    before(:each) do
+      app.set :authentication_method, :name => 'imap',
+                                      :imap_server => 'example.org',
+                                      :imap_port => 993
+    end
+
+    it "should try to login to the IMAP server when using AJAX" do
+      imap = stub('Net::Imap').as_null_object
+      imap.should_receive(:login).with('user', 'password')
+      Net::IMAP.should_receive(:new).with('example.org', 993, true).and_return(imap)
+
+      request "/authenticate", :method => "POST", :xhr => true,
+                               :params => { 'imap_user'     => 'user',
+                                            'imap_password' => 'password' }
+      last_response.should be_ok
+    end
+  end
 end
