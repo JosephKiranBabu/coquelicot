@@ -39,12 +39,16 @@ describe 'Coquelicot' do
     app.set :upload_password, Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
 
     app.set :environment, :test
-
-    app.set :depot_path, Dir.mktmpdir('coquelicot')
   end
 
-  after do
-    FileUtils.remove_entry_secure Coquelicot.depot.path
+  around(:each) do |example|
+    path = Dir.mktmpdir('coquelicot')
+    begin
+      app.set :depot_path, path
+      example.run
+    ensure
+      FileUtils.remove_entry_secure Coquelicot.depot.path
+    end
   end
 
   it "should offer an upload form" do
