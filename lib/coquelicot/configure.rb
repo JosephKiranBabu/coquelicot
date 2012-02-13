@@ -18,8 +18,8 @@ module Coquelicot::Configure
     private
     def authentication_method(method,options={})
       require "coquelicot/auth/#{method}"
-      set :auth_method, method
-      include (eval "Coquelicot::Auth::#{method.to_s.capitalize}")
+      set :authenticator, Coquelicot::Auth.
+         const_get("#{method.to_s.capitalize}Authenticator").new(self)
       options.each{|k,v| set k,v }
     end
     def default_settings

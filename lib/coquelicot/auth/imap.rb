@@ -1,7 +1,7 @@
 require 'net/imap'
 module Coquelicot
   module Auth
-    module Imap
+    class ImapAuthenticator < AbstractAuthenticator
       def authenticate(params)
         p = params['upload_token'].is_a?(Hash) ? params['upload_token'] : params
         imap = Net::IMAP.new(settings.imap_server, settings.imap_port, true)

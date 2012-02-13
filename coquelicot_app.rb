@@ -6,6 +6,7 @@ require 'sass'
 require 'digest/sha1'
 require 'gettext'
 require 'coquelicot'
+require 'coquelicot/auth'
 require 'coquelicot/configure'
 require 'haml_gettext'
 
@@ -218,8 +219,12 @@ module Coquelicot
         settings.respond_to?(:clone_url) ? settings.clone_url : "#{base_href}coquelicot.git"
       end
 
+      def authenticate(params)
+        Coquelicot.settings.authenticator.authenticate(params)
+      end
+
       def auth_method
-        Coquelicot.settings.auth_method
+        Coquelicot.settings.authenticator.class.name.gsub(/Coquelicot::Auth::([A-z0-9]+)Authenticator$/, '\1').downcase
       end
     end
   end

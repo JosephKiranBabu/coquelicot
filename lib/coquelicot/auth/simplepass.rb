@@ -1,7 +1,6 @@
 module Coquelicot
   module Auth
-    module Simplepass
-
+    class SimplepassAuthenticator < AbstractAuthenticator
       def authenticate(params)
         return TRUE if settings.upload_password.nil?
         upload_password = params['upload_token'].is_a?(Hash) ? params['upload_token']['upload_password'] : params['upload_password']

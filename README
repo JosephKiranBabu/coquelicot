@@ -254,7 +254,7 @@ with the following responsabilities:
 
  * `lib/coquelicot/auth/<METHOD>.rb`:
 
-   A module implementing the actual authentication. This module must
+   A class implementing the actual authentication. This class must
    implement one method called `authenticate` which will get all the
    parameters as an argument. To simplify your interaction with the
    field `upload_token`, that might be serialized as json, we
