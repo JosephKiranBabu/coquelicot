@@ -1,3 +1,4 @@
+require 'lockfile'
 require 'sinatra/base'
 require 'haml'
 require 'sass'

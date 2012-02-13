@@ -1,8 +1,3 @@
-require 'base64'
-require 'lockfile'
-require 'openssl'
-require 'yaml'
-
 require 'coquelicot/auth'
 require 'coquelicot/stored_file'
 require 'coquelicot/depot'

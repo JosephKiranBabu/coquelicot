@@ -1,4 +1,5 @@
 require 'base64'
+require 'lockfile'
 require 'openssl'
 require 'yaml'
 
