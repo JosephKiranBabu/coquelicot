@@ -261,14 +261,20 @@ with the following responsabilities:
 
  * `public/javascripts/coquelicot.auth.<METHOD>.js:`
 
-    We expect 3 javascript methods in that file:
+    This file should define 'authentication' as an object with the following
+    methods:
 
-    - `authenticationData()`: returns a hash of all the necessary data
-      to authenticate on the app side.
-    - `authenticationFocus()`: set the focus on the first authentication
-      form field.
-    - `authenticationReset()`: reset authentication fields after
-      a failed authentication.
+    - `getData()`: returns an object of all the necessary data
+      to authenticate on the app side. Keys should have the same name
+      as the input fields used to authenticate without Javascript.
+    - `focus()`: set the focus on the first authentication form field.
+    - (optional) `handleSuccess()`: arbitrary action upon successful
+      authentication. This is called after the livebox is closed.
+    - (optional) `handleReject()`: arbitrary action when access
+      get rejected. One can reset authentication fields after a failed
+      authentication.
+    - (optional) `handleFailure()`: arbitrary action when there was
+      a problem in the authentication procedure.
 
  * `views/auth/<METHOD>.haml`:
 

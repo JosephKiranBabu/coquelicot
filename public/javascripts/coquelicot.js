@@ -55,22 +55,30 @@ function authenticate() {
       type: 'POST',
       url: 'authenticate',
       dataType: 'text',
-      data: authenticationData.call(),
+      data: authentication.getData(),
       complete: function(res, status) {
         if (status === 'success') {
-          $.each(authenticationData.call(), function(key, value) {
+          $.each(authentication.getData(), function(key, value) {
             var hiddenField = $('<input type="hidden" />');
             hiddenField.attr('name', key);
             hiddenField.val(value);
             $('#upload').append(hiddenField);
           });
           lb.close();
+          if (authentication.handleAccept) {
+            authentication.handleAccept();
+          }
         } else if (res.responseText == 'Forbidden') {
           $('#auth-message').text(i18n.pleaseTryAgain);
+          if (authentication.handleReject) {
+            authentication.handleReject();
+          }
         } else {
-          $('#auth-message').text(i18n.error + alert(status));
+          $('#auth-message').text(i18n.error + status);
+          if (authentication.handleFailure) {
+            authentication.handleFailure(status);
+          }
         }
-        authenticationReset();
       }
     });
     return false;
@@ -82,5 +90,5 @@ function authenticate() {
   });
   if ( $('#jssubmit')[0] ) { $('#jssubmit').show(); }
   $('#authabout').show();
-  authenticationFocus();
+  authentication.focus();
 }
