@@ -237,8 +237,8 @@ describe 'Coquelicot' do
       end
 
       it "should prevent download after the time limit has expired" do
-        # let's be tomorrow
-        Timecop.travel(Date.today + 1) do
+        # let's be the day after tomorrow
+        Timecop.travel(Date.today + 2) do
           get @url
           last_response.status.should eql(410)
         end
@@ -254,8 +254,8 @@ describe 'Coquelicot' do
       url = upload :expire => 60, :file_key => 'test' # 1 hour
       url_name = url.split('/')[-1]
       Dir.glob("#{Coquelicot.depot.path}/*").should have(1).items
-      # let's be tomorrow
-      Timecop.travel(Date.today + 1) do
+      # let's be the day after tomorrow
+      Timecop.travel(Date.today + 2) do
         Coquelicot.depot.gc!
         files = Dir.glob("#{Coquelicot.depot.path}/*")
         files.should have(1).items
