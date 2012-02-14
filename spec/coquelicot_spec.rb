@@ -142,16 +142,31 @@ describe 'Coquelicot' do
       last_response.status.should eql(403)
     end
 
-    it "should allow AJAX upload password verification" do
-      request "/authenticate", :method => "POST", :xhr => true,
-                               :params => { :upload_token => { 'upload_password' => UPLOAD_PASSWORD } }
-      last_response.should be_ok
-      request "/authenticate", :method => "POST", :xhr => true,
-                               :params => { :upload_token => '{}' }
-      last_response.status.should eql(403)
-      request "/authenticate", :method => "POST", :xhr => true,
-                               :params => { :upload_token => JSON.dump({'upload_password' => 'wrong'}) }
-      last_response.status.should eql(403)
+    context "when using AJAX to verify upload password" do
+      context "when sending the right password" do
+        before do
+          request "/authenticate", :method => "POST", :xhr => true,
+                                   :params => { :upload_token => { 'upload_password' => UPLOAD_PASSWORD } }
+        end
+        subject { last_response }
+        it { should be_ok }
+      end
+      context "when sending no password" do
+        before do
+          request "/authenticate", :method => "POST", :xhr => true,
+                                   :params => { :upload_token => '{}' }
+        end
+        subject { last_response.status }
+        it { should == 403 }
+      end
+      context "when sending a JSON dump of the wrong password" do
+        before do
+          request "/authenticate", :method => "POST", :xhr => true,
+                                   :params => { :upload_token => JSON.dump({'upload_password' => 'wrong'}) }
+        end
+        subject { last_response.status }
+        it { should == 403 }
+      end
     end
 
     context "when a 'one time download' has been retrieved" do
