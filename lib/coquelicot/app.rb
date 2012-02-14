@@ -1,5 +1,6 @@
 require 'lockfile'
 require 'sinatra/base'
+require 'sinatra/config_file'
 require 'haml'
 require 'sass'
 require 'digest/sha1'
@@ -18,8 +19,22 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
+    register Sinatra::ConfigFile
+    register Coquelicot::Auth::Extension
+
     set :root, Proc.new { app_file && File.expand_path('../../..', app_file) }
-    include Coquelicot::Configure
+    set :depot_path, Proc.new { File.join(root, 'files') }
+    set :default_expire, 60
+    set :maximum_expire, 60 * 24 * 30 # 1 month
+    set :gone_period, 60 * 24 * 7 # 1 week
+    set :filename_length, 20
+    set :random_pass_length, 16
+    set :about_text, ''
+    set :additional_css, ''
+    set :authentication_method, :name => :simplepass,
+                                :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
+
+    config_file File.expand_path('../../../conf/settings.yml', __FILE__)
 
     GetText::bindtextdomain('coquelicot')
     before do
