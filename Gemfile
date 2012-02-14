@@ -7,10 +7,13 @@ gem "lockfile", "~>1.4.3"
 gem "gettext", "~>2.1.0"
 gem "json"
 
-
 group :test do
   gem "rspec", "~>2.0"
   gem "hpricot", "~>0.8.2"
   gem "timecop", "~>0.3.5"
   gem "rack-test", "~>0.5.7"
+end
+
+group :development do
+  gem "thin"
 end
