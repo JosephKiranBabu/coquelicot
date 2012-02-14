@@ -80,16 +80,25 @@ module Coquelicot
 
     post '/authenticate' do
       pass unless request.xhr?
-      unless authenticate(params) then
-        error 403, "Forbidden"
+      begin
+        unless authenticate(params)
+          error 403, "Forbidden"
+        end
+        'OK'
+      rescue Coquelicot::Auth::Error => ex
+        error 503, ex.message
       end
-      'OK'
     end
 
     post '/upload' do
-      unless authenticate(params) then
-        error 403, "Forbidden"
+      begin
+        unless authenticate(params)
+          error 403, "Forbidden"
+        end
+      rescue Coquelicot::Auth::Error => ex
+        error 503, ex.message
       end
+
       if params[:file] then
         tmpfile = params[:file][:tempfile]
         name = params[:file][:filename]

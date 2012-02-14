@@ -7,9 +7,7 @@ var authentication = {
   focus: function() {
     $('#upload_password').focus();
   },
-  handleAccept: function() { alert('success!'); },
   handleReject: function() {
     $('#upload_password').val('');
   },
-  handleFailure: function(status) { alert('failure!' + status); },
 };

@@ -56,30 +56,41 @@ function authenticate() {
       url: 'authenticate',
       dataType: 'text',
       data: authentication.getData(),
-      complete: function(res, status) {
-        if (status === 'success') {
-          $.each(authentication.getData(), function(key, value) {
-            var hiddenField = $('<input type="hidden" />');
-            hiddenField.attr('name', key);
-            hiddenField.val(value);
-            $('#upload').append(hiddenField);
-          });
-          lb.close();
-          if (authentication.handleAccept) {
-            authentication.handleAccept();
-          }
-        } else if (res.responseText == 'Forbidden') {
-          $('#auth-message').text(i18n.pleaseTryAgain);
-          if (authentication.handleReject) {
-            authentication.handleReject();
-          }
-        } else {
-          $('#auth-message').text(i18n.error + status);
-          if (authentication.handleFailure) {
-            authentication.handleFailure(status);
-          }
+      success: function(data, textStatus, jqXHR) {
+        if (data != 'OK') {
+          /* Mh. Something strange happened. */
+          return;
         }
-      }
+        $.each(authentication.getData(), function(key, value) {
+          var hiddenField = $('<input type="hidden" />');
+          hiddenField.attr('name', key);
+          hiddenField.val(value);
+          $('#upload').append(hiddenField);
+        });
+        lb.close();
+        if (authentication.handleAccept) {
+          authentication.handleAccept();
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        switch (jqXHR.status) {
+          case 403:
+            $('#auth-message').text(i18n.pleaseTryAgain);
+            if (authentication.handleReject) {
+              authentication.handleReject();
+            }
+            return;
+          default:
+            $('#auth-message').
+              empty().
+              append($('<div />').text(i18n.error)).
+              append($('<div />').append($('<strong />').text(errorThrown))).
+              append($('<div />').text(jqXHR.responseText));
+            if (authentication.handleFailure) {
+              authentication.handleFailure(textStatus);
+            }
+        }
+      },
     });
     return false;
   });

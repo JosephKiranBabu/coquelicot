@@ -13,6 +13,8 @@ module Coquelicot
       end
     end
 
+    class Error < StandardError; end
+
     class AbstractAuthenticator
       def initialize(app)
         @app = app
