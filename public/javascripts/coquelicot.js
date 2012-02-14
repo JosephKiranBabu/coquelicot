@@ -99,6 +99,5 @@ function authenticate() {
     width: "430px",
     closeOnClick: false
   });
-  $('#authabout').show();
   authentication.focus();
 }
