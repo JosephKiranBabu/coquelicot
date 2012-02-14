@@ -13,3 +13,14 @@ var authentication = {
     $('#imap_password').val('');
   },
 };
+
+$(document).ready(function() {
+  $('#imap-auth-submit').remove();
+  var submit = $('<input type="submit" />');
+  submit.attr('value', 'Login');
+  submit.attr('id', 'imap-auth-submit');
+  $('#upload-authentication').append(
+    $('<div class="field" />').append(
+      $('<div class="submit" />').append(
+        submit)));
+});

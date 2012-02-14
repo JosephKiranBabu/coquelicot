@@ -99,7 +99,6 @@ function authenticate() {
     width: "430px",
     closeOnClick: false
   });
-  if ( $('#jssubmit')[0] ) { $('#jssubmit').show(); }
   $('#authabout').show();
   authentication.focus();
 }
