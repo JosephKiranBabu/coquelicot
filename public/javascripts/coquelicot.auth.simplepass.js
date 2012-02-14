@@ -7,3 +7,7 @@ function authenticationData(){
 function authenticationFocus(){
 	$('#upload_password').focus();
 }
+
+function authenticationReset() {
+	$('#upload_password').val('');
+}

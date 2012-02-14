@@ -23,7 +23,7 @@ describe 'Coquelicot' do
 
   def upload(opts={})
     opts = { :file => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
-             :upload_token => JSON.dump({ 'upload_password' => UPLOAD_PASSWORD})
+             :upload_password => UPLOAD_PASSWORD
            }.merge(opts)
     post '/upload', opts
     return nil unless last_response.redirect?
@@ -131,13 +131,13 @@ describe 'Coquelicot' do
     end
 
     it "should prevent upload without a password" do
-      url = upload :upload_token => JSON.dump({'upload_password' => ''})
+      url = upload :upload_password => ''
       url.should be_nil
       last_response.status.should eql(403)
     end
 
     it "should prevent upload with a wrong password" do
-      url = upload :upload_token => JSON.dump({'upload_password' => 'bad'})
+      url = upload :upload_password => 'bad'
       url.should be_nil
       last_response.status.should eql(403)
     end
@@ -146,7 +146,7 @@ describe 'Coquelicot' do
       context "when sending the right password" do
         before do
           request "/authenticate", :method => "POST", :xhr => true,
-                                   :params => { :upload_token => { 'upload_password' => UPLOAD_PASSWORD } }
+                                   :params => { :upload_password => UPLOAD_PASSWORD }
         end
         subject { last_response }
         it { should be_ok }
@@ -154,7 +154,7 @@ describe 'Coquelicot' do
       context "when sending no password" do
         before do
           request "/authenticate", :method => "POST", :xhr => true,
-                                   :params => { :upload_token => '{}' }
+                                   :params => { :upload_password => '' }
         end
         subject { last_response.status }
         it { should == 403 }
@@ -162,7 +162,7 @@ describe 'Coquelicot' do
       context "when sending a JSON dump of the wrong password" do
         before do
           request "/authenticate", :method => "POST", :xhr => true,
-                                   :params => { :upload_token => JSON.dump({'upload_password' => 'wrong'}) }
+                                   :params => { :upload_password => 'wrong'}
         end
         subject { last_response.status }
         it { should == 403 }
@@ -284,8 +284,8 @@ describe 'Coquelicot' do
       Net::IMAP.should_receive(:new).with('example.org', 993, true).and_return(imap)
 
       request "/authenticate", :method => "POST", :xhr => true,
-                               :params => { 'imap_user'     => 'user',
-                                            'imap_password' => 'password' }
+                               :params => { :imap_user     => 'user',
+                                            :imap_password => 'password' }
       last_response.should be_ok
     end
   end

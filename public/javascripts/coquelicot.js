@@ -55,14 +55,15 @@ function authenticate() {
       type: 'POST',
       url: 'authenticate',
       dataType: 'text',
-      data: {
-        'upload_token': authenticationData.call()
-      },
+      data: authenticationData.call(),
       complete: function(res, status) {
         if (status === 'success') {
-          var hiddenField = $('<input type="hidden" name="upload_token" />');
-          hiddenField.val(JSON.stringify(authenticationData.call()));
-          $('#upload').append(hiddenField);
+          $.each(authenticationData.call(), function(key, value) {
+            var hiddenField = $('<input type="hidden" />');
+            hiddenField.attr('name', key);
+            hiddenField.val(value);
+            $('#upload').append(hiddenField);
+          });
           lb.close();
         } else if (res.responseText == 'Forbidden') {
           $('#auth-message').text(i18n.pleaseTryAgain);
@@ -82,8 +83,4 @@ function authenticate() {
   if ( $('#jssubmit')[0] ) { $('#jssubmit').show(); }
   $('#authabout').show();
   authenticationFocus();
-}
-
-function authenticationReset(){
-    $('#upload_token').val('');
 }
