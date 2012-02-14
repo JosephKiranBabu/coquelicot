@@ -1,13 +1,13 @@
 function authenticationData(){
-	return {
-		upload_password: $('#upload_password').val()
-	};
+  return {
+    upload_password: $('#upload_password').val()
+  };
 }
 
 function authenticationFocus(){
-	$('#upload_password').focus();
+  $('#upload_password').focus();
 }
 
 function authenticationReset() {
-	$('#upload_password').val('');
+  $('#upload_password').val('');
 }
