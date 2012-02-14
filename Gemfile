@@ -1,5 +1,5 @@
 source "http://rubygems.org"
-gem "sinatra", "1.0"
+gem "sinatra", "~>1.3"
 gem "rack", "~>1.1"
 gem "haml", "~>3.0.15"
 gem "lockfile", "~>1.4.3"

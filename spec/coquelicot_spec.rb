@@ -184,7 +184,7 @@ describe 'Coquelicot' do
     it "should offer a password form before download" do
       get @url
       last_response.should be_ok
-      last_response['Content-Type'].should eql('text/html')
+      last_response['Content-Type'].should eql('text/html;charset=utf-8')
       doc = Hpricot(last_response.body)
       (doc/'input#file_key').should have(1).items
     end
