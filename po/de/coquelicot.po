@@ -18,19 +18,19 @@ msgstr ""
 
 #: views/ready.haml:8
 msgid "A password is required to download this file."
-msgstr ""
+msgstr "Ein Passwort ist notwendig, um diese Datei herunter zu laden."
 
 #: views/ready.haml:1
 msgid "Share this!"
-msgstr "Gib dies weiter!"
+msgstr "Verteile dies!"
 
 #: views/ready.haml:11
 msgid "Share another file…"
-msgstr ""
+msgstr "Verteile eine weitere Datei…"
 
 #: views/ready.haml:9
 msgid "The file will be available until %s."
-msgstr ""
+msgstr "Diese Datei wird verfügbar sein bis %s"
 
 #: views/layout.haml:19
 msgid "Error:"
@@ -102,15 +102,15 @@ msgstr "Nach einem Download löschen"
 
 #: views/index.haml:3
 msgid "Share a file!"
-msgstr "Teile eine Datei!"
+msgstr "Verteile eine Datei!"
 
 #: views/index.haml:37
 msgid "Share!"
-msgstr ""
+msgstr "Verteile!"
 
 #: views/index.haml:28
 msgid "Unlimited downloads until expiration"
-msgstr ""
+msgstr "Unbeschränkte Downloads bis zum Ablaufdatum"
 
 #: views/enter_file_key.haml:1
 msgid "Enter download password…"
@@ -126,7 +126,7 @@ msgstr "Upload Passwort:"
 
 #: views/auth/imap.haml:2
 msgid "E-mail User:"
-msgstr ""
+msgstr "Email User:"
 
 #: views/expired.haml:3
 msgid "Sorry, file has expired."
