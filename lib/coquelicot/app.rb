@@ -152,8 +152,8 @@ module Coquelicot
            "Length" => src.stat.size,
            "Content-Type" => params[:file][:type],
          })
-      redirect "ready/#{link}-#{pass}" if params[:file_key].nil? or params[:file_key].empty?
-      redirect "ready/#{link}"
+      redirect to("/ready/#{link}-#{pass}") if params[:file_key].nil? or params[:file_key].empty?
+      redirect to("/ready/#{link}")
     end
 
     def expired
