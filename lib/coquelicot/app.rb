@@ -94,7 +94,7 @@ module Coquelicot
         @name << "-#{pass}"
         @unprotected = true
       end
-      @url = "#{base_href}/#{@name}"
+      @url = "#{base_href}#{@name}"
       haml :ready
     end
 
