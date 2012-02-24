@@ -55,6 +55,15 @@ describe 'Coquelicot' do
     (doc/"form#upload").should have(1).items
   end
 
+  context "when I explicitely ask for french" do
+    it "should offer an upload form in french" do
+      get '/', :lang => 'fr'
+      last_response.should be_ok
+      doc = Hpricot(last_response.body)
+      (doc/"input.submit").attr('value').should == 'Partager !'
+    end
+  end
+
   context "when using 'simpleauth' authentication mechanism" do
     before(:each) do
       app.set :authentication_method, :name => :simplepass,
