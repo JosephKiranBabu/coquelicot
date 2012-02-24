@@ -19,19 +19,6 @@ $:.unshift File.join(File.dirname(__FILE__), '../lib')
 
 require 'coquelicot'
 
-module Coquelicot
-  class Options
-    def random_pass_length
-      16
-    end
-  end
-  class << self
-    def options
-      Options.new
-    end
-  end
-end
-
 class JyrapheMigrator
   def initialize(jyraphe_var)
     @var = jyraphe_var
