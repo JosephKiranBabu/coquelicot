@@ -8,7 +8,7 @@ Basic principle: users can upload a file to the server, in return they
 get a unique URL which can be shared with others in order to download
 the file.
 
-Coquelicot aims to protect, to some extend, users and system
+Coquelicot aims to protect, to some extent, users and system
 administrators from disclosure of the files exchanged from passive and
 not so active attackers.
 

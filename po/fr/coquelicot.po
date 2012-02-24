@@ -21,7 +21,7 @@ msgid "A password is required to download this file."
 msgstr "Un mot de passe est nécessaire pour télécharger ce fichier."
 
 #: views/ready.haml:1
-msgid "Pass this on!"
+msgid "Share this!"
 msgstr "À transmettre !"
 
 #: views/ready.haml:11
