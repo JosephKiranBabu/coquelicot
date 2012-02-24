@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2010-08-29 18:20+0200\n"
+"POT-Creation-Date: 2012-02-24 16:56+0100\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,118 +17,122 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: views/ready.haml:8
+msgid "A password is required to download this file."
+msgstr ""
+
 #: views/ready.haml:1
 msgid "Pass this on!"
 msgstr ""
 
-#: views/layout.haml:1
-msgid "coquelicot"
+#: views/ready.haml:11
+msgid "Share another file…"
 msgstr ""
 
-#: views/layout.haml:7
+#: views/ready.haml:9
+msgid "The file will be available until %s."
+msgstr ""
+
+#: views/layout.haml:19
+msgid "Error:"
+msgstr ""
+
+#: views/layout.haml:16
 msgid "Generate random"
 msgstr ""
 
-#: views/layout.haml:7
+#: views/layout.haml:17
 msgid "Generating…"
 msgstr ""
 
-#: views/layout.haml:7
+#: views/layout.haml:18
 msgid "Please try again!"
 msgstr ""
 
-#: views/layout.haml:7
-msgid "Error: "
-msgstr ""
-
-#: views/layout.haml:7
+#: views/layout.haml:20
 msgid "Upload starting..."
 msgstr ""
 
-#: views/layout.haml:7
+#: views/layout.haml:21
 msgid "Uploading: "
 msgstr ""
 
-#: views/layout.haml:7
+#: views/layout.haml:5
+msgid "coquelicot"
+msgstr ""
+
+#: views/layout.haml:22
 msgid "kB"
 msgstr ""
 
-#: views/layout.haml:7
-msgid "Coquelicot © 2010 potager.org"
-msgstr ""
-
-#: views/layout.haml:8 views/layout.haml:10
-msgid "—"
-msgstr ""
-
-#: views/layout.haml:9
-msgid "AGPLv3"
-msgstr ""
-
-#: views/layout.haml:11
-msgid "git clone #{base_href}coquelicot.git"
-msgstr ""
-
-#: views/index.haml:1
-msgid "Share a file!"
-msgstr ""
-
-#: views/index.haml:5
-msgid "Upload password:"
-msgstr ""
-
-#: views/index.haml:6
-msgid "File:"
-msgstr ""
-
-#: views/index.haml:7
-msgid "Available for:"
-msgstr ""
-
-#: views/index.haml:8
-msgid "5 minutes"
-msgstr ""
-
 #: views/index.haml:21
+msgid "1 day"
+msgstr ""
+
+#: views/index.haml:20
 msgid "1 hour"
 msgstr ""
 
 #: views/index.haml:23
-msgid "1 day"
-msgstr ""
-
-#: views/index.haml:25
-msgid "1 week"
-msgstr ""
-
-#: views/index.haml:27
 msgid "1 month"
 msgstr ""
 
-#: views/index.haml:29
-msgid "One time download:"
+#: views/index.haml:22
+msgid "1 week"
 msgstr ""
 
-#: views/index.haml:30
-msgid "Remove after one download"
+#: views/index.haml:19
+msgid "5 minutes"
+msgstr ""
+
+#: views/index.haml:17
+msgid "Available for:"
+msgstr ""
+
+#: views/index.haml:33
+msgid "Download password:"
+msgstr ""
+
+#: views/index.haml:14
+msgid "File:"
 msgstr ""
 
 #: views/index.haml:31
-msgid "Download password:"
+msgid "Remove after one download"
+msgstr ""
+
+#: views/index.haml:3
+msgid "Share a file!"
+msgstr ""
+
+#: views/index.haml:37
+msgid "Share!"
+msgstr ""
+
+#: views/index.haml:28
+msgid "Unlimited downloads until expiration"
 msgstr ""
 
 #: views/enter_file_key.haml:1
 msgid "Enter download password…"
 msgstr ""
 
-#: views/enter_file_key.haml:4
+#: views/enter_file_key.haml:5 views/auth/imap.haml:5
 msgid "Password:"
+msgstr ""
+
+#: views/auth/simplepass.haml:2
+msgid "Upload password:"
+msgstr ""
+
+#: views/auth/imap.haml:2
+msgid "E-mail User:"
+msgstr ""
+
+#: views/expired.haml:3
+msgid "Sorry, file has expired."
 msgstr ""
 
 #: views/expired.haml:1
 msgid "Too late…"
-msgstr ""
-
-#: views/expired.haml:2
-msgid "Sorry, file has expired."
 msgstr ""

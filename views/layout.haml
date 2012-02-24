@@ -16,7 +16,7 @@
       var i18n = { generateRandomPassword: _('Generate random'),
                    generatingRandomPassword: _('Generating…'),
                    pleaseTryAgain: _('Please try again!'),
-                   error: _('Error: '),
+                   error: _('Error:'),
                    uploadStarting: _('Upload starting...'),
                    uploading: _('Uploading: '),
                    kb: _('kB'),
@@ -26,10 +26,10 @@
     #container
       = yield
     #footer
-      %span Coquelicot © 2010 potager.org
+      %span= 'Coquelicot © 2010 potager.org'
       %span
-        —
-        %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' } AGPLv3
-        —
+        = '—'
+        %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' }= 'AGPLv3'
+        = '—'
       %span
-        %code git clone #{clone_url}
+        %code= "git clone #{clone_url}"

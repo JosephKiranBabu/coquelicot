@@ -7,7 +7,7 @@
               :action  => 'upload', :method => 'post' }
   #upload-authentication
     - unless settings.about_text.empty?
-      %p.about #{settings.about_text}
+      %p.about= settings.about_text
     %script{ :type => 'text/javascript', :src => "javascripts/coquelicot.auth.#{auth_method}.js" }
     = render :haml, :"auth/#{auth_method}", :layout => false
   .field
@@ -34,4 +34,4 @@
     %input.input{ :type => 'password', :id => 'file_key', :name => 'file_key' }
   .field
     .submit
-      %input.submit{ :type => 'submit', :value => 'Share!' }
+      %input.submit{ :type => 'submit', :value => _('Share!') }
