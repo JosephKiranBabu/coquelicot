@@ -314,4 +314,16 @@ describe 'Coquelicot' do
       last_response.should be_ok
     end
   end
+
+  context "when I set an URL in the 'url' setting" do
+    before(:each) do
+      app.set :url, 'http://example.com/url-test/'
+    end
+    it 'should be appear in <base/> href' do
+      request "/"
+      last_response.should be_ok
+      doc = Hpricot(last_response.body)
+      (doc/"base").attr('href').should == 'http://example.com/url-test/'
+    end
+  end
 end

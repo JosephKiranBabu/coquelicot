@@ -48,6 +48,7 @@ module Coquelicot
     set :random_pass_length, 16
     set :about_text, ''
     set :additional_css, ''
+    set :url, '' # compute instance URL using request data
     set :authentication_method, :name => :simplepass,
                                 :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
 
@@ -213,9 +214,8 @@ module Coquelicot
 
     helpers do
       def base_href
-        if settings.respond_to?(:url)
-          return settings.url
-        end
+        return settings.url unless settings.url.empty?
+
         url = request.scheme + "://"
         url << request.host
         if request.scheme == "https" && request.port != 443 ||
