@@ -104,7 +104,7 @@ On Debian, one can fulfill its dependencies by issuing:
 
     apt-get install libsinatra-ruby1.8 libopenssl-ruby1.8 \
                     libhaml-ruby1.8 liblockfile-ruby libgettext-ruby1.8 \
-                    rake
+                    libjson-ruby1.8 rake
 
 Finally you need to figure out the best way to host a Rack application
 depending on your setup. *evil grin*

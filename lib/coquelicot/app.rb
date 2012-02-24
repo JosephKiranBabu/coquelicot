@@ -88,13 +88,12 @@ module Coquelicot
         not_found
       end
       @expire_at = file.expire_at
-      @base = request.url.gsub(/\/ready\/[^\/]*$/, '')
       @name = "#{link}"
       unless pass.nil?
         @name << "-#{pass}"
         @unprotected = true
       end
-      @url = "#{@base}/#{@name}"
+      @url = "#{base_href}/#{@name}"
       haml :ready
     end
 
@@ -214,6 +213,9 @@ module Coquelicot
 
     helpers do
       def base_href
+        if settings.respond_to?(:url)
+          return settings.url
+        end
         url = request.scheme + "://"
         url << request.host
         if request.scheme == "https" && request.port != 443 ||
