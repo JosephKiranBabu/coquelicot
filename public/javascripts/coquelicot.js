@@ -36,7 +36,8 @@ function addLinkToPasswordGenerator() {
   link.text(i18n.generateRandomPassword);
   var file_key = $('#file_key');
   file_key.after(link);
-  link.click(function() {
+  link.click(function(e) {
+    e.preventDefault();
     link.text(i18n.generatingRandomPassword);
     $.get('random_pass', function(pass) {
       file_key.val(pass);
