@@ -30,7 +30,8 @@ $(function($) {
     progressUrl: "progress"
   });
 });
-function authenticate() {
+
+function addLinkToPasswordGenerator() {
   var link = $('<a href="#" id="gen_pass" />');
   link.text(i18n.generateRandomPassword);
   var file_key = $('#file_key');
@@ -46,7 +47,9 @@ function authenticate() {
       link.remove();
     });
   });
+}
 
+function authenticate() {
   var authForm = $('<form></form>')
   var authDiv = $('#upload-authentication').remove();
   var lb = $.lightBoxFu;
