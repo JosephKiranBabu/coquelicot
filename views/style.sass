@@ -1,7 +1,5 @@
-$green: #00ff26
-
 body
-  background-color: $green
+  background: no-repeat fixed 50% 100% #70794e url('images/background.jpg')
   font-family: Georgia
   color: darkgreen
 
@@ -16,7 +14,7 @@ a, a:visited
 
 h1
   margin-top: 0.1ex
-  border-bottom: solid 1px #ccc
+  border-bottom: solid 1px #b60a00
   text-align: center
 
 #container
@@ -106,11 +104,20 @@ fieldset
   text-align: center
 
 #footer
-  margin-top: 7em
-  padding-top: 1em
+  position: fixed
+  bottom: 0
+  clear: both
+  width: 100%
+  padding-top: 0.5em
+  padding-bottom: 0.2em
   border-top: dashed 1px black
   text-align: center
+  color: #ccc
   font-size: small
+
+#footer a, #footer a:visited
+  color: #ccc
+  text-decoration: underline
 
 #upload-authentication .field label
   margin: 0 5px 1px 0
