@@ -106,10 +106,6 @@ On Debian, one can fulfill its dependencies by issuing:
                     libhaml-ruby1.8 liblockfile-ruby libgettext-ruby1.8 \
                     rake
 
-Then create the translation catalog through:
-
-    rake makemo
-
 Finally you need to figure out the best way to host a Rack application
 depending on your setup. *evil grin*
 

@@ -6,8 +6,8 @@ gem "haml", "~>3.1"
 gem "haml-magic-translations",
   :git    => 'https://dl.poivron.org/new/haml-magic-translations.git',
   :branch => 'coquelicot'
+gem "fast_gettext"
 gem "lockfile", "~>1.4.3"
-gem "gettext", "~>2.1.0"
 gem "json"
 
 group :test do
@@ -18,5 +18,6 @@ group :test do
 end
 
 group :development do
+  gem "gettext", "~>2.1.0"
   gem "thin"
 end

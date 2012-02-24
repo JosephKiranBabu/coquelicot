@@ -5,7 +5,7 @@ require 'haml'
 require 'haml/magic_translations'
 require 'sass'
 require 'digest/sha1'
-require 'gettext'
+require 'fast_gettext'
 
 module Coquelicot
   class << self
@@ -36,10 +36,12 @@ module Coquelicot
 
     config_file File.expand_path('../../../conf/settings.yml', __FILE__)
 
-    GetText::bindtextdomain('coquelicot')
-    Haml::MagicTranslations.enable(:gettext)
+    FastGettext.add_text_domain 'coquelicot', :path => 'po', :type => 'po'
+    FastGettext.available_locales = [ 'en', 'fr', 'de' ]
+    Haml::MagicTranslations.enable(:fast_gettext)
     before do
-      GetText::set_current_locale(params[:lang] || request.env['HTTP_ACCEPT_LANGUAGE'] || 'en')
+      FastGettext.text_domain = 'coquelicot'
+      FastGettext.locale = params[:lang] || request.env['HTTP_ACCEPT_LANGUAGE'] || 'en'
     end
 
     not_found do
