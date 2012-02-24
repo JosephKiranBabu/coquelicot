@@ -2,10 +2,10 @@ require 'lockfile'
 require 'sinatra/base'
 require 'sinatra/config_file'
 require 'haml'
+require 'haml/magic_translations'
 require 'sass'
 require 'digest/sha1'
 require 'gettext'
-require 'haml_gettext'
 
 module Coquelicot
   class << self
@@ -37,6 +37,7 @@ module Coquelicot
     config_file File.expand_path('../../../conf/settings.yml', __FILE__)
 
     GetText::bindtextdomain('coquelicot')
+    Haml::MagicTranslations.enable(:gettext)
     before do
       GetText::set_current_locale(params[:lang] || request.env['HTTP_ACCEPT_LANGUAGE'] || 'en')
     end

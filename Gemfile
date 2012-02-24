@@ -2,7 +2,10 @@ source "http://rubygems.org"
 gem "sinatra", "~>1.3"
 gem "sinatra-contrib", "~>1.3"
 gem "rack", "~>1.1"
-gem "haml", "~>3.0.15"
+gem "haml", "~>3.1"
+gem "haml-magic-translations",
+  :git    => 'https://dl.poivron.org/new/haml-magic-translations.git',
+  :branch => 'coquelicot'
 gem "lockfile", "~>1.4.3"
 gem "gettext", "~>2.1.0"
 gem "json"

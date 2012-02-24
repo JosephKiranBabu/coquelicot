@@ -1,3 +1,11 @@
+GIT
+  remote: https://dl.poivron.org/new/haml-magic-translations.git
+  revision: 39f58121b624b63afdce91c10b9b26f4f44cfeee
+  branch: coquelicot
+  specs:
+    haml-magic-translations (0.3.coquelicot1)
+      haml (>= 3.1.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -7,7 +15,7 @@ GEM
     eventmachine (0.12.10)
     gettext (2.1.0)
       locale (>= 2.0.5)
-    haml (3.0.25)
+    haml (3.1.4)
     hpricot (0.8.6)
     json (1.6.5)
     locale (2.0.5)
@@ -48,7 +56,8 @@ PLATFORMS
 
 DEPENDENCIES
   gettext (~> 2.1.0)
-  haml (~> 3.0.15)
+  haml (~> 3.1)
+  haml-magic-translations!
   hpricot (~> 0.8.2)
   json
   lockfile (~> 1.4.3)
