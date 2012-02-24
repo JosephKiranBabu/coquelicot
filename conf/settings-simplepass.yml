@@ -1,3 +1,16 @@
+# Settings for the 'simplepass' authentication method
+# ---------------------------------------------------
+#
+# When using the 'simplepass' authentication method, users will
+# be asked for a pre-shared password.
+
 authentication_method:
   name: simplepass
-  upload_password: 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
+
+  # SHA1 of the pre-shared password
+  #
+  #   One way to compute the hash could be:
+  #
+  #       $ echo -n 'test' | sha1sum
+  #
+  upload_password: "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"

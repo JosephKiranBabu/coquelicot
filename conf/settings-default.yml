@@ -1,12 +1,89 @@
+# Default settings for Coquelicot
+# ===============================
+#
+# Coquelicot is a "one-click" file sharing web application with a specific
+# focus on protecting users' privacy.
+#
+# This file contains the default settings and their meaning.
+#
+# These settings are only here for illustration purpose. Site specific
+# configuration only needs to specify the ones that need to be changed.
+
+# Base URL for Coquelicot
+#
+#   It should end with a '/'.
+#
+#   When empty, it will be computed dynamically using upcoming requests.
+#
+url: ""
+
+# Default expiration time (if unspecified by users)
+# (in minutes)
+#
 default_expire: 60
-# 43200 == 60 * 24 * 30 == 1 month
+
+# Maximum expiration time that can be set by users
+# (in minutes)
+#
+#   Default: 43200 = 60 * 24 * 30 ≈ 1 month
+#
 maximum_expire: 43200
+
+# Time before complete cleanup of an expired file
+# (in minutes)
+#
+#   Once a file is expired either because of time or because
+#   it was set for only one download, Coquelicot will scrape
+#   the file content, but keep an empty file around to display
+#   a “Too late” message instead of the default “Not found”.
+#
+#   This setting will influence how long will users see the
+#   first message instead of the second in case they try to
+#   access an expired link.
+#
+#   Default: 10080 = 60 * 24 * 7 ≈ 1 week
+#
 gone_period: 10080
+
+# Number of characters in generated filenames
+#
+#   URL to download files looks like:
+#     https://example.org/dhut7f73u2hiwwifwyrs-gs5wj3ixjheg6dg7
+#     (when no password has been specified)
+#   or:
+#     https://example.org/dhut7f73u2hiwwifwyrs
+#
+#   This setting controls the first set of characters.
+#
 filename_length: 20
+
+# Number of characters in generated passwords
+#
+#   When no password is specified URL looks like:
+#     https://example.org/dhut7f73u2hiwwifwyrs-gs5wj3ixjheg6dg7
+#
+#   This setting controls the second set of characters. The same
+#   code is also used when using the 'Generate password…' link.
+#
 random_pass_length: 16
-depot_path: './files'
-about_text: ''
-additional_css: ''
+
+# Directory in which Coquelicot will write its files
+#
+depot_path: "./files"
+
+# Text to display on top of the upload form
+#
+about_text: ""
+
+# Path to an additional stylesheet
+additional_css: ""
+
+# Authentication method
+#
+#   Please have look at `conf/settings-simplepass.yml` and
+#   `conf/settings-imap.yml` for more details.
+#
+# The default password is 'test'.
 authentication_method:
-  name: 'simplepass'
-  upload_password: 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'          
+  name: "simplepass"
+  upload_password: "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"

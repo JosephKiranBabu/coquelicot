@@ -1,4 +1,17 @@
+# Settings for the IMAP authentication method
+# -------------------------------------------
+#
+# When using the IMAP authentication method users will be
+# asked for a login and a password. Those credentials will
+# be tested against the given IMAP server.
+#
+# Connections to the IMAP server are made using SSL/TLS.
+
 authentication_method:
   name: imap
-  imap_server: 'imap.example.com'
+
+  # Hostname of the authenticating IMAP server
+  imap_server: "imap.example.com"
+
+  # Port of the authenticating IMAP server
   imap_port: 993
