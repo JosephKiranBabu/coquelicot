@@ -14,19 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ENV['RACK_ENV'] = 'test'
+require 'spec_helper'
 
-require 'rubygems'
-require 'bundler'
-Bundler.setup
-
-require 'rack/test'
-require 'rspec'
 require 'timecop'
 require 'hpricot'
 require 'tmpdir'
-
-require 'coquelicot'
 
 UPLOAD_PASSWORD = 'secret'
 
