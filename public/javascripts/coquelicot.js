@@ -84,12 +84,14 @@ function authenticate() {
           /* Mh. Something strange happened. */
           return;
         }
+        var hiddenFields = $('<div />')
         $.each(authentication.getData(), function(key, value) {
           var hiddenField = $('<input type="hidden" />');
           hiddenField.attr('name', key);
           hiddenField.val(value);
-          $('#upload').append(hiddenField);
+          hiddenFields.append(hiddenField)
         });
+        $('#upload').prepend(hiddenFields);
         lb.close();
         if (authentication.handleAccept) {
           authentication.handleAccept();

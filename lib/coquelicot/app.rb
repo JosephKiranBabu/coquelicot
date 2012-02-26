@@ -36,6 +36,8 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
+    use Coquelicot::Rack::Upload
+
     register Sinatra::ConfigFile
     register Coquelicot::Auth::Extension
 
@@ -114,49 +116,16 @@ module Coquelicot
     end
 
     post '/upload' do
-      begin
-        unless authenticate(params)
-          error 403, "Forbidden"
-        end
-      rescue Coquelicot::Auth::Error => ex
-        error 503, ex.message
-      end
+      # Normally handled by Coquelicot::Rack::Upload, only failures
+      # will arrive here.
+      error 500, 'Rack::Coquelicot::Upload failed' if @env['X_COQUELICOT_FORWARD'].nil?
 
-      if params[:file] then
-        tmpfile = params[:file][:tempfile]
-        name = params[:file][:filename]
-      end
-      if tmpfile.nil? || name.nil? then
+      if params[:file].nil? then
         @error = "No file selected"
         return haml(:index)
       end
-      if tmpfile.lstat.size == 0 then
-        @error = "#{name} is empty"
-        return haml(:index)
-      end
-      if params[:expire].nil? or params[:expire].to_i == 0 then
-        params[:expire] = settings.default_expire
-      elsif params[:expire].to_i > settings.maximum_expire then
-        error 403
-      end
-      expire_at = Time.now + 60 * params[:expire].to_i
-      one_time_only = params[:one_time] and params[:one_time] == 'true'
-      if params[:file_key].nil? or params[:file_key].empty?then
-        pass = Coquelicot.gen_random_pass
-      else
-        pass = params[:file_key]
-      end
-      src = params[:file][:tempfile]
-      src.rewind
-      link = Coquelicot.depot.add_file(
-         pass,
-         { "Expire-at" => expire_at.to_i,
-           "One-time-only" => one_time_only,
-           "Filename" => params[:file][:filename],
-           "Content-Type" => params[:file][:type],
-         }) { src.eof? ? nil : src.read }
-      redirect to("/ready/#{link}-#{pass}") if params[:file_key].nil? or params[:file_key].empty?
-      redirect to("/ready/#{link}")
+
+      error 500, 'Something went wrong: this code should never be executed'
     end
 
     def expired

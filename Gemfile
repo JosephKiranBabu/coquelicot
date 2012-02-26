@@ -11,6 +11,8 @@ gem "maruku"
 gem "fast_gettext"
 gem "lockfile", "~>1.4.3"
 gem "json"
+gem "rainbows"
+gem "multipart-parser"
 
 group :test do
   gem "rspec", "~>2.0"
@@ -18,6 +20,7 @@ group :test do
   gem "timecop", "~>0.3.5"
   gem "rack-test", "~>0.5.7"
   gem "capybara"
+  gem "active_support"
 end
 
 group :development do

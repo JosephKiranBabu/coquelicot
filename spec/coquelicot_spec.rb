@@ -19,6 +19,7 @@ require 'spec_helper'
 require 'timecop'
 require 'hpricot'
 require 'tmpdir'
+require 'active_support'
 
 UPLOAD_PASSWORD = 'secret'
 
@@ -35,16 +36,47 @@ describe 'Coquelicot' do
   include_context 'with Coquelicot::Application'
 
   def upload(opts={})
-    opts = { :file => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
-             :upload_password => UPLOAD_PASSWORD
-           }.merge(opts)
-    post '/upload', opts
+    # We need the request to be in the right order
+    params = ActiveSupport::OrderedHash.new
+    params[:upload_password] = UPLOAD_PASSWORD
+    params[:expire] = 5
+    params[:one_time] = ''
+    params[:file_key] = ''
+    params[:file] = Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby')
+    params.merge!(opts)
+    data = build_multipart(params)
+    post '/upload', {}, { :input           => data,
+                          'CONTENT_LENGTH' => data.length.to_s,
+                          'CONTENT_TYPE'   => "multipart/form-data; boundary=#{Rack::Multipart::MULTIPART_BOUNDARY}"
+                        }
     return nil unless last_response.redirect?
     follow_redirect!
     last_response.should be_ok
     doc = Hpricot(last_response.body)
     return (doc/'a').collect { |a| a.attributes['href'] }.
              select { |h| h.start_with? "http://#{last_request.host}/" }[0]
+  end
+
+  def build_multipart(params)
+    params.map do |name, value|
+      if value.is_a? Rack::Test::UploadedFile
+        <<-PART
+--#{Rack::Multipart::MULTIPART_BOUNDARY}\r
+Content-Disposition: form-data; name="#{name}"; filename="#{Rack::Utils.escape(value.original_filename)}"\r
+Content-Type: #{value.content_type}\r
+Content-Length: #{::File.stat(value.path).size}\r
+\r
+#{File.open(value.path).read}\r
+PART
+      else
+        <<-PART
+--#{Rack::Multipart::MULTIPART_BOUNDARY}\r
+Content-Disposition: form-data; name="#{name}"\r
+\r
+#{value}\r
+PART
+      end
+    end.join + "--#{Rack::Multipart::MULTIPART_BOUNDARY}--\r"
   end
 
   it "should offer an upload form" do
@@ -118,6 +150,11 @@ describe 'Coquelicot' do
           last_response.should be_ok
           last_response['Content-Type'].should eql('text/x-script.ruby')
           last_response.body.should eql(File.new(__FILE__).read)
+        end
+
+        it "should have sent the right Content-Length" do
+          last_response.should be_ok
+          last_response['Content-Length'].to_i.should == File.stat(__FILE__).size
         end
 
         it "should always has the same Last-Modified header" do

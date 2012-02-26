@@ -18,4 +18,6 @@
 require 'coquelicot/auth'
 require 'coquelicot/stored_file'
 require 'coquelicot/depot'
+require 'coquelicot/rack/multipart_parser'
+require 'coquelicot/rack/upload'
 require 'coquelicot/app'

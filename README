@@ -117,18 +117,18 @@ Once Bundler is available, please issue:
 
 Then, to start Coquelicot use:
 
-    $ bin/rackup config.ru
+    $ bin/rainbows -c rainbows.conf -E none config.ru
 
 Coquelicot is intended to be run on a fully encrypted system and
 accessible only through HTTPS. To configure Apache as a reverse proxy,
 you will need to add the following directives:
 
-    ProxyPass / http://127.0.0.1:9292/
+    ProxyPass / http://127.0.0.1:51161/
     SetEnv proxy-sendchunks 1
     RequestHeader set X-Forwarded-SSL "on"
 
 You can also run Coquelicot with mod_passenger, Mongrel, Thin or any
-Rack compatible webserver.
+Rack compatible webserver, but please read below about buffered input.
 
 ### Configuration
 
@@ -241,6 +241,54 @@ with the following responsabilities:
    The authentication method can be set in the application settings
    including mandatory options for this method.
 
+### Watch for buffered inputs!
+
+Coquelicot is written in Ruby using Sinatra. Sinatra is based on the
+Rack webserver interface. Rack specification mandates that applications
+must be able to seek and rewind freely in the request content.
+
+Request data are always received as a stream through the network. So in
+order to comply with the specification, webservers implementing Rack will
+either buffer the input in memory (Webrick) or in a temporary file
+(Thin, Passenger or Mongrel).
+
+On top of that, when parsing `multipart/form-data` POST content,
+`Rack::Request` (used by Sinatra) will create a new temporary file for
+each files in the POST request.
+
+For the specific needs of Coquelicot, those behaviours will prevent
+users from uploading large files (if `/tmp` is in memory) or will be a
+breach of privacy, as a clear text version will be written to disk.
+
+To overcome these limitations, Coquelicot first uses a specific feature
+of the Rainbows! webserver of streaming its input directly to
+applications, and second bypass `Rack::Request` to directly handle
+POST content. Usage of any other Rack webserver is strongly discouraged
+and should be restricted to development and testing.
+
+### Implementation details
+
+Common application code lies in `Coquelicot::Application`. Except for
+one specific (and important) type of requests, namely `POST /update`.
+These requests are handled directly at bare Rack level by
+`Coquelicot::Rack::Upload`.
+
+This allows to work directly with POST data as the browser is sending
+them, so we can directly stream the uploaded file to our encrypted
+on-disk containers.
+
+The POST data must be in a very specific order, as we need to handle
+authentication, and various options prior to start recording the file
+content. Thanks to the W3C, the [HTML specification] states that parts
+of the POST data must be delivered in the same order the controls
+appears in the `<form/>` container.
+
+`Coquelicot::Rack::Multipart` expose a simple DSL to parse the fields as
+they are delivered. The later is used by `Coquelicot::Rack::Upload` to
+perform its logic pretty nicely.
+
+[HTML specification]: http://www.w3.org/TR/html4/interact/forms.html
+
 Future
 ------
 
@@ -262,11 +310,6 @@ Future
  * Package for Debian
 
    A Debian package would be nice to spread Coquelicot setups.
-
- * Describe more setups
-
-   Describe how to setup Coquelicot with mod_passenger, Mongrel and
-   other webservers.
 
 Storage details
 ---------------

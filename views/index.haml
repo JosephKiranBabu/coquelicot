@@ -29,9 +29,6 @@
     %script{ :type => 'text/javascript', :src => "javascripts/coquelicot.auth.#{auth_method}.js" }
     = render :haml, :"auth/#{auth_method}", :layout => false
   .field
-    %label{ :for => 'file' } File:
-    %input.input{ :type => 'file', :id => 'file', :name => 'file' }
-  .field
     %label{ :for => 'expire' } Available for:
     %select.input{ :id => 'expire',:name => 'expire' }
       %option{ :value => 5            } 5 minutes
@@ -50,6 +47,9 @@
   .field
     %label{ :for => 'file_key' } Download password:
     %input.input{ :type => 'password', :id => 'file_key', :name => 'file_key' }
+  .field
+    %label{ :for => 'file' } File:
+    %input.input{ :type => 'file', :id => 'file', :name => 'file' }
   .field
     .submit
       %input.submit{ :type => 'submit', :value => _('Share!') }
