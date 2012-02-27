@@ -39,6 +39,11 @@ $(function($) {
       jQuery('#size').html(parseInt(upload.size / 1024) + ' ' + i18n.kb);
       jQuery('#percent').html(upload.percents + "%");
     },
+    success: function(upload) {
+      $('#received').html('');
+      $('#size').html('');
+      $('#percent').html("100%");
+    },
     interval: 2000,
     /* if we are using images it's good to preload them, safari has problems with
        downloading anything after hitting submit button. these are images for lightBoxFu

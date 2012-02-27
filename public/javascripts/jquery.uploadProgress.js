@@ -89,10 +89,10 @@ jQuery.uploadProgress = function(e, options) {
     url: options.progressUrl + "?X-Progress-ID=" + options.uuid,
     dataType: options.dataType,
     success: function(upload) {
+      var bar = $.browser.safari ? $(options.progressBar, parent.document) : $(options.progressBar);
       if (upload.state == 'uploading') {
         upload.percents = Math.floor((upload.received / upload.size)*1000)/10;
         
-        var bar = $.browser.safari ? $(options.progressBar, parent.document) : $(options.progressBar);
         bar.css({width: upload.percents+'%'});
         options.uploading(upload);
       }
@@ -103,6 +103,7 @@ jQuery.uploadProgress = function(e, options) {
       }
       
       if (upload.state == 'done') {
+        bar.css({width: '100%'});
         options.success(upload);
       }
       
