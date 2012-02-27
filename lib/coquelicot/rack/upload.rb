@@ -32,7 +32,9 @@ module Coquelicot::Rack
 
     def call(env)
       if handle_request?(env)
-        if !@warned_of_rewind && env['rack.input'].respond_to?(:rewind)
+        input = env['rack.input']
+        input = input.input if input.is_a? Upr::InputWrapper
+        if !@warned_of_rewind && input.respond_to?(:rewind)
           env['rack.logger'].warn <<-MESSAGE.gsub(/\n */m, ' ').strip
             It looks like the input stream is "rewindable". This means that
             somewhere along the process, the input request is probably buffered,
