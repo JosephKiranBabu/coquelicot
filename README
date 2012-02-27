@@ -48,8 +48,8 @@ Features
 
  * Upload progress bar
 
-   If the web server tracks upload progress, users having javascript
-   enabled will see a nice progress bar during the file upload.
+   Users having javascript enabled will see a nice progress bar during
+   the file upload.
 
  * Downgrade nicely
 

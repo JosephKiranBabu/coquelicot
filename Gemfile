@@ -13,6 +13,7 @@ gem "lockfile", "~>1.4.3"
 gem "json"
 gem "rainbows"
 gem "multipart-parser"
+gem "upr"
 
 group :test do
   gem "rspec", "~>2.0"

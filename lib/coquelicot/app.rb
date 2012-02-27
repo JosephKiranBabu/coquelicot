@@ -23,6 +23,8 @@ require 'haml/magic_translations'
 require 'sass'
 require 'digest/sha1'
 require 'fast_gettext'
+require 'upr'
+require 'moneta/memory'
 
 module Coquelicot
   class << self
@@ -36,6 +38,8 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
+    set :upr_backend, Upr::Monitor.new(Moneta::Memory.new)
+    use Upr, :backend => upr_backend, :path_info => %q{/upload}
     use Coquelicot::Rack::Upload
 
     register Sinatra::ConfigFile
@@ -114,6 +118,14 @@ module Coquelicot
       rescue Coquelicot::Auth::Error => ex
         error 503, ex.message
       end
+    end
+
+    get '/progress' do
+      response.headers.update(Upr::JSON::RESPONSE_HEADERS)
+      data = Upr::JSON.new(:env => request.env,
+                           :backend => settings.upr_backend,
+                           :upload_id => params['X-Progress-ID'])._once
+      halt 200, { 'Content-Type' => 'application/json' }, data
     end
 
     post '/upload' do
