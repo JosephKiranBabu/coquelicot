@@ -25,6 +25,7 @@ require 'digest/sha1'
 require 'fast_gettext'
 require 'upr'
 require 'moneta/memory'
+require 'rainbows'
 
 module Coquelicot
   class << self
@@ -38,10 +39,6 @@ module Coquelicot
   end
 
   class Application < Sinatra::Base
-    set :upr_backend, Upr::Monitor.new(Moneta::Memory.new)
-    use Upr, :backend => upr_backend, :path_info => %q{/upload}
-    use Coquelicot::Rack::Upload
-
     register Sinatra::ConfigFile
     register Coquelicot::Auth::Extension
 
@@ -59,6 +56,14 @@ module Coquelicot
                                 :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
 
     config_file File.expand_path('../../../conf/settings.yml', __FILE__)
+
+    set :upr_backend, Upr::Monitor.new(Moneta::Memory.new)
+    if defined?(Rainbows) && !Rainbows.server.nil? && !Rainbows.server.rewindable_input
+      use Upr, :backend => upr_backend, :path_info => %q{/upload}
+    end
+    use Coquelicot::Rack::Upload
+    # limit requests other than upload to an input body of 5 kiB max
+    use Rainbows::MaxBody, 5 * 1024
 
     FastGettext.add_text_domain 'coquelicot', :path => 'po', :type => 'po'
     FastGettext.available_locales = [ 'en', 'fr', 'de' ]

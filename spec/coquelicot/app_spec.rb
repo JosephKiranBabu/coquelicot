@@ -18,6 +18,7 @@ require 'spec_helper'
 require 'capybara/dsl'
 
 describe Coquelicot::Application do
+  include Rack::Test::Methods
   include Capybara::DSL
   Capybara.app = Coquelicot::Application
 
@@ -40,6 +41,19 @@ describe Coquelicot::Application do
     it 'should display the README file' do
       title = File.open(File.expand_path('../../../README', __FILE__)) { |f| f.readline.strip }
       find('h1').should have_content(title)
+    end
+  end
+
+  describe 'post /authenticate' do
+    context 'when given a request with too much input' do
+      before do
+        # README is bigger than 5 kiB
+        path = File.expand_path('../../../README', __FILE__)
+        post '/authenticate', :file => Rack::Test::UploadedFile.new(path, 'text/plain')
+      end
+      it 'should get status 413 (Request entity too large)' do
+        last_response.status.should == 413
+      end
     end
   end
 end
