@@ -127,8 +127,12 @@ module Coquelicot
 
     def files
       lockfile.lock do
-        File.open(links_path) do |f|
-          f.readlines.collect { |l| l.split[1] }
+        begin
+          File.open(links_path) do |f|
+            f.readlines.collect { |l| l.split[1] }
+          end
+        rescue Errno::ENOENT # if links file has not been created yet
+          []
         end
       end
     end
