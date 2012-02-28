@@ -15,11 +15,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'coquelicot/auth'
-require 'coquelicot/stored_file'
-require 'coquelicot/depot'
-require 'coquelicot/rack/multipart_parser'
-require 'coquelicot/num'
-require 'coquelicot/helpers'
-require 'coquelicot/rack/upload'
-require 'coquelicot/app'
+module Coquelicot
+  module Helpers
+    def clone_url
+      settings.respond_to?(:clone_url) ? settings.clone_url : uri('coquelicot.git')
+    end
+
+    def authenticate(params)
+      Coquelicot.settings.authenticator.authenticate(params)
+    end
+
+    def auth_method
+      Coquelicot.settings.authenticator.class.name.gsub(/Coquelicot::Auth::([A-z0-9]+)Authenticator$/, '\1').downcase
+    end
+  end
+end

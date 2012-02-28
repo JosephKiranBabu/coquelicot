@@ -41,6 +41,7 @@ module Coquelicot
   class Application < Sinatra::Base
     register Sinatra::ConfigFile
     register Coquelicot::Auth::Extension
+    helpers Coquelicot::Helpers
 
     set :root, Proc.new { app_file && File.expand_path('../../..', app_file) }
     set :depot_path, Proc.new { File.join(root, 'files') }
@@ -203,20 +204,6 @@ module Coquelicot
         return 403 unless send_link(link, pass)
       rescue Coquelicot::BadKey => ex
         403
-      end
-    end
-
-    helpers do
-      def clone_url
-        settings.respond_to?(:clone_url) ? settings.clone_url : uri('coquelicot.git')
-      end
-
-      def authenticate(params)
-        Coquelicot.settings.authenticator.authenticate(params)
-      end
-
-      def auth_method
-        Coquelicot.settings.authenticator.class.name.gsub(/Coquelicot::Auth::([A-z0-9]+)Authenticator$/, '\1').downcase
       end
     end
   end

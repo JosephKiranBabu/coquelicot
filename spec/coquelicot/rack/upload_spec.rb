@@ -221,7 +221,7 @@ MULTIPART_DATA
             subject.status == 400
           end
           it 'should display "Bad Request: fields in unacceptable order"' do
-            subject.body.should == 'Bad Request: fields in unacceptable order'
+            subject.body.should include('Bad Request: fields in unacceptable order')
           end
         end
         context 'when authentication fails' do
@@ -233,7 +233,7 @@ MULTIPART_DATA
             subject.status == 403
           end
           it 'should display "Forbidden"' do
-            subject.body.should == 'Forbidden'
+            subject.body.should include('Forbidden')
           end
           it 'should not add a file' do
             expect { subject }.to_not change { Coquelicot.depot.size }
@@ -249,7 +249,7 @@ MULTIPART_DATA
             subject.status == 503
           end
           it 'should display the error message' do
-            subject.body.should == 'Something bad happened!'
+            subject.body.should include('Something bad happened!')
           end
           it 'should not add a file' do
             expect { subject }.to_not change { Coquelicot.depot.size }
@@ -314,7 +314,7 @@ MULTIPART_DATA
             subject.status == 403
           end
           it 'should display "Forbidden: expiration time too big"' do
-            subject.body.should == 'Forbidden: expiration time too big'
+            subject.body.should include('Forbidden: expiration time too big')
           end
           it 'should not add a file' do
             expect { subject }.to_not change { Coquelicot.depot.size }
