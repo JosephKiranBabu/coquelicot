@@ -23,6 +23,16 @@ describe Coquelicot::Application do
 
   include_context 'with Coquelicot::Application'
 
+  describe 'get /' do
+    before do
+      visit '/'
+    end
+    it 'should display the maximum file size' do
+      find(:xpath, '//label[@for="file"]/following::*[@class="note"]').
+          should have_content("Max. size: #{Coquelicot.settings.max_file_size.as_size}")
+    end
+  end
+
   describe 'get /README' do
     before do
       visit '/README'

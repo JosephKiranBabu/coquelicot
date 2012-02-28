@@ -43,6 +43,7 @@ module Coquelicot
 
     set :root, Proc.new { app_file && File.expand_path('../../..', app_file) }
     set :depot_path, Proc.new { File.join(root, 'files') }
+    set :max_file_size, 5 * 1024 * 1024 # 5 MiB
     set :default_expire, 60
     set :maximum_expire, 60 * 24 * 30 # 1 month
     set :gone_period, 60 * 24 * 7 # 1 week

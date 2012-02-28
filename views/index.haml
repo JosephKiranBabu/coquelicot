@@ -50,6 +50,7 @@
   .field
     %label{ :for => 'file' } File:
     %input.input{ :type => 'file', :id => 'file', :name => 'file' }
+    .note Max. size: #{Coquelicot.settings.max_file_size.as_size}
   .field
     .submit
       %input.submit{ :type => 'submit', :value => _('Share!') }

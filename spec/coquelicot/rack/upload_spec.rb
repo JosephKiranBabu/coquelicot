@@ -139,6 +139,52 @@ MULTIPART_DATA
             expect { subject }.to change { Coquelicot.depot.size }.by(1)
           end
         end
+        context 'when file is bigger than limit' do
+          include_context 'correct POST data'
+          before(:each) do
+            Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
+            Coquelicot.settings.stub(:max_file_size).and_return(100)
+          end
+          context 'when there is a request Content-Length header' do
+            it 'should bail out with 413 (Request Entity Too Large)' do
+              subject.status.should == 413
+            end
+            it 'should display "File is bigger than maximum allowed size"' do
+              subject.body.should include('File is bigger than maximum allowed size')
+            end
+            it 'should display the maximum file size' do
+              subject.body.should include('100 B')
+            end
+          end
+          context 'when there is no request Content-Length header' do
+            before(:each) do
+              env['CONTENT_LENGTH'] = nil
+            end
+            it 'should bail out with 413 (Request Entity Too Large)' do
+              subject.status.should == 413
+            end
+            it 'should display "File is bigger than maximum allowed size"' do
+              subject.body.should include('File is bigger than maximum allowed size')
+            end
+            it 'should display the maximum file size' do
+              subject.body.should include('100 B')
+            end
+          end
+          context 'when the request Content-Length header is lying to us' do
+            before(:each) do
+              env['CONTENT_LENGTH'] = 99
+            end
+            it 'should bail out with 413 (Request Entity Too Large)' do
+              subject.status.should == 413
+            end
+            it 'should display "File is bigger than maximum allowed size"' do
+              subject.body.should include('File is bigger than maximum allowed size')
+            end
+            it 'should display the maximum file size' do
+              subject.body.should include('100 B')
+            end
+          end
+        end
         context 'when receiving a request with other fields after file' do
           before(:each) do
             Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)

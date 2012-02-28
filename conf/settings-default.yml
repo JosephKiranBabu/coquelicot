@@ -9,6 +9,13 @@
 # These settings are only here for illustration purpose. Site specific
 # configuration only needs to specify the ones that need to be changed.
 
+# Maximum size allowed for uploaded files
+# (in bytes)
+#
+#   Default: 5242880 = 5 * 1024 * 1024
+#
+max_file_size: 5242880
+
 # Default expiration time (if unspecified by users)
 # (in minutes)
 #

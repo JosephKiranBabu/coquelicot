@@ -89,6 +89,13 @@ module Coquelicot::Rack
     end
 
     def process!
+      # Stop users right now if input has already said the file is too big.
+      length = @env['CONTENT_LENGTH']
+      unless length.nil?
+        length = length.to_i
+        error_for_max_length(length) if length > Coquelicot.settings.max_file_size
+      end
+
       MultipartParser.parse(@env) do |p|
         p.start do
           @expire = Coquelicot.settings.default_expire
@@ -118,6 +125,9 @@ module Coquelicot::Rack
         p.file :file do |filename, type, reader|
           error 403, 'Forbidden' unless @authenticated
 
+          max_length = Coquelicot.settings.max_file_size
+          # We still compute the length of the received data manually, in case
+          # input was lying.
           length = 0
           @link = Coquelicot.depot.add_file(
                     @pass,
@@ -128,6 +138,7 @@ module Coquelicot::Rack
             data = reader.call
             unless data.nil?
               length += data.bytesize
+              error_for_max_length if length > max_length
             else
               error_for_empty if length == 0
             end
@@ -158,6 +169,23 @@ module Coquelicot::Rack
       # in Coquelicot::Application
       @env['X_COQUELICOT_FORWARD'] = 'Yes'
       super
+    end
+
+    def error_for_max_length(length = nil)
+      # XXX: i18nize
+      if length
+        message = <<-MESSAGE.gsub(/\n */m, ' ').strip
+          File is bigger than maximum allowed size:
+          #{length.as_size} would exceed the
+          maximum allowed #{Coquelicot.settings.max_file_size.as_size}.
+        MESSAGE
+      else
+        message = <<-MESSAGE.gsub(/\n */m, ' ').strip
+          File is bigger than maximum allowed size
+          (#{Coquelicot.settings.max_file_size.as_size}).
+        MESSAGE
+      end
+      error 413, message
     end
 
     def error_for_empty
