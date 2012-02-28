@@ -1,5 +1,5 @@
-Coquelicot
-==========
+About “Coquelicot”
+==================
 
 Coquelicot is a "one-click" file sharing web application with a specific
 focus on protecting users' privacy.
@@ -95,25 +95,42 @@ Features
    to make it harder to retrieve its content through filesystem
    analysis, it is filled with zeros first.
 
-Setup
------
+Installation
+------------
 
-Coquelicot is written in Ruby using the Sinatra web framework.
+Coquelicot is written in Ruby using the Sinatra web framework. Due to
+reasons detailed below, it needs to be run with the Rainbows! web
+server. The later should probably be made accessible through a reverse
+proxy.
 
-On Debian, one can fulfill its dependencies by issuing:
+### Initial setup
 
-    apt-get install libsinatra-ruby1.8 libopenssl-ruby1.8 \
-                    libhaml-ruby1.8 liblockfile-ruby libgettext-ruby1.8 \
-                    libjson-ruby1.8 rake
+Coquelicot uses Bundler to manage its dependency. To install Bundler on
+Debian, please issue:
 
-Finally you need to figure out the best way to host a Rack application
-depending on your setup. *evil grin*
+    # apt-get install rubygems
+    $ gem install bundler
 
-Coquelicot is intended to be run on a fully encrypted system and accessible
-only through HTTPS.
+Once Bundler is available, please issue:
 
-Configuration
--------------
+    $ bundle install --deployment --binstubs
+
+Then, to start Coquelicot use:
+
+    $ bin/rackup config.ru
+
+Coquelicot is intended to be run on a fully encrypted system and
+accessible only through HTTPS. To configure Apache as a reverse proxy,
+you will need to add the following directives:
+
+    ProxyPass / http://127.0.0.1:9292/
+    SetEnv proxy-sendchunks 1
+    RequestHeader set X-Forwarded-SSL "on"
+
+You can also run Coquelicot with mod_passenger, Mongrel, Thin or any
+Rack compatible webserver.
+
+### Configuration
 
 By default Coquelicot is configured to authenticate with the
 "simplepass" mechanism and some other reasonable defaults.
@@ -133,29 +150,49 @@ Further settings example:
  * `conf/settings-imap.yml`: necessary configuration for the "imap"
    authentication mechanism.
 
-You can copy one of these examples to `conf/settings.yml` and adjust them
-according to your environment.
+You can copy one of these examples to `conf/settings.yml` and adjust
+them according to your environment.
 
-Garbage collection
-------------------
+### Garbage collection
 
 To cleanup files automatically when they expired, coquelicot comes with
 a cleanup script, that does the garbage collection for you. The easiest
 way is to add `ext/coquelicot_gc.rb` as a cron job that runs every 5
 minutes (or so).
 
-Test and development
---------------------
+### Migrate from Jyraphe
+
+[Jyraphe] is another free software web file sharing application.
+Coquelicot provides a migration script to import Jyraphe 0.5
+repositories in `tools/migrate_jyraphe.rb`.
+
+[Jyraphe]: http://home.gna.org/jyraphe/
+
+Test, development and extensions
+--------------------------------
+
+Coquelicot is written in Ruby and should be quite easy to improve for
+anyone a little bit familiar with the Sinatra web framework. It is
+mostly written using Behaviour Driven Development, making the test suite
+a fine net to hack in confidence. So please go ahead!
+
+### Setup a work environment
 
 As Coquelicot uses Bundle, the first step to work on Coquelicot
 is installing the proper dependencies by issuing:
 
     bundle install
 
-Coquelicot test suite is written using RSpec. Running the test suite is just a
-matter of typing:
+### Basic operations
+
+Coquelicot test suite is written using RSpec. Running the test suite is
+just a matter of typing:
 
     bundle exec rspec
+
+Running a test server can be done with:
+
+    bundle exec rackup config-development.ru
 
 To update the translation source files, use:
 
@@ -164,14 +201,45 @@ To update the translation source files, use:
 This will update `po/coquelicot.pot` and merge the new strings in the various
 `po/*/coquelicot.po` files.
 
-Migrate from Jyraphe
---------------------
+### Authentication mechanisms
 
-Jyraphe [1] is another free software web file sharing application.
-Coquelicot provides a migration script to import Jyraphe 0.5 repositories in
-`tools/migrate_jyraphe.rb`.
+The authentication part of Coquelicot has been made modular. Adding a
+new authentication mechanism should be fairly straightforward.
 
-[1] http://home.gna.org/jyraphe/
+New authentication mechanism needs to provide the following 3 files,
+with the following responsabilities:
+
+ * `lib/coquelicot/auth/<METHOD>.rb`:
+
+   A class implementing the actual authentication. This class must
+   implement an `authenticate` method. It will receive the form fields
+   as usual (params). This method should either return true if upload
+   should be allowed.
+
+ * `public/javascripts/coquelicot.auth.<METHOD>.js:`
+
+    This file should define 'authentication' as an object with the
+    following methods:
+
+    - `getData()`: returns an object of all the necessary data
+      to authenticate on the app side. Keys should have the same name
+      as the input fields used to authenticate without Javascript.
+    - `focus()`: set the focus on the first authentication form field.
+    - (optional) `handleSuccess()`: arbitrary action upon successful
+      authentication. This is called after the livebox is closed.
+    - (optional) `handleReject()`: arbitrary action when access
+      get rejected. One can reset authentication fields after a failed
+      authentication.
+    - (optional) `handleFailure()`: arbitrary action when there was
+      a problem in the authentication procedure.
+
+ * `views/auth/<METHOD>.haml`:
+
+   Render the necessary form fields that will be used for
+   authentication.
+
+   The authentication method can be set in the application settings
+   including mandatory options for this method.
 
 Future
 ------
@@ -204,7 +272,8 @@ Storage details
 ---------------
 
 Files are stored in the directory specified by the 'depot_path'
-setting.
+setting. The storage format is designed in the very specific way that
+the content can be written without seeking or knowing its total length.
 
 The format is the following:
 
@@ -216,8 +285,8 @@ The format is the following:
     <encrypted data>
 
 Encryption is done using OpenSSL. Cipher is AES-256-CBC with key and IV
-created using the pbkdf2_hmac_sha1() implementation of PKCS5. The later
-is fed using the former 'Salt' and the given passphrase.
+created using the `pbkdf2_hmac_sha1()` implementation of PKCS5. The later
+is fed using the former *Salt* and the given passphrase.
 
 Once decrypted, content has the following format:
 
@@ -239,56 +308,19 @@ is used. It contains a line for each file in the form:
 
     <URL name> <file name>
 
-Authentication Mechanisms
--------------------------
-
-It is possible to authenticate users against your own common authentication
-mechanism.
-
-Such an authentication mechanism needs to provide the following 3 files,
-with the following responsabilities:
-
- * `lib/coquelicot/auth/<METHOD>.rb`:
-
-   A class implementing the actual authentication. This class must
-   implement an `authenticate` method. It will receive the form fields
-   as usual (params). This method should either return true if upload
-   should be allowed.
-
- * `public/javascripts/coquelicot.auth.<METHOD>.js:`
-
-    This file should define 'authentication' as an object with the following
-    methods:
-
-    - `getData()`: returns an object of all the necessary data
-      to authenticate on the app side. Keys should have the same name
-      as the input fields used to authenticate without Javascript.
-    - `focus()`: set the focus on the first authentication form field.
-    - (optional) `handleSuccess()`: arbitrary action upon successful
-      authentication. This is called after the livebox is closed.
-    - (optional) `handleReject()`: arbitrary action when access
-      get rejected. One can reset authentication fields after a failed
-      authentication.
-    - (optional) `handleFailure()`: arbitrary action when there was
-      a problem in the authentication procedure.
-
- * `views/auth/<METHOD>.haml`:
-
-   Render the necessary form fields that will be used for authentication.
-
-   The authentication method can be set in the application settings
-   including mandatory options for this method.
-
 Authors
 -------
 
-Coquelicot © 2010-2012 potager.org <jardiniers@potager.org>  
-           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
+    Coquelicot © 2010-2012 potager.org <jardiniers@potager.org>
+               © 2011 mh / immerda.ch  <mh+coquelicot@immerda.ch>
 
-Coquelicot is distributed under the GNU Affero General Public License
-version 3. See LICENSE for details.
+Coquelicot is distributed under the [GNU Affero General Public License]
+version 3 or (at your option) any later version.
 
 Background image (`public/images/background.jpg`) derived from:  
-"coquelicot" © 2008 Jean-Louis Zimmermann  
-Licensed under Creative Commons Attributions 2.0 Generic  
-<https://secure.flickr.com/photos/jeanlouis_zimmermann/2478019744/>
+[“coquelicot”] © 2008 Jean-Louis Zimmermann  
+Licensed under [Creative Commons Attributions 2.0 Generic]  
+
+[“coquelicot”]: https://secure.flickr.com/photos/jeanlouis_zimmermann/2478019744/
+[GNU Affero General Public License]: http://www.gnu.org/licenses/agpl.txt
+[Creative Commons Attributions 2.0 Generic]: https://creativecommons.org/licenses/by/2.0/deed
