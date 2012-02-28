@@ -74,6 +74,11 @@ module Coquelicot
       haml :index
     end
 
+    get '/README' do
+      haml(":markdown\n" +
+           File.read(File.join(settings.root, 'README')).gsub(/^/, '  '))
+    end
+
     get '/random_pass' do
       "#{Coquelicot.gen_random_pass}"
     end

@@ -22,6 +22,13 @@ require 'tmpdir'
 
 UPLOAD_PASSWORD = 'secret'
 
+# The specs in this file are written like what should have been Cucumber
+# features and without much knowledge of best practices with RSpec. Most of
+# them should be improved, rewritten and moved to `spec/coquelicot/app_spec.rb`.
+#
+# Once down, we could remove the dependency on Hpricot for the much better
+# Capybara (which is used in `spec/coquelicot/app_spec.rb`).
+
 describe 'Coquelicot' do
   include Rack::Test::Methods
 

@@ -7,6 +7,7 @@ gem "haml-magic-translations",
   :git    => 'https://dl.poivron.org/new/haml-magic-translations.git',
   :branch => 'coquelicot'
 gem "sass"
+gem "maruku"
 gem "fast_gettext"
 gem "lockfile", "~>1.4.3"
 gem "json"
@@ -16,6 +17,7 @@ group :test do
   gem "hpricot", "~>0.8.2"
   gem "timecop", "~>0.3.5"
   gem "rack-test", "~>0.5.7"
+  gem "capybara"
 end
 
 group :development do
