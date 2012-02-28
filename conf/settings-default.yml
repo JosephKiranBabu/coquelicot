@@ -9,14 +9,6 @@
 # These settings are only here for illustration purpose. Site specific
 # configuration only needs to specify the ones that need to be changed.
 
-# Base URL for Coquelicot
-#
-#   It should end with a '/'.
-#
-#   When empty, it will be computed dynamically using upcoming requests.
-#
-url: ""
-
 # Default expiration time (if unspecified by users)
 # (in minutes)
 #

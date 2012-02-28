@@ -18,10 +18,10 @@
 #content
   .url
     %a{ :href => @url }
-      %span.base>= "#{base_href}"
+      %span.base>= uri('/')
       %span.name= @name
   - unless @unprotected
     %p A password is required to download this file.
   %p The file will be available until #{@expire_at}.
   .again
-    %a{ :href => base_href } Share another file…
+    %a{ :href => uri('/') } Share another file…

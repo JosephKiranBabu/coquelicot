@@ -48,7 +48,6 @@ module Coquelicot
     set :random_pass_length, 16
     set :about_text, ''
     set :additional_css, ''
-    set :url, '' # compute instance URL using request data
     set :authentication_method, :name => :simplepass,
                                 :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
 
@@ -94,7 +93,7 @@ module Coquelicot
         @name << "-#{pass}"
         @unprotected = true
       end
-      @url = "#{base_href}#{@name}"
+      @url = uri(@name)
       haml :ready
     end
 
@@ -213,21 +212,8 @@ module Coquelicot
     end
 
     helpers do
-      def base_href
-        return settings.url unless settings.url.empty?
-
-        url = request.scheme + "://"
-        url << request.host
-        if request.scheme == "https" && request.port != 443 ||
-            request.scheme == "http" && request.port != 80
-          url << ":#{request.port}"
-        end
-        url << request.script_name
-        "#{url}/"
-      end
-
       def clone_url
-        settings.respond_to?(:clone_url) ? settings.clone_url : "#{base_href}coquelicot.git"
+        settings.respond_to?(:clone_url) ? settings.clone_url : uri('coquelicot.git')
       end
 
       def authenticate(params)

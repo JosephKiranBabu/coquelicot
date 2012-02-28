@@ -21,7 +21,7 @@
   %head
     %title coquelicot
     %meta{ :"http-equiv" => "Content-Type", :content => "text/html; charset=UTF-8" }
-    %base{ :href => base_href }
+    %base{ :href => uri('/') }
     %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css',
            :media => "screen, projection" }
     - unless settings.additional_css.empty?
