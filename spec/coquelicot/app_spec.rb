@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'spec_helper'
+require 'coquelicot/jyraphe_migrator'
 require 'capybara/dsl'
 require 'tempfile'
 
@@ -116,5 +117,13 @@ describe Coquelicot, '.collect_garbage!' do
         expect { Coquelicot.collect_garbage! ['-h'] }.to raise_error(SystemExit)
       end
     end
+  end
+end
+
+describe Coquelicot, '.migrate_jyraphe!' do
+  it 'should call the migrator' do
+    args = ['whatever']
+    Coquelicot::JyrapheMigrator.should_receive(:run!).with(args)
+    Coquelicot.migrate_jyraphe! args
   end
 end

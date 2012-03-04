@@ -56,6 +56,11 @@ module Coquelicot
       parser.parse!(args)
       depot.gc!
     end
+    # Called by +coquelicot-migrate-jyraphe+ script.
+    def migrate_jyraphe!(args = [])
+      require 'coquelicot/jyraphe_migrator'
+      Coquelicot::JyrapheMigrator.run! args
+    end
   end
 
   class Application < Sinatra::Base

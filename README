@@ -164,7 +164,20 @@ every 5 minutes (or so).
 
 [Jyraphe] is another free software web file sharing application.
 Coquelicot provides a migration script to import Jyraphe 0.5
-repositories in `tools/migrate_jyraphe.rb`.
+repositories as `bin/coquelicot-migrate-jyraphe`:
+
+    Usage: coquelicot-migrate-jyraphe [options] jyraphe-var > rewrite-rules
+
+    Options:
+        -c, --config FILE            read settings from FILE
+        -p, --rewrite-prefix PREFIX  prefix URL in rewrite rules
+        -h, --help                   show this message
+
+The last argument must be a path to the `var` directory of the Jyraphe
+installation. After migrating the files to Coquelicot, directives for
+Apache mod_rewrite will be printed on stdout which ought to be
+redirected to a file. The `-p` option can be used to add a specific
+paths in the redirected URLs.
 
 [Jyraphe]: http://home.gna.org/jyraphe/
 
