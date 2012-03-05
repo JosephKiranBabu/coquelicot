@@ -112,11 +112,12 @@ module Coquelicot
     COQUELICOT_VERSION = "1.0"
 
     def self.get_cipher(pass, salt, method)
-      hmac = OpenSSL::PKCS5.pbkdf2_hmac_sha1(pass, salt, 2000, 48)
       cipher = OpenSSL::Cipher.new CIPHER
+      hmac = OpenSSL::PKCS5.pbkdf2_hmac_sha1(
+          pass, salt, 2000, cipher.key_len + cipher.iv_len)
       cipher.method(method).call
-      cipher.key = hmac[0..31]
-      cipher.iv = hmac[32..-1]
+      cipher.key = hmac.slice!(0, cipher.key_len)
+      cipher.iv = hmac
       cipher
     end
 
