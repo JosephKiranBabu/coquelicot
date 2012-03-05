@@ -32,7 +32,7 @@ module Coquelicot
       end
 
       def create_stored_file(extra_meta = {})
-        @stored_file_path = File.expand_path('stored_file', @tmpdir)
+        @stored_file_path ||= File.expand_path('stored_file', @tmpdir)
         @pass = 'secret'
         @src = __FILE__
         @src_length = File.stat(@src).size
@@ -149,6 +149,15 @@ module Coquelicot
 
     describe '.create' do
       include_context 'create new StoredFile'
+      context 'when the destination file already exists' do
+        it 'should raise an error' do
+          @stored_file_path = File.expand_path('stored_file', @tmpdir)
+          FileUtils.touch @stored_file_path
+          expect {
+            create_stored_file
+          }.to raise_error(Errno::EEXIST)
+        end
+      end
       context 'in clear metadata' do
         let(:test_salt) { "\0" * StoredFile::SALT_LEN }
         let(:expire_at) { Time.now + 60 }

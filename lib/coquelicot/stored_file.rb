@@ -49,7 +49,7 @@ module Coquelicot
                      "Salt" => Base64.encode64(salt).strip,
                      "Expire-at" => meta.delete('Expire-at'),
                    }
-      File.open(dest, 'w') do |dest|
+      File.open(dest, File::WRONLY|File::EXCL|File::CREAT) do |dest|
         dest.write(YAML.dump(clear_meta) + YAML_START)
 
         cipher = get_cipher(pass, salt, :encrypt)

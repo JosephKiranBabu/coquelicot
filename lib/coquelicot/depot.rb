@@ -27,12 +27,19 @@ module Coquelicot
 
     def add_file(pass, options, &block)
       dst = nil
-      lockfile.lock do
-        dst = gen_random_file_name
-        File.open(full_path(dst), 'w').close
-      end
+
       begin
-        StoredFile.create(full_path(dst), pass, options, &block)
+        # Ensure that the generated name is not already used
+        loop do
+          dst = gen_random_file_name
+          begin
+            StoredFile.create(full_path(dst), pass, options, &block)
+            break
+          rescue Errno::EEXIST => e
+            raise unless e.message =~ /(?:^|\s)#{Regexp.escape(full_path(dst))}(?:\s|$)/
+            next # let's try again
+          end
+        end
       rescue
         File.unlink full_path(dst)
         raise
