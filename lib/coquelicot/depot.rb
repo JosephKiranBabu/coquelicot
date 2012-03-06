@@ -70,6 +70,10 @@ module Coquelicot
     def gc!
       files.each do |name|
         path = full_path(name)
+        unless File.exists?(path)
+          remove_from_links { |l| l.strip.end_with? " #{name}" }
+          next
+        end
         if File.lstat(path).size > 0
           file = StoredFile::open path
           file.empty! if file.expired?

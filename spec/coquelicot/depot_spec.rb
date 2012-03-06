@@ -237,6 +237,17 @@ module Coquelicot
           end
         end
       end
+      context 'when there is a link but no associated file' do
+        before(:each) do
+          depot.should_receive(:gen_random_file_name).
+            and_return('file', 'link')
+          add_file
+          File.unlink File.expand_path('file', @tmpdir)
+        end
+        it 'should remove the link' do
+          expect { depot.gc! }.to change { depot.size }.from(1).to(0)
+        end
+      end
     end
 
     describe '#size' do
