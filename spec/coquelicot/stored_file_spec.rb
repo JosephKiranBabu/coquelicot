@@ -108,6 +108,12 @@ module Coquelicot
     let(:reference) {
       YAML.load_file(File.expand_path('../../fixtures/LICENSE-secret-1.0/reference', __FILE__))
     }
+    let(:small_stored_file_path) {
+      File.expand_path('../../fixtures/small-secret-1.0/stored_file', __FILE__)
+    }
+    let(:small_reference) {
+      YAML.load_file(File.expand_path('../../fixtures/small-secret-1.0/reference', __FILE__))
+    }
 
     describe '.open' do
       context 'when the given file does not exist' do
@@ -318,13 +324,25 @@ module Coquelicot
 
     describe '#each' do
       context 'when the right pass has been given' do
-        let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
-        it 'should output the whole content with several yields' do
-          buf = ''
-          stored_file.each do |data|
-            buf << data
+        context 'for an usual file' do
+          let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
+          it 'should output the whole content with several yields' do
+            buf = ''
+            stored_file.each do |data|
+              buf << data
+            end
+            buf.should == reference['Content']
           end
-          buf.should == reference['Content']
+        end
+        context 'for a small file' do
+          let(:small_stored_file) { StoredFile.open(small_stored_file_path, 'secret') }
+          it 'should output the whole content' do
+            buf = ''
+            small_stored_file.each do |data|
+              buf << data
+            end
+            buf.should == small_reference['Content']
+          end
         end
       end
       context 'when no password has been given' do

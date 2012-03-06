@@ -95,10 +95,12 @@ module Coquelicot
       # output content
       yield @initial_content
       @initial_content = nil
-      until (buf = @file.read(BUFFER_LEN)).nil?
-        yield @cipher.update(buf)
+      unless @file.eof?
+        until (buf = @file.read(BUFFER_LEN)).nil?
+          yield @cipher.update(buf)
+        end
+        yield @cipher.final
       end
-      yield @cipher.final
       @fully_sent = true
     end
 
