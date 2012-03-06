@@ -59,7 +59,7 @@ module Coquelicot
     def file_exists?(link)
       lockfile.lock do
         name = read_link(link)
-        return !name.nil?
+        return name && File.exists?(full_path(name))
       end
     end
 

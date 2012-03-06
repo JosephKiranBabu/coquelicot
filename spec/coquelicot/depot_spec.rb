@@ -167,7 +167,13 @@ module Coquelicot
         it { should be_true }
       end
       context 'when there is a link with no matching file' do
-        it 'should not be true'
+        before(:each) do
+          depot.should_receive(:gen_random_file_name).
+            and_return('file', 'link')
+          add_file
+          File.unlink File.expand_path('file', @tmpdir)
+        end
+        it { should_not be_true }
       end
     end
 
