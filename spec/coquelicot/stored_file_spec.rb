@@ -22,7 +22,6 @@ require 'base64'
 
 module Coquelicot
   describe StoredFile do
-
     shared_context 'create new StoredFile' do
       around do |example|
         Dir.mktmpdir('coquelicot') do |tmpdir|
@@ -102,19 +101,6 @@ module Coquelicot
       end
     end
 
-    let(:stored_file_path) {
-      File.expand_path('../../fixtures/LICENSE-secret-1.0/stored_file', __FILE__)
-    }
-    let(:reference) {
-      YAML.load_file(File.expand_path('../../fixtures/LICENSE-secret-1.0/reference', __FILE__))
-    }
-    let(:small_stored_file_path) {
-      File.expand_path('../../fixtures/small-secret-1.0/stored_file', __FILE__)
-    }
-    let(:small_reference) {
-      YAML.load_file(File.expand_path('../../fixtures/small-secret-1.0/reference', __FILE__))
-    }
-
     describe '.open' do
       context 'when the given file does not exist' do
         it 'should raise an error' do
@@ -132,23 +118,29 @@ module Coquelicot
         end
       end
       context 'when giving no pass' do
-        subject { StoredFile.open(stored_file_path) }
-        it 'should read clear metadata' do
-          subject.meta['Coquelicot'] == '1.0'
+        for_all_file_versions do
+          subject { StoredFile.open(stored_file_path) }
+          it 'should read clear metadata' do
+            subject.meta['Coquelicot'] == reference['Coquelicot']
+          end
+          # XXX: maybe we want a way to know that we can't uncrypt the rest
         end
-        # XXX: maybe we want a way to know that we can't uncrypt the rest
       end
       context 'when giving a wrong pass' do
-        it 'should raise an error' do
-          expect {
-            StoredFile.open(stored_file_path, 'whatever')
-          }.to raise_error(BadKey)
+        for_all_file_versions do
+          it 'should raise an error' do
+            expect {
+              StoredFile.open(stored_file_path, 'whatever')
+            }.to raise_error(BadKey)
+          end
         end
       end
       context 'when giving the right pass' do
-        subject { StoredFile.open(stored_file_path, 'secret') }
-        it 'should read the metadata' do
-          subject.meta['Length'] == reference['Length']
+        for_all_file_versions do
+          subject { StoredFile.open(stored_file_path, 'secret') }
+          it 'should read the metadata' do
+            subject.meta['Length'] == reference['Length']
+          end
         end
       end
     end
@@ -230,22 +222,34 @@ module Coquelicot
     end
 
     describe '#created_at' do
-      include_context 'create new StoredFile'
-      it 'should return the creation time' do
-        Timecop.freeze(2012, 1, 1) do
-          create_stored_file
-          stored_file = StoredFile.open(@stored_file_path, @pass)
-          stored_file.created_at.should == Time.local(2012, 1, 1)
+      context 'with a new file' do
+        include_context 'create new StoredFile'
+        it 'should return the creation time' do
+          Timecop.freeze(2012, 1, 1) do
+            create_stored_file
+            stored_file = StoredFile.open(@stored_file_path, @pass)
+            stored_file.created_at.should == Time.local(2012, 1, 1)
+          end
+        end
+      end
+      for_all_file_versions do
+        it 'should return the creation time' do
+          stored_file.created_at.should == Time.at(reference['Created-at'])
         end
       end
     end
 
     describe '#expire_at' do
-      include_context 'create new StoredFile'
-      it 'should return the date of expiration' do
-        create_stored_file('Expire-at' => Time.local(2012, 1, 1))
-        stored_file = StoredFile.open(@stored_file_path, @pass)
-        stored_file.expire_at.should == Time.local(2012, 1, 1)
+      context 'with a new file' do
+        include_context 'create new StoredFile'
+        it 'should return the date of expiration' do
+          create_stored_file('Expire-at' => Time.local(2012, 1, 1))
+          stored_file = StoredFile.open(@stored_file_path, @pass)
+          stored_file.expire_at.should == Time.local(2012, 1, 1)
+        end
+      end
+      for_all_file_versions do
+        specify { stored_file.expire_at.should == Time.at(reference['Expire-at']) }
       end
     end
 
@@ -310,22 +314,23 @@ module Coquelicot
     end
 
     describe '#lockfile' do
-      let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
-      it 'should return a Lockfile' do
-        stored_file.lockfile.should be_a(Lockfile)
-      end
-      it 'should create a Lockfile using the path followed by ".lock"' do
-        Lockfile.should_receive(:new) do |path, options|
-          path.should == "#{stored_file_path}.lock"
+      for_all_file_versions do
+        let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
+        it 'should return a Lockfile' do
+          stored_file.lockfile.should be_a(Lockfile)
         end
-        stored_file.lockfile
+        it 'should create a Lockfile using the path followed by ".lock"' do
+          Lockfile.should_receive(:new) do |path, options|
+            path.should == "#{stored_file_path}.lock"
+          end
+          stored_file.lockfile
+        end
       end
     end
 
     describe '#each' do
       context 'when the right pass has been given' do
-        context 'for an usual file' do
-          let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
+        for_all_file_versions do
           it 'should output the whole content with several yields' do
             buf = ''
             stored_file.each do |data|
@@ -334,36 +339,30 @@ module Coquelicot
             buf.should == reference['Content']
           end
         end
-        context 'for a small file' do
-          let(:small_stored_file) { StoredFile.open(small_stored_file_path, 'secret') }
-          it 'should output the whole content' do
-            buf = ''
-            small_stored_file.each do |data|
-              buf << data
-            end
-            buf.should == small_reference['Content']
-          end
-        end
       end
       context 'when no password has been given' do
-        let(:stored_file) { StoredFile.open(stored_file_path) }
-        it 'should raise BadKey' do
-          expect {
-            stored_file.each
-          }.to raise_error(BadKey)
+        for_all_file_versions do
+          let(:stored_file) { StoredFile.open(stored_file_path) }
+          it 'should raise BadKey' do
+            expect {
+              stored_file.each
+            }.to raise_error(BadKey)
+          end
         end
       end
     end
 
     describe '#close' do
-      it 'should reset the cipher' do
-        salt = Base64::decode64(YAML.load_file(stored_file_path)['Salt'])
-        cipher = StoredFile.get_cipher('secret', salt, :decrypt)
-        StoredFile.stub(:get_cipher).and_return(cipher)
+      for_all_file_versions do
+        it 'should reset the cipher' do
+          salt = Base64::decode64(YAML.load_file(stored_file_path)['Salt'])
+          cipher = StoredFile.get_cipher('secret', salt, :decrypt)
+          StoredFile.stub(:get_cipher).and_return(cipher)
 
-        stored_file = StoredFile.open(stored_file_path, 'secret')
-        cipher.should_receive(:reset)
-        stored_file.close
+          stored_file = StoredFile.open(stored_file_path, 'secret')
+          cipher.should_receive(:reset)
+          stored_file.close
+        end
       end
       context 'when file is "one-time only"' do
         include_context 'create new StoredFile'

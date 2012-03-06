@@ -44,3 +44,30 @@ shared_context 'with Coquelicot::Application' do
     end
   end
 end
+
+module StoredFileHelpers
+  FIXTURES = { 'LICENSE-secret-1.0' => '1.0',
+               'small-secret-1.0' => 'small 1.0'
+             }
+
+  shared_context 'with a StoredFile fixture' do |name|
+    let(:stored_file_path) {
+      File.expand_path("../fixtures/#{name}/stored_file", __FILE__)
+    }
+    let(:stored_file) { Coquelicot::StoredFile.open(stored_file_path, 'secret') }
+    let(:reference) {
+      YAML.load_file(File.expand_path("../fixtures/#{name}/reference", __FILE__))
+    }
+  end
+
+  def for_all_file_versions(&block)
+    FIXTURES.each_pair do |name, description|
+      context "with a #{description} file" do
+        include_context 'with a StoredFile fixture', name
+        instance_eval &block
+      end
+    end
+  end
+end
+
+::RSpec.configure { |c| c.extend StoredFileHelpers }
