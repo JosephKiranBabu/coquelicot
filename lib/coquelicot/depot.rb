@@ -130,17 +130,14 @@ module Coquelicot
     end
 
     def read_link(src)
-      dst = nil
       File.open(links_path) do |f|
-        begin
-          line = f.readline rescue break
-          if line.start_with? "#{src} " then
-            dst = line.split[1]
-            break
-          end
-        end until line.empty?
-      end if File.exists?(links_path)
-      dst
+        until f.eof?
+          return $1 if f.readline =~ /^#{Regexp.escape(src)}\s+(.+)$/
+        end
+      end
+      nil
+    rescue Errno::ENOENT
+      nil
     end
 
     def files
