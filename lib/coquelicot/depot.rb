@@ -61,7 +61,8 @@ module Coquelicot
         if File.lstat(path).size > 0
           file = StoredFile::open path
           file.empty! if file.expired?
-        elsif Time.now - File.lstat(path).mtime > (Coquelicot.settings.gone_period * 60)
+        end
+        if Time.now - File.lstat(path).mtime > (Coquelicot.settings.gone_period * 60)
           remove_from_links { |l| l.strip.end_with? " #{name}" }
           File.unlink path
         end
