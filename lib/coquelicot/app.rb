@@ -82,11 +82,10 @@ module Coquelicot
       not_found if link.nil?
 
       link, pass = link.split '-' if link.include? '-'
-      begin
-        file = Coquelicot.depot.get_file(link, nil)
-      rescue Errno::ENOENT => ex
-        not_found
-      end
+      file = Coquelicot.depot.get_file(link, nil)
+
+      not_found if file.nil?
+
       @expire_at = file.expire_at
       @name = "#{link}"
       unless pass.nil?

@@ -149,7 +149,15 @@ module Coquelicot
         end
       end
       context 'when there is a link with no matching file' do
-        it 'should return nil'
+        before(:each) do
+          depot.should_receive(:gen_random_file_name).
+            and_return('file', 'link')
+          @link = add_file
+          File.unlink File.expand_path('file', @tmpdir)
+        end
+        it 'should return nil' do
+          depot.get_file(@link).should be_nil
+        end
       end
     end
 

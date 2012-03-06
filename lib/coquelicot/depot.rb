@@ -53,7 +53,11 @@ module Coquelicot
         name = read_link(link)
       end
       return nil if name.nil?
-      StoredFile::open(full_path(name), pass)
+      begin
+        StoredFile::open(full_path(name), pass)
+      rescue Errno::ENOENT
+        nil
+      end
     end
 
     def file_exists?(link)
