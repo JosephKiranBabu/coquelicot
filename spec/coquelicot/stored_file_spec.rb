@@ -307,13 +307,23 @@ module Coquelicot
     end
 
     describe '#each' do
-      let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
-      it 'should output the whole content with several yields' do
-        buf = ''
-        stored_file.each do |data|
-          buf << data
+      context 'when the right pass has been given' do
+        let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
+        it 'should output the whole content with several yields' do
+          buf = ''
+          stored_file.each do |data|
+            buf << data
+          end
+          buf.should == reference['Content']
         end
-        buf.should == reference['Content']
+      end
+      context 'when no password has been given' do
+        let(:stored_file) { StoredFile.open(stored_file_path) }
+        it 'should raise BadKey' do
+          expect {
+            stored_file.each
+          }.to raise_error(BadKey)
+        end
       end
     end
 

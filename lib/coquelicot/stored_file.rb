@@ -84,6 +84,8 @@ module Coquelicot
 
     # used by Rack streaming mechanism
     def each
+      raise BadKey.new if @cipher.nil?
+
       # output content
       yield @initial_content
       @initial_content = nil
