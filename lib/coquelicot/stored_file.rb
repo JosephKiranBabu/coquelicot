@@ -43,13 +43,13 @@ module Coquelicot
       @meta['One-time-only']
     end
 
-    def self.create(dest, pass, meta)
+    def self.create(path, pass, meta)
       salt = gen_salt
       clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
                      "Salt" => Base64.encode64(salt).strip,
                      "Expire-at" => meta.delete('Expire-at'),
                    }
-      File.open(dest, File::WRONLY|File::EXCL|File::CREAT) do |dest|
+      File.open(path, File::WRONLY|File::EXCL|File::CREAT) do |dest|
         dest.write(YAML.dump(clear_meta) + YAML_START)
 
         cipher = get_cipher(pass, salt, :encrypt)
@@ -61,6 +61,12 @@ module Coquelicot
         end
         dest.write(cipher.final)
       end
+    rescue Errno::EEXIST
+      # do not remove the file if it already existed before!
+      raise
+    rescue
+      FileUtils.rm path, :force => true
+      raise
     end
 
     def empty!

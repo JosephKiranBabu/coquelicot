@@ -209,7 +209,17 @@ module Coquelicot
         end
       end
       context 'when the given block raise an error' do
-        it 'should not create a file'
+        it 'should not create a file' do
+          path = File.expand_path('stored_file', @tmpdir)
+          begin
+            StoredFile.create(path, 'secret', {}) do
+              raise StandardError.new
+            end
+          rescue StandardError
+            # that was expected!
+          end
+          File.should_not exist(path)
+        end
       end
     end
 
