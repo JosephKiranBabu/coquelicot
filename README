@@ -271,42 +271,67 @@ Future
 Storage details
 ---------------
 
-Files are stored in the directory specified by the 'depot_path'
-setting. The storage format is designed in the very specific way that
-the content can be written without seeking or knowing its total length.
+Files are stored in the directory specified by the 'depot_path' setting.
+One file in Coquelicot is actually stored in two files: one for metadata and
+one for the file content.
+
+### Metadata file
 
 The format is the following:
 
     --- 
-    Coquelicot: "1.0"
+    Coquelicot: "2.0"
     Salt: <8 bytes stored as Base64>
     Expire-at: <expiration time in seconds since epoch>
     --- 
-    <encrypted data>
+    <encrypted metadata>
 
 Encryption is done using OpenSSL. Cipher is AES-256-CBC with key and IV
 created using the `pbkdf2_hmac_sha1()` implementation of PKCS5. The later
-is fed using the former *Salt* and the given passphrase.
+is fed using the former *Salt* and the given passphrase, using 2000
+iterations.
 
-Once decrypted, content has the following format:
+Once decrypted, the metadata have the following format:
 
     --- 
     Created-at: <upload time in seconds since epoch>
     Filename: "<original file name>"
     Content-Type: "<MIME type>"
-    Length: <file length is bytes>
+    Length: <content length is bytes>
     One-time-only: <true|false>
-    --- 
-    <original bytes forming the file content>
 
 Headers must be parseable using the YAML standard.
 
-File are truncated to zero length when they are "expired".
+### Content file
+
+The content file contains the stored file in encrypted form. Encryption is done
+with the same algorithm and keys as the encrypted metadata (see above).
+
+The file name of the content file is the same as the one for metada, with an
+added suffix of '.content'. For example, if the metadata file name is
+`mqeb4pfcru2ymq3e6se7`, the associated content file will be
+`mqeb4pfcru2ymq3e6se7.content`.
+
+### Expired files
+
+Both the content file and the metadata file are truncated to zero length when
+they are "expired".
+
+### URL mapping
 
 In order to map download URLs to file name, a simple text file ".links"
 is used. It contains a line for each file in the form:
 
-    <URL name> <file name>
+    <URL name> <metadata file name>
+
+### Changes history
+
+  version 2.0
+  :    Current version described above.
+
+  version 1.0
+  :    File content is in the same file as the metadata. Content is put in the
+       after the metadata and an extra "--- \n".
 
 Authors
 -------

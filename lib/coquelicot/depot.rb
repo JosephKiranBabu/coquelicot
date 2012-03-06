@@ -80,7 +80,8 @@ module Coquelicot
         end
         if Time.now - File.lstat(path).mtime > (Coquelicot.settings.gone_period * 60)
           remove_from_links { |l| l.strip.end_with? " #{name}" }
-          File.unlink path
+          FileUtils.rm "#{path}.content", :force => true
+          FileUtils.rm path
         end
       end
     end

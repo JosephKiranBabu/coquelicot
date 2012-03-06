@@ -49,16 +49,21 @@ module Coquelicot
                      "Salt" => Base64.encode64(salt).strip,
                      "Expire-at" => meta.delete('Expire-at'),
                    }
-      File.open(path, File::WRONLY|File::EXCL|File::CREAT) do |dest|
-        dest.write(YAML.dump(clear_meta) + YAML_START)
-
-        cipher = get_cipher(pass, salt, :encrypt)
-        dest.write(cipher.update(
-            YAML.dump(meta.merge("Created-at" => Time.now.to_i)) +
-            YAML_START))
-        while not (buf = yield).nil?
+      cipher = get_cipher(pass, salt, :encrypt)
+      length = 0
+      File.open("#{path}.content", File::WRONLY|File::EXCL|File::CREAT) do |dest|
+        until (buf = yield).nil?
+          length += buf.bytesize
           dest.write(cipher.update(buf))
         end
+        dest.write(cipher.final)
+      end
+      cipher.reset
+      File.open(path, File::WRONLY|File::EXCL|File::CREAT) do |dest|
+        dest.write(YAML.dump(clear_meta) + YAML_START)
+        dest.write(cipher.update(
+            YAML.dump(meta.merge('Created-at' => Time.now.to_i,
+                                 'Length' => length))))
         dest.write(cipher.final)
       end
     rescue Errno::EEXIST
@@ -66,22 +71,28 @@ module Coquelicot
       raise
     rescue
       FileUtils.rm path, :force => true
+      FileUtils.rm "#{path}.content", :force => true
       raise
     end
 
     def empty!
-      # zero the content before truncating
-      File.open(@path, 'r+') do |f|
-        f.seek 0, IO::SEEK_END
-        length = f.tell
-        f.rewind
-        while length > 0 do
-          write_len = [StoredFile::BUFFER_LEN, length].min
-          length -= f.write("\0" * write_len)
+      # XXX: probably this should be locked
+      paths = [@path]
+      paths.unshift "#{@path}.content" unless @features.include? :meta_include_content
+      paths.each do |path|
+        # zero the content before truncating
+        File.open(path, 'r+') do |f|
+          f.seek 0, IO::SEEK_END
+          length = f.tell
+          f.rewind
+          while length > 0 do
+            write_len = [StoredFile::BUFFER_LEN, length].min
+            length -= f.write("\0" * write_len)
+          end
+          f.fsync
         end
-        f.fsync
+        File.truncate(path, 0)
       end
-      File.truncate(@path, 0)
     end
 
     def lockfile
@@ -93,10 +104,16 @@ module Coquelicot
       raise BadKey.new if @cipher.nil?
 
       # output content
-      yield @initial_content
-      @initial_content = nil
-      unless @file.eof?
-        until (buf = @file.read(BUFFER_LEN)).nil?
+      if @features.include? :meta_include_content
+        yield @initial_content
+        @initial_content = nil
+        file = @file
+      else
+        file = File.open("#{path}.content")
+        @cipher.reset
+      end
+      unless file.eof?
+        until (buf = file.read(BUFFER_LEN)).nil?
           yield @cipher.update(buf)
         end
         yield @cipher.final
@@ -121,7 +138,10 @@ module Coquelicot
     YAML_START = "--- \n"
     CIPHER = 'AES-256-CBC'
     SALT_LEN = 8
-    COQUELICOT_VERSION = '1.0'
+    COQUELICOT_VERSION = '2.0'
+    COQUELICOT_FEATURES = {               '1.0' => [:meta_include_content],
+                             COQUELICOT_VERSION => [:current]
+                          }
 
     def self.get_cipher(pass, salt, method)
       cipher = OpenSSL::Cipher.new CIPHER
@@ -163,7 +183,8 @@ module Coquelicot
         meta += line
       end
       @meta = YAML.load(meta)
-      unless @meta["Coquelicot"] == COQUELICOT_VERSION
+      @features = COQUELICOT_FEATURES[@meta['Coquelicot']]
+      unless @features
         raise 'unknown file'
       end
       @expire_at = Time.at(@meta['Expire-at'])
@@ -175,6 +196,19 @@ module Coquelicot
     end
 
     def find_meta
+      return find_meta_in_meta_and_content if @features.include? :meta_include_content
+
+      begin
+        content = @cipher.update(@file.read)
+        content << @cipher.final
+        raise BadKey.new unless content.start_with? YAML_START
+        content
+      rescue OpenSSL::Cipher::CipherError
+        raise BadKey.new
+      end
+    end
+
+    def find_meta_in_meta_and_content
       yaml = ''
       buf = @file.read(BUFFER_LEN)
       begin

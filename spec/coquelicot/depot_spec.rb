@@ -231,9 +231,9 @@ module Coquelicot
           it 'should remove links' do
             expect { subject }.to change { depot.size }.from(1).to(0)
           end
-          it 'should remove the file' do
+          it 'should remove files' do
             subject
-            Dir.glob("#{@tmpdir}/*").should be_empty
+            Dir.glob("#{@tmpdir}/file*").should be_empty
           end
         end
       end

@@ -76,7 +76,7 @@ describe 'Coquelicot' do
 
       it "should not store the file in cleartext" do
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        files.should have(1).items
+        files.should have(2).items
         File.new(files[0]).read().should_not include('should not store an uploaded file')
       end
 
@@ -87,7 +87,7 @@ describe 'Coquelicot' do
       it "should store the file with a different name than the one in URL" do
         url_name = @url.split('/')[-1]
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        files.should have(1).items
+        files.should have(2).items
         url_name.should_not eql(File.basename(files[0]))
       end
 
@@ -201,7 +201,7 @@ describe 'Coquelicot' do
 
       it "should have zero'ed the file on the server" do
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        files.should have(1).items
+        files.should have(2).items
         File.lstat(files[0]).size.should eql(0)
       end
     end
@@ -266,12 +266,12 @@ describe 'Coquelicot' do
     it "should cleanup expired files" do
       url = upload :expire => 60, :file_key => 'test' # 1 hour
       url_name = url.split('/')[-1]
-      Dir.glob("#{Coquelicot.depot.path}/*").should have(1).items
+      Dir.glob("#{Coquelicot.depot.path}/*").should have(2).items
       # let's be the day after tomorrow
       Timecop.travel(Date.today + 2) do
         Coquelicot.depot.gc!
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        files.should have(1).items
+        files.should have(2).items
         File.lstat(files[0]).size.should eql(0)
         Coquelicot.depot.get_file(url_name).expired?.should be_true
       end

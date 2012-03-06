@@ -35,7 +35,7 @@ module Coquelicot
         @pass = 'secret'
         @src = __FILE__
         @src_length = File.stat(@src).size
-        meta = { 'Expire-at' => 0, 'Length' => @src_length }
+        meta = { 'Expire-at' => 0 }
         meta.merge!(extra_meta)
         content = File.read(@src)
         StoredFile.create(@stored_file_path, @pass, meta) do
@@ -147,7 +147,7 @@ module Coquelicot
 
     describe '.create' do
       include_context 'create new StoredFile'
-      context 'when the destination file already exists' do
+      context 'when the metadata file already exists' do
         it 'should raise an error' do
           @stored_file_path = File.expand_path('stored_file', @tmpdir)
           FileUtils.touch @stored_file_path
@@ -156,7 +156,16 @@ module Coquelicot
           }.to raise_error(Errno::EEXIST)
         end
       end
-      context 'in clear metadata' do
+      context 'when the content file already exists' do
+        it 'should raise an error' do
+          @stored_file_path = File.expand_path('stored_file', @tmpdir)
+          FileUtils.touch "#{@stored_file_path}.content"
+          expect {
+            create_stored_file
+          }.to raise_error(Errno::EEXIST)
+        end
+      end
+      context 'in metadata file, clear part' do
         let(:test_salt) { "\0" * StoredFile::SALT_LEN }
         let(:expire_at) { Time.now + 60 }
         before(:each) do
@@ -165,7 +174,7 @@ module Coquelicot
         end
         let(:clear_meta) { YAML.load_file(@stored_file_path) }
         it 'should write Coquelicot file version' do
-          clear_meta['Coquelicot'].should == '1.0'
+          clear_meta['Coquelicot'].should == '2.0'
         end
         it 'should generate a random Salt' do
           salt = Base64.decode64(clear_meta['Salt'])
@@ -175,18 +184,35 @@ module Coquelicot
           clear_meta['Expire-at'].should == expire_at
         end
       end
-      context 'in encrypted part' do
+      shared_context 'in encrypted part' do |path_regex|
         before(:each) do
-          @cipher = Array.new
-          class << @cipher
-            def update(str); self << str; end
+          class NullCipher
             attr_reader :content
-            def final; @content = self.join; end
+            def initialize; reset; end
+            def reset; @buf, @content = '', nil; end
+            def update(str); @buf << str ; str; end
+            def final; @content = @buf; ''; end
           end
-          StoredFile.stub(:get_cipher).and_return(@cipher)
+          cipher = NullCipher.new
+          StoredFile.stub(:get_cipher).and_return(cipher)
+          @content = StringIO.new
+          open = File.method(:open)
+          File.should_receive(:open).at_least(1).times do |path, *args, &block|
+            if path =~ path_regex
+              ret = block.call(@content)
+              @cipher = cipher.dup
+              ret
+            else
+              open.call(path, *args, &block)
+            end
+          end
         end
-        it 'should start with metadata as YAML block' do
+      end
+      context 'in metadata file, encrypted part' do
+        include_context 'in encrypted part', /stored_file$/
+        it 'should contain metadata as YAML block' do
           create_stored_file
+          @cipher.content.split(/^--- \n/, 3).length.should == 2
           YAML.load(@cipher.content).should be_a(Hash)
         end
         context 'in encrypted metadata' do
@@ -201,22 +227,31 @@ module Coquelicot
             @meta.should include('Created-at')
           end
         end
-        it 'should follow metadata with file content' do
+      end
+      context 'in encrypted content' do
+        include_context 'in encrypted part', /stored_file\.content$/
+        before(:each) do
           create_stored_file
-          @cipher.content.split(/^--- \n/, 3)[-1].should == File.read(@src)
+        end
+        it 'should contain the file content' do
+          @cipher.content.should == File.read(@src)
+        end
+        it 'should have the whole file for encrypted content' do
+          @content.string == File.read(@src)
         end
       end
       context 'when the given block raise an error' do
-        it 'should not create a file' do
-          path = File.expand_path('stored_file', @tmpdir)
-          begin
-            StoredFile.create(path, 'secret', {}) do
-              raise StandardError.new
+        it 'should not leave files' do
+          expect {
+            path = File.expand_path('stored_file', @tmpdir)
+            begin
+              StoredFile.create(path, 'secret', {}) do
+                raise StandardError.new
+              end
+            rescue StandardError
+              # that was expected!
             end
-          rescue StandardError
-            # that was expected!
-          end
-          File.should_not exist(path)
+          }.to_not change { Dir.entries(@tmpdir) }
         end
       end
     end
@@ -294,22 +329,30 @@ module Coquelicot
     end
 
     describe '#empty!' do
-      include_context 'create new StoredFile'
-      before(:each) do
-        create_stored_file
-        @stored_file = StoredFile.open(@stored_file_path, @pass)
-      end
-      it 'should overwrite the file content with \0' do
-        file = StringIO.new(File.read(@src))
-        File.should_receive(:open).
-            with(@stored_file_path, anything).
-            and_yield(file)
-        @stored_file.empty!
-        file.string.should == "\0" * File.stat(@src).size
-      end
-      it 'should truncate the file' do
-        @stored_file.empty!
-        File.stat(@stored_file_path).size.should == 0
+      for_all_file_versions do
+        include_context 'create new StoredFile'
+        before(:each) do
+          FileUtils.cp Dir.glob("#{stored_file_path}*"), @tmpdir
+          @stored_file_path = File.expand_path('stored_file', @tmpdir)
+          @stored_file = StoredFile.open(@stored_file_path, @pass)
+        end
+        it 'should overwrite file contents with \0' do
+          Dir.glob("#{@stored_file_path}*").each do |path|
+            File.should_receive(:open) do |*args, &block|
+              length = File.stat(path).size
+              file = StringIO.new(File.read(path))
+              block.call(file)
+              file.string.should == "\0" * length
+            end
+          end
+          @stored_file.empty!
+        end
+        it 'should truncate files' do
+          @stored_file.empty!
+          Dir.glob("#{@stored_file_path}*").each do |path|
+            File.stat(path).size.should == 0
+          end
+        end
       end
     end
 

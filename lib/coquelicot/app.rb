@@ -153,7 +153,6 @@ module Coquelicot
          { "Expire-at" => expire_at.to_i,
            "One-time-only" => one_time_only,
            "Filename" => params[:file][:filename],
-           "Length" => src.stat.size,
            "Content-Type" => params[:file][:type],
          }) { src.eof? ? nil : src.read }
       redirect to("/ready/#{link}-#{pass}") if params[:file_key].nil? or params[:file_key].empty?

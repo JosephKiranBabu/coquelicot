@@ -47,7 +47,8 @@ end
 
 module StoredFileHelpers
   FIXTURES = { 'LICENSE-secret-1.0' => '1.0',
-               'small-secret-1.0' => 'small 1.0'
+               'small-secret-1.0' => 'small 1.0',
+               'LICENSE-secret-2.0' => '2.0'
              }
 
   shared_context 'with a StoredFile fixture' do |name|

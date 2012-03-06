@@ -56,7 +56,6 @@ class JyrapheMigrator
               { "Expire-at" => expire_at,
                 "One-time-only" => one_time_only,
                 "Filename" => filename,
-                "Length" => length,
                 "Content-Type" => mime_type
               }) { src.eof? ? nil : src.read }
           end
