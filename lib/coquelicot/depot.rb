@@ -39,20 +39,28 @@ module Coquelicot
           next # let's try again
         end
       end
-      link = gen_random_file_name
-      add_link(link, dst)
-      link
+
+      # retry to add the link until a free name is generated
+      loop do
+        link = gen_random_file_name
+        return link if add_link(link, dst)
+      end
     end
 
     def get_file(link, pass=nil)
-      name = read_link(link)
+      name = nil
+      lockfile.lock do
+        name = read_link(link)
+      end
       return nil if name.nil?
       StoredFile::open(full_path(name), pass)
     end
 
     def file_exists?(link)
-      name = read_link(link)
-      return !name.nil?
+      lockfile.lock do
+        name = read_link(link)
+        return !name.nil?
+      end
     end
 
     def gc!
@@ -90,10 +98,13 @@ module Coquelicot
 
     def add_link(src, dst)
       lockfile.lock do
+        return false unless read_link(src).nil?
+
         File.open(links_path, 'a') do |f|
           f.write("#{src} #{dst}\n")
         end
       end
+      true
     end
 
     def remove_from_links(&block)
@@ -116,17 +127,15 @@ module Coquelicot
 
     def read_link(src)
       dst = nil
-      lockfile.lock do
-        File.open(links_path) do |f|
-          begin
-            line = f.readline rescue break
-            if line.start_with? "#{src} " then
-              dst = line.split[1]
-              break
-            end
-          end until line.empty?
-        end if File.exists?(links_path)
-      end
+      File.open(links_path) do |f|
+        begin
+          line = f.readline rescue break
+          if line.start_with? "#{src} " then
+            dst = line.split[1]
+            break
+          end
+        end until line.empty?
+      end if File.exists?(links_path)
       dst
     end
 

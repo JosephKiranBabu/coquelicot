@@ -110,7 +110,20 @@ module Coquelicot
           File.read(File.expand_path('.links', @tmpdir)).should =~ /^link\s+file$/
         end
         context 'when it generates a link name that is already taken' do
-          it 'should find another name'
+          before(:each) do
+            depot.stub(:gen_random_file_name).
+              and_return('file', 'link', 'another', 'link', 'another_link')
+            # add 'link' pointing to 'file'
+            add_file
+            # now it should add 'another_link' -> 'another'
+            @link = add_file
+          end
+          it 'should not overwrite the existing link' do
+            depot.size.should == 2
+          end
+          it 'should find another name' do
+            @link.should == 'another_link'
+          end
         end
       end
     end
