@@ -1,3 +1,7 @@
+*.gem
+.bundle
+Gemfile.lock
+pkg/*
 files/
 locale/
 tmp/restart.txt

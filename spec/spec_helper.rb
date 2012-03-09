@@ -18,6 +18,7 @@ ENV['RACK_ENV'] = 'test'
 
 require 'rubygems'
 require 'bundler'
+Bundler.require(:default, :development)
 Bundler.setup
 
 require 'rack/test'

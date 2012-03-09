@@ -1,5 +1,6 @@
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2010-2012 potager.org <jardiniers@potager.org>
+#           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,16 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'rubygems'
-require 'bundler'
-Bundler.require(:default, :development)
-Bundler.setup
-
-require 'bundler/gem_tasks'
-require 'haml/magic_translations/tasks'
-
-Haml::MagicTranslations::Tasks::UpdatePoFiles.new(:updatepo) do |t|
- t.text_domain = 'coquelicot'
- t.files = Dir.glob("views/**/*.{rb,haml}") << "lib/coquelicot/app.rb"
- t.app_version = 'coquelicot 1.0.0'
+module Coquelicot
+  VERSION = '0.9.dev'
 end
