@@ -26,6 +26,7 @@ require 'fast_gettext'
 require 'upr'
 require 'moneta/memory'
 require 'rainbows'
+require 'optparse'
 
 module Coquelicot
   class << self
@@ -35,6 +36,25 @@ module Coquelicot
     def depot
       @depot = Depot.new(settings.depot_path) if @depot.nil? || settings.depot_path != @depot.path
       @depot
+    end
+    # Called by +coquelicot-collect-garbage+ script.
+    def collect_garbage!(args = [])
+      parser ||= OptionParser.new do |opts|
+        opts.banner = "Usage: #{$0} [options]"
+
+        opts.separator ""
+        opts.separator "Options:"
+
+        opts.on "-c", "--config FILE", "read settings from FILE" do |file|
+          settings.config_file file
+        end
+        opts.on_tail("-h", "--help", "show this message") do
+          $stderr.puts opts.to_s
+          exit
+        end
+      end
+      parser.parse!(args)
+      depot.gc!
     end
   end
 

@@ -157,8 +157,8 @@ them according to your environment.
 
 To cleanup files automatically when they expired, coquelicot comes with
 a cleanup script, that does the garbage collection for you. The easiest
-way is to add `ext/coquelicot_gc.rb` as a cron job that runs every 5
-minutes (or so).
+way is to run `bin/coquelicot-collect-gabage` as a cron job that runs
+every 5 minutes (or so).
 
 ### Migrate from Jyraphe
 

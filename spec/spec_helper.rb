@@ -39,6 +39,7 @@ shared_context 'with Coquelicot::Application' do
   around(:each) do |example|
     path = Dir.mktmpdir('coquelicot')
     begin
+      @depot_path = path
       app.set :depot_path, path
       example.run
     ensure

@@ -16,6 +16,7 @@
 
 require 'spec_helper'
 require 'capybara/dsl'
+require 'tempfile'
 
 describe Coquelicot::Application do
   include Rack::Test::Methods
@@ -53,6 +54,66 @@ describe Coquelicot::Application do
       end
       it 'should get status 413 (Request entity too large)' do
         last_response.status.should == 413
+      end
+    end
+  end
+end
+
+describe Coquelicot, '.collect_garbage!' do
+  context 'when given no option' do
+    include_context 'with Coquelicot::Application'
+
+    it 'should use the default depot path' do
+      Coquelicot::Depot.should_receive(:new).
+        with(@depot_path).
+        and_return(double.as_null_object)
+      Coquelicot.collect_garbage!
+    end
+    it 'should call gc!' do
+      depot = double('Depot').as_null_object
+      depot.should_receive(:gc!)
+      Coquelicot::Depot.stub(:new).and_return(depot)
+      Coquelicot.collect_garbage!
+    end
+  end
+  context 'when using "-c <settings.yml>"' do
+    around(:each) do |example|
+      settings = Tempfile.new('coquelicot')
+      begin
+        settings.write(YAML.dump({ 'depot_path' => '/nonexistent' }))
+        settings.close
+        @settings_path = settings.path
+        example.run
+      ensure
+        settings.unlink
+      end
+    end
+    it 'should use the depot path defined in the given settings' do
+      Coquelicot::Depot.should_receive(:new).
+        with('/nonexistent').
+        and_return(double.as_null_object)
+      Coquelicot.collect_garbage! ['-c', @settings_path]
+    end
+    it 'should call gc!' do
+      depot = double('Depot').as_null_object
+      depot.should_receive(:gc!)
+      Coquelicot::Depot.stub(:new).and_return(depot)
+      Coquelicot.collect_garbage! ['-c', @settings_path]
+    end
+  end
+  context 'when using "-h"' do
+    it 'should display help and exit' do
+      stderr = capture(:stderr) do
+        expect { Coquelicot.collect_garbage! ['-h'] }.to raise_error(SystemExit)
+      end
+      stderr.should =~ /Usage:/
+    end
+    it 'should not call gc!' do
+      depot = double('Depot').as_null_object
+      depot.should_not_receive(:gc!)
+      Coquelicot::Depot.stub(:new).and_return(depot)
+      capture(:stderr) do
+        expect { Coquelicot.collect_garbage! ['-h'] }.to raise_error(SystemExit)
       end
     end
   end

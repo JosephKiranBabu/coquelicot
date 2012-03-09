@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/usr/bin/env ruby
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2012 potager.org <jardiniers@potager.org>
 #           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
@@ -16,8 +16,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-$: << File.expand_path(File.join(File.dirname(__FILE__),'..','lib')) << File.expand_path(File.join(File.dirname(__FILE__),'..'))
-require 'bundler/setup'
+require 'rubygems'
+require 'bundler'
+Bundler.setup
+
 require 'coquelicot'
 
-Coquelicot::Depot.new(Coquelicot.settings.depot_path).gc!
+Coquelicot.collect_garbage!(ARGV)
