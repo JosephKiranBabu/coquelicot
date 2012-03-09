@@ -166,7 +166,7 @@ module Coquelicot
       end
 
       if YAML_START != (buf = @file.read(YAML_START.length)) then
-        raise "unknown file, read #{buf.inspect}"
+        raise ArgumentError.new("unknown file, read #{buf.inspect}")
       end
       parse_clear_meta
       return if pass.nil?
@@ -185,7 +185,7 @@ module Coquelicot
       @meta = YAML.load(meta)
       @features = COQUELICOT_FEATURES[@meta['Coquelicot']]
       unless @features
-        raise 'unknown file'
+        raise ArgumentError.new('unknown file')
       end
       @expire_at = Time.at(@meta['Expire-at'])
     end

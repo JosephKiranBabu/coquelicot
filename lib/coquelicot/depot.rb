@@ -75,7 +75,12 @@ module Coquelicot
           next
         end
         if File.lstat(path).size > 0
-          file = StoredFile::open path
+          begin
+            file = StoredFile::open path
+          rescue ArgumentError
+            $stderr.puts "W: #{path} is not a Coquelicot file. Skipping."
+            next
+          end
           file.empty! if file.expired?
         end
         if Time.now - File.lstat(path).mtime > (Coquelicot.settings.gone_period * 60)

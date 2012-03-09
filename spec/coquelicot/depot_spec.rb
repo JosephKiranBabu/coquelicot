@@ -248,6 +248,28 @@ module Coquelicot
           expect { depot.gc! }.to change { depot.size }.from(1).to(0)
         end
       end
+      context 'when there is a corrupted file' do
+        before(:each) do
+          depot.should_receive(:gen_random_file_name).
+            and_return('file', 'link')
+          add_file
+          @file_path = File.expand_path('file', @tmpdir)
+          File.open(@file_path, 'w') do |f|
+            f.write('gibberish')
+          end
+        end
+        it 'should print a warning on stderr' do
+          stderr = capture(:stderr) do
+            depot.gc!
+          end
+          stderr.should =~ /^W: #{@file_path} is not a Coquelicot file\. Skipping\./
+        end
+        it 'should not remove files' do
+          capture(:stderr) do
+            expect { depot.gc! }.to_not change { Dir.entries(@tmpdir) }
+          end
+        end
+      end
     end
 
     describe '#size' do

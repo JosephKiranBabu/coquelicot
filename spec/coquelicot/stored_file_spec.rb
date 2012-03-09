@@ -113,8 +113,7 @@ module Coquelicot
         it 'should raise an error' do
           expect {
             StoredFile.open(__FILE__)
-          }.to raise_error
-          # XXX: make this an ArgumentError
+          }.to raise_error(ArgumentError)
         end
       end
       context 'when giving no pass' do
