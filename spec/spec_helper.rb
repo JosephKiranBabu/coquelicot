@@ -22,6 +22,7 @@ Bundler.setup
 
 require 'rack/test'
 require 'rspec'
+require 'stringio'
 
 require 'coquelicot'
 
@@ -71,4 +72,23 @@ module StoredFileHelpers
   end
 end
 
-::RSpec.configure { |c| c.extend StoredFileHelpers }
+module CoquelicotSpecHelpers
+  # written by cash on
+  # http://rails-bestpractices.com/questions/1-test-stdin-stdout-in-rspec
+  def capture(*streams)
+    streams.map! { |stream| stream.to_s }
+    begin
+      result = StringIO.new
+      streams.each { |stream| eval "$#{stream} = result" }
+      yield
+    ensure
+      streams.each { |stream| eval("$#{stream} = #{stream.upcase}") }
+    end
+    result.string
+  end
+end
+
+::RSpec.configure do |c|
+  c.extend StoredFileHelpers
+  c.include CoquelicotSpecHelpers
+end
