@@ -25,9 +25,7 @@ UPLOAD_PASSWORD = 'secret'
 describe 'Coquelicot' do
   include Rack::Test::Methods
 
-  def app
-    Coquelicot::Application
-  end
+  include_context 'with Coquelicot::Application'
 
   def upload(opts={})
     opts = { :file => Rack::Test::UploadedFile.new(__FILE__, 'text/x-script.ruby'),
@@ -40,20 +38,6 @@ describe 'Coquelicot' do
     doc = Hpricot(last_response.body)
     return (doc/'a').collect { |a| a.attributes['href'] }.
              select { |h| h.start_with? "http://#{last_request.host}/" }[0]
-  end
-
-  before do
-    app.set :environment, :test
-  end
-
-  around(:each) do |example|
-    path = Dir.mktmpdir('coquelicot')
-    begin
-      app.set :depot_path, path
-      example.run
-    ensure
-      FileUtils.remove_entry_secure Coquelicot.depot.path
-    end
   end
 
   it "should offer an upload form" do

@@ -24,3 +24,23 @@ require 'rack/test'
 require 'rspec'
 
 require 'coquelicot'
+
+shared_context 'with Coquelicot::Application' do
+  def app
+    Coquelicot::Application
+  end
+
+  before do
+    app.set :environment, :test
+  end
+
+  around(:each) do |example|
+    path = Dir.mktmpdir('coquelicot')
+    begin
+      app.set :depot_path, path
+      example.run
+    ensure
+      FileUtils.remove_entry_secure path
+    end
+  end
+end
