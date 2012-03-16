@@ -105,6 +105,11 @@ describe 'Coquelicot' do
         url_name.split('-').should have(2).items
       end
 
+      it "should say 'not found' is password in URL is wrong" do
+        get "#{@url}wrong"
+        last_response.status.should == 404
+      end
+
       it "should download when using extra Base32 characters in URL" do
         splitted = @url.split('/')
         name = splitted[-1].upcase.gsub(/O/, '0').gsub(/L/, '1')

@@ -189,7 +189,11 @@ module Coquelicot
 
       link = Coquelicot.remap_base32_extra_characters(link)
       pass = Coquelicot.remap_base32_extra_characters(pass)
-      not_found unless send_link(link, pass)
+      begin
+        not_found unless send_link(link, pass)
+      rescue Coquelicot::BadKey
+        not_found
+      end
     end
 
     get '/:link' do |link|
