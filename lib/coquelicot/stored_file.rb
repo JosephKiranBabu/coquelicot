@@ -40,7 +40,7 @@ module Coquelicot
     end
 
     def one_time_only?
-      @meta['One-time-only'] == 'true'
+      @meta['One-time-only']
     end
 
     def self.create(dest, pass, meta)
@@ -111,7 +111,7 @@ module Coquelicot
     YAML_START = "--- \n"
     CIPHER = 'AES-256-CBC'
     SALT_LEN = 8
-    COQUELICOT_VERSION = "1.0"
+    COQUELICOT_VERSION = '1.0'
 
     def self.get_cipher(pass, salt, method)
       cipher = OpenSSL::Cipher.new CIPHER
@@ -140,8 +140,11 @@ module Coquelicot
       end
       parse_clear_meta
       return if pass.nil?
+
       init_decrypt_cipher pass
-      parse_meta
+
+      yaml = find_meta
+      @meta.merge! YAML.load(yaml)
     end
 
     def parse_clear_meta
@@ -150,8 +153,8 @@ module Coquelicot
         meta += line
       end
       @meta = YAML.load(meta)
-      if @meta["Coquelicot"].nil? or @meta["Coquelicot"] != COQUELICOT_VERSION then
-        raise "unknown file"
+      unless @meta["Coquelicot"] == COQUELICOT_VERSION
+        raise 'unknown file'
       end
       @expire_at = Time.at(@meta['Expire-at'])
     end
@@ -161,27 +164,27 @@ module Coquelicot
       @cipher = StoredFile::get_cipher(pass, salt, :decrypt)
     end
 
-    def parse_meta
+    def find_meta
       yaml = ''
       buf = @file.read(BUFFER_LEN)
       content = @cipher.update(buf)
-      raise BadKey unless content.start_with? YAML_START
+      raise BadKey.new unless content.start_with? YAML_START
       yaml << YAML_START
       block = content.split(YAML_START, 3)
       yaml << block[1]
       if block.length == 3 then
         @initial_content = block[2]
-        @meta.merge! YAML.load(yaml)
-        return
+        return yaml
       end
 
       until (buf = @file.read(BUFFER_LEN)).nil? do
-        block = @cipher.update(buf).split(YAML_START, 3)
+        content = @cipher.update(buf)
+        block = content.split(YAML_START, 3)
         yaml << block[0]
         break if block.length == 2
       end
       @initial_content = block[1]
-      @meta.merge! YAML.load(yaml)
+      yaml
     end
   end
 end
