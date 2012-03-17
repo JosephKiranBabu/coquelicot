@@ -25,16 +25,14 @@ module Coquelicot
       @path = path
     end
 
-    def add_file(src, pass, options)
+    def add_file(pass, options, &block)
       dst = nil
       lockfile.lock do
         dst = gen_random_file_name
         File.open(full_path(dst), 'w').close
       end
       begin
-        File.open(full_path(dst), 'w') do |dest|
-          StoredFile.create(src, pass, options) { |data| dest.write data }
-        end
+        StoredFile.create(full_path(dst), pass, options, &block)
       rescue
         File.unlink full_path(dst)
         raise

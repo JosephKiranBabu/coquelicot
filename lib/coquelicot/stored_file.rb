@@ -43,22 +43,24 @@ module Coquelicot
       @meta['One-time-only'] == 'true'
     end
 
-    def self.create(src, pass, meta)
+    def self.create(dest, pass, meta)
       salt = gen_salt
       clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
                      "Salt" => Base64.encode64(salt).strip,
                      "Expire-at" => meta.delete('Expire-at'),
                    }
-      yield YAML.dump(clear_meta) + YAML_START
+      File.open(dest, 'w') do |dest|
+        dest.write(YAML.dump(clear_meta) + YAML_START)
 
-      cipher = get_cipher(pass, salt, :encrypt)
-      yield cipher.update(YAML.dump(meta.merge("Created-at" => Time.now.to_i)) +
-                          YAML_START)
-      src.rewind
-      while not (buf = src.read(BUFFER_LEN)).nil?
-        yield cipher.update(buf)
+        cipher = get_cipher(pass, salt, :encrypt)
+        dest.write(cipher.update(
+            YAML.dump(meta.merge("Created-at" => Time.now.to_i)) +
+            YAML_START))
+        while not (buf = yield).nil?
+          dest.write(cipher.update(buf))
+        end
+        dest.write(cipher.final)
       end
-      yield cipher.final
     end
 
     def empty!

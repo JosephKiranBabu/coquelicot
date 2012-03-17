@@ -52,13 +52,13 @@ class JyrapheMigrator
         begin
           coquelicot_link = File.open("#{@var}/files/#{filename}") do |src|
             Coquelicot::depot.add_file(
-              src, file_key || random_pass,
+              file_key || random_pass,
               { "Expire-at" => expire_at,
                 "One-time-only" => one_time_only,
                 "Filename" => filename,
                 "Length" => length,
                 "Content-Type" => mime_type
-              })
+              }) { src.eof? ? nil : src.read }
           end
           @redirects[link_name] = "#{coquelicot_link}"
           @redirects[link_name] << "-#{random_pass}" if file_key.empty?

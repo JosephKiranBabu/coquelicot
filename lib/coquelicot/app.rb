@@ -143,14 +143,15 @@ module Coquelicot
         pass = params[:file_key]
       end
       src = params[:file][:tempfile]
+      src.rewind
       link = Coquelicot.depot.add_file(
-         src, pass,
+         pass,
          { "Expire-at" => expire_at.to_i,
            "One-time-only" => one_time_only,
            "Filename" => params[:file][:filename],
            "Length" => src.stat.size,
            "Content-Type" => params[:file][:type],
-         })
+         }) { src.eof? ? nil : src.read }
       redirect to("/ready/#{link}-#{pass}") if params[:file_key].nil? or params[:file_key].empty?
       redirect to("/ready/#{link}")
     end
