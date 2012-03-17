@@ -177,9 +177,13 @@ module Coquelicot
     def find_meta
       yaml = ''
       buf = @file.read(BUFFER_LEN)
-      content = @cipher.update(buf)
-      content << @cipher.final if @file.eof?
-      raise BadKey.new unless content.start_with? YAML_START
+      begin
+        content = @cipher.update(buf)
+        content << @cipher.final if @file.eof?
+        raise BadKey.new unless content.start_with? YAML_START
+      rescue OpenSSL::Cipher::CipherError
+        raise BadKey.new
+      end
       yaml << YAML_START
       block = content.split(YAML_START, 3)
       yaml << block[1]
