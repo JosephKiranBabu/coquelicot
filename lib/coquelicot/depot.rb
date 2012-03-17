@@ -68,6 +68,10 @@ module Coquelicot
       end
     end
 
+    def size
+      files.count
+    end
+
   private
 
     LOCKFILE_OPTIONS = { :timeout => 60,
