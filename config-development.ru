@@ -27,6 +27,7 @@ app = Coquelicot::Application
 
 app.set :environment, :development
 app.set :raise_errors, true
+app.set :logging, true
 app.disable :run
 
 run app
