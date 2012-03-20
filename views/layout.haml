@@ -41,6 +41,10 @@
                  };
     %script{ :type => 'text/javascript', :src => 'javascripts/coquelicot.js' }
   %body
+    #header
+      - unless uri.end_with? '/README'
+        - Coquelicot::Application::AVAILABLE_LOCALES.each do |locale|
+          %a{ :href => uri + "?lang=#{locale}" }= locale
     #container
       = yield
     #footer

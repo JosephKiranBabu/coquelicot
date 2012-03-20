@@ -27,13 +27,70 @@ describe Coquelicot::Application do
 
   include_context 'with Coquelicot::Application'
 
+  def upload_password
+    'secret'
+  end
+
+  before(:each) do
+    app.set :authentication_method, :name => :simplepass,
+                                    :upload_password => Digest::SHA1.hexdigest(upload_password)
+  end
+
   describe 'get /' do
-    before do
-      visit '/'
+    context 'using the default language' do
+      before do
+        visit '/'
+      end
+      it 'should display the maximum file size' do
+        find(:xpath, '//label[@for="file"]/following::*[@class="note"]').
+            should have_content("Max. size: #{Coquelicot.settings.max_file_size.as_size}")
+      end
+      context 'when I explicitly request french' do
+        before do
+          click_link 'fr'
+        end
+        it 'should display a page in french' do
+          page.should have_content('Partager')
+        end
+      end
     end
-    it 'should display the maximum file size' do
-      find(:xpath, '//label[@for="file"]/following::*[@class="note"]').
-          should have_content("Max. size: #{Coquelicot.settings.max_file_size.as_size}")
+    context 'when my browser prefers french' do
+      around do |example|
+        begin
+          page.driver.header 'Accept-Language',  'fr-fr;q=1.0, en-gb;q=0.8, en;q=0.7'
+          example.run
+        ensure
+          page.driver.header 'Accept-Language', nil
+        end
+      end
+      context 'when I do nothing special' do
+        before do
+          visit '/'
+        end
+        it 'should display a page in french' do
+          page.should have_content('Partager')
+        end
+      end
+      context 'when I explicitly request german' do
+        before do
+          click_link 'de'
+        end
+        it 'should display a page in german' do
+          page.should have_content('Verteile')
+        end
+	# will fail without ordered Hash, see:
+	# <https://github.com/jnicklas/capybara/issues/670>
+        context 'after an upload', :if => RUBY_VERSION >= '1.9' do
+          before do
+            fill_in 'upload_password', :with => upload_password
+            attach_file 'file', __FILE__
+            click_button 'submit'
+          end
+          it 'should display a page in german' do
+            page.should have_content('Verteile eine weitere Datei')
+          end
+        end
+      end
     end
   end
 

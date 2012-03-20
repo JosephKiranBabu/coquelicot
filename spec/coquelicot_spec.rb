@@ -22,8 +22,6 @@ require 'hpricot'
 require 'tmpdir'
 require 'active_support'
 
-UPLOAD_PASSWORD = 'secret'
-
 # The specs in this file are written like what should have been Cucumber
 # features and without much knowledge of best practices with RSpec. Most of
 # them should be improved, rewritten and moved to `spec/coquelicot/app_spec.rb`.
@@ -36,10 +34,14 @@ describe 'Coquelicot' do
 
   include_context 'with Coquelicot::Application'
 
+  def upload_password
+    'secret'
+  end
+
   def upload(opts={})
     # We need the request to be in the right order
     params = ActiveSupport::OrderedHash.new
-    params[:upload_password] = UPLOAD_PASSWORD
+    params[:upload_password] = upload_password
     params[:expire] = 5
     params[:one_time] = ''
     params[:file_key] = ''
@@ -54,7 +56,7 @@ describe 'Coquelicot' do
     follow_redirect!
     last_response.should be_ok
     doc = Hpricot(last_response.body)
-    return (doc/'a').collect { |a| a.attributes['href'] }.
+    return (doc/'.url a').collect { |a| a.attributes['href'] }.
              select { |h| h.start_with? "http://#{last_request.host}/" }[0]
   end
 
@@ -92,14 +94,14 @@ PART
       get '/', :lang => 'fr'
       last_response.should be_ok
       doc = Hpricot(last_response.body)
-      (doc/"input.submit").attr('value').should == 'Partager !'
+      (doc/"#submit").attr('value').should == 'Partager !'
     end
   end
 
   context "when using 'simpleauth' authentication mechanism" do
     before(:each) do
       app.set :authentication_method, :name => :simplepass,
-                                      :upload_password => Digest::SHA1.hexdigest(UPLOAD_PASSWORD)
+                                      :upload_password => Digest::SHA1.hexdigest(upload_password)
     end
 
     context "after a successful upload" do
@@ -197,7 +199,7 @@ PART
       context "when sending the right password" do
         before do
           request "/authenticate", :method => "POST", :xhr => true,
-                                   :params => { :upload_password => UPLOAD_PASSWORD }
+                                   :params => { :upload_password => upload_password }
         end
         subject { last_response }
         it { should be_ok }

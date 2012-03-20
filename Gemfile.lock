@@ -112,5 +112,5 @@ DEPENDENCIES
   gettext
   hpricot
   rack-test
-  rspec
+  rspec (~> 2.6)
   timecop

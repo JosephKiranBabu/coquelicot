@@ -69,6 +69,12 @@ module Coquelicot
     register Coquelicot::Auth::Extension
     helpers Coquelicot::Helpers
 
+    enable :sessions
+    # When sessions are enabled, Rack::Protection (added by Sinatra)
+    # will choke on our lack of rewind method on our input. Let's
+    # deactivate the protections which needs to parse parameters, then.
+    set :protection, :except => [:session_hijacking, :remote_token]
+
     set :root, Proc.new { app_file && File.expand_path('../../..', app_file) }
     set :depot_path, Proc.new { File.join(root, 'files') }
     set :max_file_size, 5 * 1024 * 1024 # 5 MiB
@@ -92,12 +98,21 @@ module Coquelicot
     # limit requests other than upload to an input body of 5 kiB max
     use Rainbows::MaxBody, 5 * 1024
 
+    AVAILABLE_LOCALES = %w(en fr de)
+
     FastGettext.add_text_domain 'coquelicot', :path => 'po', :type => 'po'
-    FastGettext.available_locales = [ 'en', 'fr', 'de' ]
+    FastGettext.available_locales = AVAILABLE_LOCALES
     Haml::MagicTranslations.enable(:fast_gettext)
     before do
       FastGettext.text_domain = 'coquelicot'
-      FastGettext.locale = params[:lang] || request.env['HTTP_ACCEPT_LANGUAGE'] || 'en'
+      if params[:lang]
+        locale = session[:lang] = params[:lang]
+      elsif session[:lang]
+        locale = session[:lang]
+      else
+        locale = request.env['HTTP_ACCEPT_LANGUAGE'] || 'en'
+      end
+      FastGettext.locale = locale
     end
 
     not_found do
