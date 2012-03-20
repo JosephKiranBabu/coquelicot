@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2010-2012 potager.org <jardiniers@potager.org>
 #
@@ -44,6 +45,8 @@ module Coquelicot
     end
 
     def self.create(path, pass, meta)
+      YAML::ENGINE.yamler = 'syck' if YAML.const_defined? :ENGINE
+
       salt = gen_salt
       clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
                      "Salt" => Base64.encode64(salt).strip,
@@ -136,6 +139,7 @@ module Coquelicot
   private
 
     YAML_START = "--- \n"
+    YAML_START_RE = /^---( |\n)/
     CIPHER = 'AES-256-CBC'
     SALT_LEN = 8
     COQUELICOT_VERSION = '2.0'
@@ -158,6 +162,8 @@ module Coquelicot
     end
 
     def initialize(path, pass)
+      YAML::ENGINE.yamler = 'syck' if YAML.const_defined? :ENGINE
+
       @path = path
       @file = File.open(@path)
       if @file.lstat.size == 0 then
@@ -165,7 +171,7 @@ module Coquelicot
         return
       end
 
-      if YAML_START != (buf = @file.read(YAML_START.length)) then
+      unless YAML_START_RE =~ (buf = @file.readline)
         raise ArgumentError.new("unknown file, read #{buf.inspect}")
       end
       parse_clear_meta
@@ -179,7 +185,7 @@ module Coquelicot
 
     def parse_clear_meta
       meta = ''
-      until YAML_START == (line = @file.readline) do
+      until YAML_START_RE =~ (line = @file.readline) do
         meta += line
       end
       @meta = YAML.load(meta)
@@ -187,7 +193,11 @@ module Coquelicot
       unless @features
         raise ArgumentError.new('unknown file')
       end
-      @expire_at = Time.at(@meta['Expire-at'])
+      if @meta['Expire-at'].respond_to? :to_time
+        @expire_at = @meta['Expire-at'].to_time
+      else
+        @expire_at = Time.at(@meta['Expire-at'])
+      end
     end
 
     def init_decrypt_cipher(pass)
@@ -201,7 +211,7 @@ module Coquelicot
       begin
         content = @cipher.update(@file.read)
         content << @cipher.final
-        raise BadKey.new unless content.start_with? YAML_START
+        raise BadKey.new unless content =~ YAML_START_RE
         content
       rescue OpenSSL::Cipher::CipherError
         raise BadKey.new
@@ -214,7 +224,7 @@ module Coquelicot
       begin
         content = @cipher.update(buf)
         content << @cipher.final if @file.eof?
-        raise BadKey.new unless content.start_with? YAML_START
+        raise BadKey.new unless content =~ YAML_START_RE
       rescue OpenSSL::Cipher::CipherError
         raise BadKey.new
       end

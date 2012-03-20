@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2012 potager.org <jardiniers@potager.org>
 #
@@ -292,7 +293,7 @@ module Coquelicot::Rack
                 data << buf until (buf = reader.call).nil?
               end
             end
-            data.should == File.read(file)
+            data.should == slurp(file)
           end
         end
       end
@@ -329,7 +330,7 @@ module Coquelicot::Rack
               end
               p.field(:field3)
             end
-            data.should == File.read(file)
+            data.should == slurp(file)
           end
         end
       end
@@ -374,8 +375,8 @@ module Coquelicot::Rack
                 data2 << buf until (buf = reader.call).nil?
               end
             end
-            data1.should == File.read(file1)
-            data2.should == File.read(file2)
+            data1.should == slurp(file1)
+            data2.should == slurp(file2)
           end
         end
       end

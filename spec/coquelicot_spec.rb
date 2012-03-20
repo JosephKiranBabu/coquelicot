@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2010-2012 potager.org <jardiniers@potager.org>
 #
@@ -66,7 +67,7 @@ Content-Disposition: form-data; name="#{name}"; filename="#{Rack::Utils.escape(v
 Content-Type: #{value.content_type}\r
 Content-Length: #{::File.stat(value.path).size}\r
 \r
-#{File.open(value.path).read}\r
+#{slurp(value.path)}\r
 PART
       else
         <<-PART
@@ -149,7 +150,7 @@ PART
         it "should be the same file as the uploaded" do
           last_response.should be_ok
           last_response['Content-Type'].should eql('text/x-script.ruby')
-          last_response.body.should eql(File.new(__FILE__).read)
+          last_response.body.should == slurp(__FILE__)
         end
 
         it "should have sent the right Content-Length" do
@@ -228,7 +229,7 @@ PART
       it "should be the same as the uploaded file" do
         last_response.should be_ok
         last_response['Content-Type'].should eql('text/x-script.ruby')
-        last_response.body.should eql(File.new(__FILE__).read)
+        last_response.body.should == slurp(__FILE__)
       end
 
       it "should not be downloadable any more" do
@@ -266,7 +267,7 @@ PART
           post @url, :file_key => 'somethingSecret'
           last_response.should be_ok
           last_response['Content-Type'].should eql('text/x-script.ruby')
-          last_response.body.should eql(File.new(__FILE__).read)
+          last_response.body.should == slurp(__FILE__)
         end
       end
 

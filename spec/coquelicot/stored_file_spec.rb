@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2010-2012 potager.org <jardiniers@potager.org>
 #
@@ -37,7 +38,7 @@ module Coquelicot
         @src_length = File.stat(@src).size
         meta = { 'Expire-at' => 0 }
         meta.merge!(extra_meta)
-        content = File.read(@src)
+        content = slurp(@src)
         StoredFile.create(@stored_file_path, @pass, meta) do
           buf, content = content, nil
           buf
@@ -166,7 +167,7 @@ module Coquelicot
       end
       context 'in metadata file, clear part' do
         let(:test_salt) { "\0" * StoredFile::SALT_LEN }
-        let(:expire_at) { Time.now + 60 }
+        let(:expire_at) { Time.at(Time.now.to_i + 60) } # we need to round it at second-level
         before(:each) do
           StoredFile.stub(:gen_salt).and_return(test_salt)
           create_stored_file('Expire-at' => expire_at)
@@ -233,10 +234,10 @@ module Coquelicot
           create_stored_file
         end
         it 'should contain the file content' do
-          @cipher.content.should == File.read(@src)
+          @cipher.content.should == slurp(@src)
         end
         it 'should have the whole file for encrypted content' do
-          @content.string == File.read(@src)
+          @content.string == slurp(@src)
         end
       end
       context 'when the given block raise an error' do
@@ -339,7 +340,7 @@ module Coquelicot
           Dir.glob("#{@stored_file_path}*").each do |path|
             File.should_receive(:open) do |*args, &block|
               length = File.stat(path).size
-              file = StringIO.new(File.read(path))
+              file = StringIO.new(slurp(path))
               block.call(file)
               file.string.should == "\0" * length
             end
@@ -425,7 +426,7 @@ module Coquelicot
             another = StoredFile.open(@stored_file_path, @pass)
             buf = ''
             another.each { |data| buf << data }
-            buf.should == File.read(@src)
+            buf.should == slurp(@src)
           end
         end
         context 'when the file has been fully sent' do

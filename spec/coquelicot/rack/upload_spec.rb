@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2012 potager.org <jardiniers@potager.org>
 #
@@ -132,7 +133,7 @@ MULTIPART_DATA
             filename = File.basename(file)
             Coquelicot.depot.should_receive(:add_file).
                 with(file_key, hash_including('Filename' => filename)).
-                and_yield(file_content).and_yield(nil)
+                and_yield.and_yield
             subject
           end
           it 'should increment the depot size' do

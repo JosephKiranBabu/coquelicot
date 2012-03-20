@@ -58,7 +58,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sass'
   s.add_runtime_dependency 'maruku'
   s.add_runtime_dependency 'fast_gettext'
-  s.add_runtime_dependency 'lockfile'
+  s.add_runtime_dependency 'lockfile', '~>2.0'
   s.add_runtime_dependency 'json'
   s.add_runtime_dependency 'rainbows'
   s.add_runtime_dependency 'multipart-parser'

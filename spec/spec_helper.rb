@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2010-2012 potager.org <jardiniers@potager.org>
 #
@@ -87,6 +88,16 @@ module CoquelicotSpecHelpers
       streams.each { |stream| eval("$#{stream} = #{stream.upcase}") }
     end
     result.string
+  end
+
+  if defined? Encoding
+    def slurp(path)
+      File.read(path, :encoding => 'binary')
+    end
+  else
+    def slurp(path)
+      File.read(path)
+    end
   end
 end
 
