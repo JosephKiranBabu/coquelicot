@@ -90,7 +90,7 @@ msgstr "Disponible pendant :"
 
 #: views/index.haml:49
 msgid "Download password:"
-msgstr "Passe pour le téléchargement :"
+msgstr "Mot de passe pour le téléchargement :"
 
 #: views/index.haml:52
 msgid "File:"
@@ -98,7 +98,7 @@ msgstr "Fichier :"
 
 #: views/index.haml:54
 msgid "Max. size: %s"
-msgstr ""
+msgstr "Taille maximale : %s"
 
 #: views/index.haml:47
 msgid "Remove after one download"
@@ -118,17 +118,19 @@ msgstr "Téléchargements illimités avant expiration"
 
 #: views/about_your_data.haml:18
 msgid "About your data…"
-msgstr ""
+msgstr "À propos de vos données…"
 
 #: views/about_your_data.haml:26
 msgid ""
 "An attacker in-between will be able to see how much data is exchanged,\n"
 "but not its nature."
 msgstr ""
+"Un attaquant entre les deux pourra voir quelle quantité de données est\n"
+"échangée, mais pas leur nature."
 
 #: views/about_your_data.haml:25
 msgid "Exchanges between your computer and %s are encrypted."
-msgstr ""
+msgstr "Les échanges entre votre ordinateur et %s sont chiffrés."
 
 #: views/about_your_data.haml:29
 msgid ""
@@ -144,20 +146,33 @@ msgid ""
 "stored anywhere on the server, except if it has been actively compromised\n"
 "beforehand."
 msgstr ""
+"Les fichiers sont enregistrés sous forme chiffrée. Au cas où une personne\n"
+"obtiendrait l'accès aux fichiers du serveur, elle saura la taille, la date\n"
+"d'arrivée et d'expiration des fichiers ; mais elle ne pourra pas recupérer\n"
+"leur contenu sans mot de passe.\n"
+"\n"
+"Au cas où aucun *mot de passe de téléchargement* n'a été indiqué, le mot\n"
+"de passe a pu être gardé dans les journaux du serveur.\n"
+"\n"
+"Si un *mot de passe de téléchargement* a été indiqué, le mot de passe\n"
+"ne sera pas enregistré sur le serveur, sauf s'il a été compromis au\n"
+"au préalable."
 
 #: views/about_your_data.haml:20
 msgid ""
 "Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
 "with a little bit of privacy."
 msgstr ""
+"Bienvenue sur *Coquelicot*. Un moyen simple de partager des fichiers avec\n"
+"des personnes que vous connaissez, cela avec un peu d'intimité."
 
 #: views/about_your_data.haml:41
 msgid "What if I don't trust the server admins?"
-msgstr ""
+msgstr "Et si je ne fais pas confiance aux admin. du serveur ?"
 
 #: views/about_your_data.haml:23
 msgid "What should I expect from “a little bit of privacy”?"
-msgstr ""
+msgstr "Que puis-je attendre d'« un peu d'intimité » ?"
 
 #: views/about_your_data.haml:42
 msgid ""
@@ -165,6 +180,9 @@ msgid ""
 "on your own system. Please refer to the [README](README) if you wish to\n"
 "know how."
 msgstr ""
+"Vous êtes [libre](http://www.gnu.org/licenses/agpl.txt) d'installer\n"
+"Coquelicot sur votre propre système. Veuillez vous référer au\n"
+"[fichier README](README) pour savoir comment faire."
 
 #: views/enter_file_key.haml:18
 msgid "Enter download password…"
@@ -172,11 +190,11 @@ msgstr "Entrer le passe de téléchargement…"
 
 #: views/enter_file_key.haml:22 views/auth/imap.haml:23
 msgid "Password:"
-msgstr "Passe :"
+msgstr "Mot de passe :"
 
 #: views/auth/simplepass.haml:19
 msgid "Upload password:"
-msgstr "Passe pour envoyer :"
+msgstr "Mot de passe pour envoyer :"
 
 #: views/auth/imap.haml:20
 msgid "E-mail User:"
