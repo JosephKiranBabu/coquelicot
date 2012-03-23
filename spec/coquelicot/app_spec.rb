@@ -64,15 +64,29 @@ describe Coquelicot::Application do
         end
       end
       context 'when I do nothing special' do
-        before do
-          visit '/'
-        end
         it 'should display a page in french' do
+          visit '/'
           page.should have_content('Partager')
+        end
+        context 'when the max upload size is 1 KiB' do
+          around do |example|
+            begin
+              max_file_size = app.max_file_size
+              app.set :max_file_size, 1024
+              example.run
+            ensure
+              app.set :max_file_size, max_file_size
+            end
+          end
+          it 'should display "1 Kio" as the max upload size' do
+            visit '/'
+            page.should have_content('1 Kio')
+          end
         end
       end
       context 'when I explicitly request german' do
         before do
+          visit '/'
           click_link 'de'
         end
         it 'should display a page in german' do

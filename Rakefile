@@ -24,6 +24,6 @@ require 'haml/magic_translations/tasks'
 
 Haml::MagicTranslations::Tasks::UpdatePoFiles.new(:updatepo) do |t|
  t.text_domain = 'coquelicot'
- t.files = Dir.glob("views/**/*.{rb,haml}") << "lib/coquelicot/app.rb"
+ t.files = Dir.glob('views/**/*.{rb,haml}') + Dir.glob('lib/coquelicot/**/*.rb')
  t.app_version = 'coquelicot 1.0.0'
 end

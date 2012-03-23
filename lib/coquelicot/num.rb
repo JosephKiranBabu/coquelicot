@@ -15,18 +15,21 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'fast_gettext'
+
 module Coquelicot::Num
+  include FastGettext::Translation
+
   # found on: http://codereview.stackexchange.com/questions/9107/
   def as_size
-    # XXX: i18nize
-    prefix = %W(TiB GiB MiB KiB B)
+    prefix = [N_('TiB'), N_('GiB'), N_('MiB'), N_('KiB'), N_('B')]
     s = self.to_f
     i = prefix.length - 1
     while s > 512 && i > 0
       s /= 1024
       i -= 1
     end
-    ((s > 9 || s.modulo(1) < 0.1 ? '%d' : '%.1f') % s) + ' ' + prefix[i]
+    ((s > 9 || s.modulo(1) < 0.1 ? '%d' : '%.1f') % s) + ' ' + _(prefix[i])
   end
 end
 

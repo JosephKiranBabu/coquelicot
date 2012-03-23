@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2012-03-23 18:48+0100\n"
+"POT-Creation-Date: 2012-03-23 18:49+0100\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
@@ -189,3 +189,23 @@ msgstr "Entschuldigung, die Datei ist nicht mehr verfügbar."
 #: views/expired.haml:18
 msgid "Too late…"
 msgstr "Zu spät…"
+
+#: lib/coquelicot/num.rb:22
+msgid "TiB"
+msgstr ""
+
+#: lib/coquelicot/num.rb:22
+msgid "GiB"
+msgstr ""
+
+#: lib/coquelicot/num.rb:22
+msgid "MiB"
+msgstr ""
+
+#: lib/coquelicot/num.rb:22
+msgid "KiB"
+msgstr ""
+
+#: lib/coquelicot/num.rb:22
+msgid "B"
+msgstr ""
