@@ -82,6 +82,19 @@ describe Coquelicot::Application do
             visit '/'
             page.should have_content('1 Kio')
           end
+          # will fail without ordered Hash, see:
+          # <https://github.com/jnicklas/capybara/issues/670>
+          context 'when I upload something bigger', :if => RUBY_VERSION >= '1.9' do
+            before do
+              visit '/'
+              fill_in 'upload_password', :with => upload_password
+              attach_file 'file', __FILE__
+              click_button 'submit'
+            end
+            it 'should display an error in french' do
+              page.should have_content('plus gros que la taille maximale')
+            end
+          end
         end
       end
       context 'when I explicitly request german' do

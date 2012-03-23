@@ -29,6 +29,8 @@ module Coquelicot::Rack
   end
 
   class Upload < Sinatra::Base
+    include FastGettext::Translation
+
     set :logging, true
     set :views, Proc.new { Coquelicot.settings.views }
     set :additional_css, Proc.new { Coquelicot.settings.additional_css }
@@ -193,18 +195,12 @@ module Coquelicot::Rack
     end
 
     def error_for_max_length(length = nil)
-      # XXX: i18nize
       if length
-        message = <<-MESSAGE.gsub(/\n */m, ' ').strip
-          File is bigger than maximum allowed size:
-          #{length.as_size} would exceed the
-          maximum allowed #{Coquelicot.settings.max_file_size.as_size}.
-        MESSAGE
+        message = _('File is bigger than maximum allowed size: %s would exceed the maximum allowed %s.') %
+                  [length.as_size, Coquelicot.settings.max_file_size.as_size]
       else
-        message = <<-MESSAGE.gsub(/\n */m, ' ').strip
-          File is bigger than maximum allowed size
-          (#{Coquelicot.settings.max_file_size.as_size}).
-        MESSAGE
+        message = _('File is bigger than maximum allowed size %s.') %
+                  [Coquelicot.settings.max_file_size.as_size]
       end
       error 413, message
     end
