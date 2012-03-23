@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2012-03-23 18:43+0100\n"
+"POT-Creation-Date: 2012-03-23 18:48+0100\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,6 +115,56 @@ msgstr ""
 
 #: views/index.haml:44
 msgid "Unlimited downloads until expiration"
+msgstr ""
+
+#: views/about_your_data.haml:18
+msgid "About your data…"
+msgstr ""
+
+#: views/about_your_data.haml:26
+msgid ""
+"An attacker in-between will be able to see how much data is exchanged,\n"
+"but not its nature."
+msgstr ""
+
+#: views/about_your_data.haml:25
+msgid "Exchanges between your computer and %s are encrypted."
+msgstr ""
+
+#: views/about_your_data.haml:29
+msgid ""
+"Files are stored encrypted. In case someone gets access to the server\n"
+"storage, they will know the size, arrival and expiration dates of the\n"
+"files; but they will not be able to get their content without the\n"
+"password.\n"
+"\n"
+"In case no *download password* has been specified, the password might\n"
+"be kept in the server request logs.\n"
+"\n"
+"If a *download password* has been specified, the password will not be\n"
+"stored anywhere on the server, except if it has been actively compromised\n"
+"beforehand."
+msgstr ""
+
+#: views/about_your_data.haml:20
+msgid ""
+"Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
+"with a little bit of privacy."
+msgstr ""
+
+#: views/about_your_data.haml:41
+msgid "What if I don't trust the server admins?"
+msgstr ""
+
+#: views/about_your_data.haml:23
+msgid "What should I expect from “a little bit of privacy”?"
+msgstr ""
+
+#: views/about_your_data.haml:42
+msgid ""
+"You are [free](http://www.gnu.org/licenses/agpl.txt) to install Coquelicot\n"
+"on your own system. Please refer to the [README](README) if you wish to\n"
+"know how."
 msgstr ""
 
 #: views/enter_file_key.haml:18
