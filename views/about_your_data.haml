@@ -1,0 +1,45 @@
+-# -*- coding: UTF-8 -*-
+-# Coquelicot: "one-click" file sharing with a focus on users' privacy.
+-# Copyright © 2010 potager.org <jardiniers@potager.org>
+-#
+-# This program is free software: you can redistribute it and/or modify
+-# it under the terms of the GNU Affero General Public License as
+-# published by the Free Software Foundation, either version 3 of the
+-# License, or (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU Affero General Public License for more details.
+-#
+-# You should have received a copy of the GNU Affero General Public License
+-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+%h1 About your data…
+#content
+  :markdown
+    Welcome to *Coquelicot*. A simple way to share files with people you know,
+    with a little bit of privacy.
+  %h2 What should I expect from “a little bit of privacy”?
+  - if request.secure?
+    %p Exchanges between your computer and #{request.host} are encrypted.
+    :markdown
+      An attacker in-between will be able to see how much data is exchanged,
+      but not its nature.
+  :markdown
+    Files are stored encrypted. In case someone gets access to the server
+    storage, they will know the size, arrival and expiration dates of the
+    files; but they will not be able to get their content without the
+    password.
+
+    In case no *download password* has been specified, the password might
+    be kept in the server request logs.
+
+    If a *download password* has been specified, the password will not be
+    stored anywhere on the server, except if it has been actively compromised
+    beforehand.
+  %h2 What if I don't trust the server admins?
+  :markdown
+    You are [free](http://www.gnu.org/licenses/agpl.txt) to install Coquelicot
+    on your own system. Please refer to the [README](README) if you wish to
+    know how.

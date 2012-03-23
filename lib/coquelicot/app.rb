@@ -133,6 +133,10 @@ module Coquelicot
            File.read(File.join(settings.root, 'README')).gsub(/^/, '  '))
     end
 
+    get '/about-your-data' do
+      haml :about_your_data
+    end
+
     get '/random_pass' do
       "#{Coquelicot.gen_random_pass}"
     end

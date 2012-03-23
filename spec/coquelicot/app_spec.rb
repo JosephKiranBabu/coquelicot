@@ -104,6 +104,25 @@ describe Coquelicot::Application do
     end
   end
 
+  describe 'get /about-your-data' do
+    it 'should display some info about data retention' do
+      visit '/about-your-data'
+      find('h1').should have_content('About your data…')
+    end
+    context 'when using SSL' do
+      it 'should notice the connection is encrypted' do
+        visit 'https://example.com/about-your-data'
+        page.should have_content('Exchanges between your computer and example.com are encrypted.')
+      end
+    end
+    context 'when not using SSL' do
+      it 'should notice the connection is encrypted' do
+        visit 'http://example.com/about-your-data'
+        page.should_not have_content('Exchanges between your computer and example.org are encrypted.')
+      end
+    end
+  end
+
   describe 'post /authenticate' do
     context 'when given a request with too much input' do
       before do
