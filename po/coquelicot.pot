@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2012-03-23 19:21+0100\n"
+"POT-Creation-Date: 2012-03-23 19:34+0100\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,4 +219,8 @@ msgstr ""
 
 #: lib/coquelicot/rack/upload.rb:202
 msgid "File is bigger than maximum allowed size %s."
+msgstr ""
+
+#: lib/coquelicot/rack/upload.rb:209
+msgid "File has no content"
 msgstr ""

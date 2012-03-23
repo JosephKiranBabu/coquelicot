@@ -96,6 +96,25 @@ describe Coquelicot::Application do
             end
           end
         end
+        # will fail without ordered Hash, see:
+        # <https://github.com/jnicklas/capybara/issues/670>
+        context 'when I upload an empty file', :if => RUBY_VERSION >= '1.9' do
+          around do |example|
+            file = Tempfile.new('coquelicot')
+            begin
+              visit '/'
+              fill_in 'upload_password', :with => upload_password
+              attach_file 'file', file.path
+              click_button 'submit'
+              example.run
+            ensure
+              file.close!
+            end
+          end
+          it 'should display an error in french' do
+            page.should have_content('Le fichier est vide')
+          end
+        end
       end
       context 'when I explicitly request german' do
         before do

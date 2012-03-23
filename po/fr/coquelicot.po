@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2012-03-23 19:21+0100\n"
+"POT-Creation-Date: 2012-03-23 19:34+0100\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
@@ -233,10 +233,13 @@ msgid ""
 "File is bigger than maximum allowed size: %s would exceed the maximum "
 "allowed %s."
 msgstr ""
-"Le fichier est plus gros que la taille maximale autorisée : %s dépasse "
-"le maximum autorisé (%s)."
+"Le fichier est plus gros que la taille maximale autorisée : %s dépasse le "
+"maximum autorisé (%s)."
 
 #: lib/coquelicot/rack/upload.rb:202
 msgid "File is bigger than maximum allowed size %s."
-msgstr ""
-"Le fichier est plus gros que la taille maximale autorisée (%s)."
+msgstr "Le fichier est plus gros que la taille maximale autorisée (%s)."
+
+#: lib/coquelicot/rack/upload.rb:209
+msgid "File has no content"
+msgstr "Le fichier est vide"

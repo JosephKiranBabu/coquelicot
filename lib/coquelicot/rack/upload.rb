@@ -206,8 +206,7 @@ module Coquelicot::Rack
     end
 
     def error_for_empty
-      # XXX: i18nize
-      error 403, 'File has no content'
+      error 403, _('File has no content')
     end
 
     # This will create a new (rewindable) input with the given params
