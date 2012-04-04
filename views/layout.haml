@@ -43,7 +43,7 @@
   %body
     #header
       - unless uri.end_with? '/README'
-        - Coquelicot::Application::AVAILABLE_LOCALES.each do |locale|
+        - Coquelicot::AVAILABLE_LOCALES.each do |locale|
           %a{ :href => uri + "?lang=#{locale}" }= locale
     #container
       = yield

@@ -17,10 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'lockfile'
-require 'sinatra/base'
 require 'sinatra/config_file'
-require 'haml'
-require 'haml/magic_translations'
 require 'sass'
 require 'digest/sha1'
 require 'fast_gettext'
@@ -64,10 +61,9 @@ module Coquelicot
     end
   end
 
-  class Application < Sinatra::Base
+  class Application < Coquelicot::BaseApp
     register Sinatra::ConfigFile
     register Coquelicot::Auth::Extension
-    helpers Coquelicot::Helpers
 
     enable :sessions
     # When sessions are enabled, Rack::Protection (added by Sinatra)
@@ -97,23 +93,6 @@ module Coquelicot
     use Coquelicot::Rack::Upload
     # limit requests other than upload to an input body of 5 kiB max
     use Rainbows::MaxBody, 5 * 1024
-
-    AVAILABLE_LOCALES = %w(en fr de)
-
-    FastGettext.add_text_domain 'coquelicot', :path => 'po', :type => 'po'
-    FastGettext.available_locales = AVAILABLE_LOCALES
-    Haml::MagicTranslations.enable(:fast_gettext)
-    before do
-      FastGettext.text_domain = 'coquelicot'
-      if params[:lang]
-        locale = session[:lang] = params[:lang]
-      elsif session[:lang]
-        locale = session[:lang]
-      else
-        locale = request.env['HTTP_ACCEPT_LANGUAGE'] || 'en'
-      end
-      FastGettext.locale = locale
-    end
 
     not_found do
       'Not found'

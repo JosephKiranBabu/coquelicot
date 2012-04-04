@@ -38,19 +38,36 @@ describe Coquelicot::Application do
 
   describe 'get /' do
     context 'using the default language' do
-      before do
-        visit '/'
-      end
       it 'should display the maximum file size' do
+        visit '/'
         find(:xpath, '//label[@for="file"]/following::*[@class="note"]').
             should have_content("Max. size: #{Coquelicot.settings.max_file_size.as_size}")
       end
       context 'when I explicitly request french' do
-        before do
-          click_link 'fr'
-        end
         it 'should display a page in french' do
+          visit '/'
+          click_link 'fr'
           page.should have_content('Partager')
+        end
+        # will fail without ordered Hash, see:
+        # <https://github.com/jnicklas/capybara/issues/670>
+        context 'when I upload an empty file', :if => RUBY_VERSION >= '1.9' do
+          around do |example|
+            file = Tempfile.new('coquelicot')
+            begin
+              visit '/'
+              click_link 'fr'
+              fill_in 'upload_password', :with => upload_password
+              attach_file 'file', file.path
+              click_button 'submit'
+              example.run
+            ensure
+              file.close!
+            end
+          end
+          it 'should display an error in french' do
+            page.should have_content('Le fichier est vide')
+          end
         end
       end
     end

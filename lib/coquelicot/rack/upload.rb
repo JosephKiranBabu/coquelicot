@@ -28,13 +28,10 @@ module Coquelicot::Rack
     end
   end
 
-  class Upload < Sinatra::Base
-    include FastGettext::Translation
-
+  class Upload < Coquelicot::BaseApp
     set :logging, true
     set :views, Proc.new { Coquelicot.settings.views }
     set :additional_css, Proc.new { Coquelicot.settings.additional_css }
-    helpers Coquelicot::Helpers
 
     def call(env)
       if handle_request?(env)
@@ -90,6 +87,7 @@ module Coquelicot::Rack
     end
 
     def dispatch!
+      filter! :before
       catch(:pass) do
         return process!
       end
@@ -98,12 +96,6 @@ module Coquelicot::Rack
 
     def error_block!(status)
       return unless (400..599).include? status
-
-      # XXX: NOT NICE! FIX FIX FIX!
-      FastGettext.add_text_domain 'coquelicot', :path => 'po', :type => 'po'
-      FastGettext.available_locales = [ 'en', 'fr', 'de' ]
-      FastGettext.text_domain = 'coquelicot'
-      FastGettext.locale = request.env['HTTP_ACCEPT_LANGUAGE'] || 'en'
 
       haml <<-HAML.gsub(/^ */, '')
         %h1 Oops…
