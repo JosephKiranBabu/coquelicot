@@ -67,7 +67,8 @@ function addLinkToPasswordGenerator() {
       file_key.val(pass);
       file_key.hide();
       var show = $('<div class="random-pass" />');
-      show.text(pass);
+      show.append($('<div>').append($('<code>').text(pass))).
+           append($('<div>').append($('<em>').text(i18n.writeItDown)));
       link.before(show);
       link.remove();
     });
