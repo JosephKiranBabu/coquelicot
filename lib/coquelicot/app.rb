@@ -95,7 +95,21 @@ module Coquelicot
     use Rainbows::MaxBody, 5 * 1024
 
     not_found do
-      'Not found'
+      @uri = env['REQUEST_URI']
+      haml :not_found
+    end
+
+    error 403 do
+      haml :forbidden
+    end
+
+    error 409 do
+      haml :download_in_progress
+    end
+
+    error 500..510 do
+      @error = env['sinatra.error'] || response.body.join
+      haml :error
     end
 
     get '/style.css' do
