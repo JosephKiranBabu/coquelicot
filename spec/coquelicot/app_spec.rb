@@ -40,8 +40,8 @@ describe Coquelicot::Application do
     context 'using the default language' do
       it 'should display the maximum file size' do
         visit '/'
-        find(:xpath, '//label[@for="file"]/following::*[@class="note"]').
-            should have_content("Max. size: #{Coquelicot.settings.max_file_size.as_size}")
+        find(:xpath, '//label[@for="file"]').
+            should have_content("max. size: #{Coquelicot.settings.max_file_size.as_size}")
       end
       context 'when I explicitly request french' do
         it 'should display a page in french' do

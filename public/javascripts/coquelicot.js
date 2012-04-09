@@ -59,7 +59,7 @@ function addLinkToPasswordGenerator() {
   var link = $('<a href="#" id="gen_pass" />');
   link.text(i18n.generateRandomPassword);
   var file_key = $('#file_key');
-  file_key.after(link);
+  file_key.before(link);
   link.click(function(e) {
     e.preventDefault();
     link.text(i18n.generatingRandomPassword);
@@ -126,7 +126,7 @@ function authenticate() {
   });
   lb.open({
     html: authForm.append(authDiv).append('<div id="auth-message"></div>'),
-    width: "430px",
+    width: "350px",
     closeOnClick: false
   });
   authentication.focus();

@@ -18,9 +18,7 @@
 %h1 Share this!
 #content
   .url
-    %a{ :href => @url }
-      %span.base>= uri('/')
-      %span.name= @name
+    %textarea.ready{ 'readonly' => 'readonly' }= uri(@name)
   - unless @unprotected
     %p A password is required to download this file.
   %p The file will be available until #{@expire_at}.

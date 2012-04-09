@@ -46,12 +46,11 @@
         %input{ :type => 'radio', :id => 'one_time', :name => 'one_time', :value => 'true' }
         %label{ :for => 'one_time' } Remove after one download
   .field
-    %label{ :for => 'file_key' } Download password:
+    %label{ :for => 'file_key' } Download password (<em>optional</em>):
     %input.input{ :type => 'password', :id => 'file_key', :name => 'file_key' }
   .field
-    %label{ :for => 'file' } File:
+    %label{ :for => 'file' } File (<em>max. size: #{Coquelicot.settings.max_file_size.as_size}</em>):
     %input.input{ :type => 'file', :id => 'file', :name => 'file' }
-    .note Max. size: #{Coquelicot.settings.max_file_size.as_size}
   .field
     .submit
       %input#submit{ :type => 'submit', :value => _('Share!') }
