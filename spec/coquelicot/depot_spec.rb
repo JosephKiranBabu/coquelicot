@@ -226,15 +226,34 @@ module Coquelicot
                 to change { File.stat(File.expand_path('file', @tmpdir)).size }.to(0)
           end
         end
-        context 'after the gone period' do
+        context 'after the gone period and two collections' do
           let(:now) { Time.now + Coquelicot.settings.gone_period * 61 }
-          subject { Timecop.travel(now) { depot.gc! } }
+          subject { Timecop.travel(now) { depot.gc!; depot.gc! } }
           it 'should remove links' do
             expect { subject }.to change { depot.size }.from(1).to(0)
           end
           it 'should remove files' do
             subject
             Dir.glob("#{@tmpdir}/file*").should be_empty
+          end
+        end
+      end
+      context 'when there is a file that expires after the gone period' do
+        let(:expire) { Coquelicot.settings.gone_period + 42 }
+        before(:each) do
+          depot.should_receive(:gen_random_file_name).
+            and_return('file', 'link')
+          add_file
+        end
+        context 'after the gone period' do
+          let(:now) { Time.now + Coquelicot.settings.gone_period * 61 }
+          subject { Timecop.travel(now) { depot.gc! } }
+          it 'should not remove links' do
+            expect { subject }.to_not change { depot.size }
+          end
+          it 'should not remove files' do
+            expect { subject }.
+                to_not change { Dir.entries(@tmpdir) }
           end
         end
       end

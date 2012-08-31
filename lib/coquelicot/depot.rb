@@ -83,8 +83,7 @@ module Coquelicot
             next
           end
           file.empty! if file.expired?
-        end
-        if Time.now - File.lstat(path).mtime > (Coquelicot.settings.gone_period * 60)
+        elsif Time.now - File.lstat(path).mtime > (Coquelicot.settings.gone_period * 60)
           remove_from_links { |l| l.strip.end_with? " #{name}" }
           FileUtils.rm "#{path}.content", :force => true
           FileUtils.rm path
