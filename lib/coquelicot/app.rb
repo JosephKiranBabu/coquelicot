@@ -23,6 +23,7 @@ require 'digest/sha1'
 require 'fast_gettext'
 require 'upr'
 require 'moneta'
+require 'unicorn/launcher'
 require 'rainbows'
 require 'optparse'
 
@@ -35,17 +36,164 @@ module Coquelicot
       @depot = Depot.new(settings.depot_path) if @depot.nil? || settings.depot_path != @depot.path
       @depot
     end
-    # Called by +coquelicot-collect-garbage+ script.
-    def collect_garbage!(args = [])
-      parser ||= OptionParser.new do |opts|
-        opts.banner = "Usage: #{$0} [options]"
+    # Called by the +coquelicot+ script.
+    def run!(args = [])
+      parser = OptionParser.new do |opts|
+        opts.banner = "Usage: #{opts.program_name} [options] COMMAND [command options]"
 
         opts.separator ""
-        opts.separator "Options:"
+        opts.separator "Common options:"
 
         opts.on "-c", "--config FILE", "read settings from FILE" do |file|
-          settings.config_file file
+          if File.readable? file
+            settings.config_file file
+          else
+            $stderr.puts "#{opts.program_name}: cannot access configuration file '#{file}'."
+            exit 1
+          end
         end
+        opts.on("-h", "--help", "show this message") do
+          $stderr.puts opts.to_s
+          exit
+        end
+        opts.separator ""
+        opts.separator "Available commands:"
+        opts.separator "    start             Start web server"
+        opts.separator "    stop              Stop web server"
+        opts.separator "    gc                Run garbage collection"
+        opts.separator "    migrate-jyraphe   Migrate a Jyraphe repository"
+        opts.separator ""
+        opts.separator "See '#{opts.program_name} COMMAND --help' for more information on a specific command."
+      end
+      begin
+        parser.order!(args) do |command|
+          if %w{start stop gc migrate-jyraphe}.include? command
+            return self.send("#{command.gsub(/-/, '_')}!", args)
+          else
+            $stderr.puts("#{parser.program_name}: '#{command}' is not a valid command. " +
+                         "See '#{parser.program_name} --help'.")
+            exit 1
+          end
+        end
+      rescue OptionParser::InvalidOption => ex
+        $stderr.puts("#{parser.program_name}: '#{ex.args[0]}' is not a valid option. " +
+                     "See '#{parser.program_name} --help'.")
+        exit 1
+      end
+      # if we reach here, no command was given
+      $stderr.puts parser.to_s
+      exit
+    end
+    def start!(args)
+      options = {}
+      parser = OptionParser.new do |opts|
+        opts.banner = "Usage: #{opts.program_name} [options] start [command options]"
+        opts.separator ""
+        opts.separator "'#{opts.program_name} start' will start the web server in background."
+        opts.separator "Use '#{opts.program_name} stop' to stop it when done serving."
+        opts.separator ""
+        opts.separator "Command options:"
+        opts.on_tail("-n", "--no-daemon", "do not daemonize (stay in foreground)") do
+          options[:no_daemon] = true
+        end
+        opts.on_tail("-h", "--help", "show this message") do
+          $stderr.puts opts.to_s
+          exit
+        end
+      end
+      parser.parse!(args)
+
+      Unicorn::Configurator::DEFAULTS.merge!({
+        :pid => settings.pid,
+        :listeners => settings.listen,
+        :use => :ThreadSpawn,
+        :rewindable_input => false,
+        :client_max_body_size => nil
+      })
+      unless options[:no_daemon]
+        if settings.log
+          Unicorn::Configurator::DEFAULTS.merge!({
+            :stdout_path => settings.log,
+            :stderr_path => settings.log
+          })
+        end
+      end
+
+      # daemonize! and start pass data around through rainbows_opts
+      rainbows_opts = {}
+      ::Unicorn::Launcher.daemonize!(rainbows_opts) unless options[:no_daemon]
+
+      app = lambda do
+          ::Rack::Builder.new do
+            # This implements the behaviour outlined in Section 8 of
+            # <http://ftp.ics.uci.edu/pub/ietf/http/draft-ietf-http-connection-00.txt>.
+            #
+            # Half-closing the write part first and draining our input makes sure the
+            # client will properly receive an error message instead of TCP RST (a.k.a.
+            # "Connection reset by peer") when we interrupt it in the middle of a POST
+            # request.
+            #
+            # Thanks Eric Wong for these few lines. See
+            # <http://rubyforge.org/pipermail/rainbows-talk/2012-February/000328.html> for
+            # the discussion that lead him to propose what follows.
+            Rainbows::Client.class_eval <<-END_OF_METHOD
+              def close
+                close_write
+                buf = ""
+                loop do
+                  kgio_wait_readable(2)
+                  break unless kgio_tryread(512, buf)
+                end
+              ensure
+                super
+              end
+            END_OF_METHOD
+
+            use ::Rack::ContentLength
+            use ::Rack::Chunked
+            use ::Rack::CommonLogger, $stderr
+            run Application
+          end.to_app
+        end
+
+      server = ::Rainbows::HttpServer.new(app, rainbows_opts)
+      server.start.join
+    end
+    def stop!(args)
+      parser = OptionParser.new do |opts|
+        opts.banner = "Usage: #{opts.program_name} [options] stop [command options]"
+        opts.separator ""
+        opts.separator "'#{opts.program_name} stop' will stop the web server."
+        opts.separator ""
+        opts.separator "Command options:"
+        opts.on_tail("-h", "--help", "show this message") do
+          $stderr.puts opts.to_s
+          exit
+        end
+      end
+      parser.parse!(args)
+
+      unless File.readable? settings.pid
+        $stderr.puts "Unable to read #{settings.pid}. Are you sure Coquelicot is started?"
+        exit 1
+      end
+
+      pid = File.read(settings.pid).to_i
+      if pid == 0
+        $stderr.puts "Bad PID file #{settings.pid}."
+        exit 1
+      end
+
+      Process.kill(:TERM, pid)
+    end
+    def gc!(args)
+      parser = OptionParser.new do |opts|
+        opts.banner = "Usage: #{opts.program_name} [options] gc [command options]"
+        opts.separator ""
+        opts.separator "'#{opts.program_name} gc' will clean up expired files from the current depot."
+        opts.separator "Depot is currently set to '#{Coquelicot.depot.path}'"
+        opts.separator ""
+        opts.separator "Command options:"
         opts.on_tail("-h", "--help", "show this message") do
           $stderr.puts opts.to_s
           exit
@@ -54,7 +202,6 @@ module Coquelicot
       parser.parse!(args)
       depot.gc!
     end
-    # Called by +coquelicot-migrate-jyraphe+ script.
     def migrate_jyraphe!(args = [])
       require 'coquelicot/jyraphe_migrator'
       Coquelicot::JyrapheMigrator.run! args
@@ -81,6 +228,10 @@ module Coquelicot
     set :random_pass_length, 16
     set :about_text, ''
     set :additional_css, ''
+    set :pid, Proc.new { File.join(root, 'tmp/coquelicot.pid') }
+    set :log, Proc.new { File.join(root, 'tmp/coquelicot.log') }
+    set :listen, [ "127.0.0.1:51161" ]
+    set :show_exceptions, false
     set :authentication_method, :name => :simplepass,
                                 :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
 

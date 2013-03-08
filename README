@@ -117,7 +117,7 @@ Once Bundler is available, please issue:
 
 Then, to start Coquelicot use:
 
-    $ bin/rainbows -c rainbows.conf -E none config.ru
+    $ bin/coquelicot start
 
 Coquelicot is intended to be run on a fully encrypted system and
 accessible only through HTTPS. To configure Apache as a reverse proxy,
@@ -127,8 +127,9 @@ you will need to add the following directives:
     SetEnv proxy-sendchunks 1
     RequestHeader set X-Forwarded-SSL "on"
 
-You can also run Coquelicot with mod_passenger, Mongrel, Thin or any
-Rack compatible webserver, but please read below about buffered input.
+Coquelicot has been written to use Rainbows! as its webserver. You can
+also run Coquelicot with mod_passenger, Mongrel, Thin or any Rack
+compatible webserver, but please read below about buffered input.
 
 ### Configuration
 
@@ -153,25 +154,31 @@ Further settings example:
 You can copy one of these examples to `conf/settings.yml` and adjust
 them according to your environment.
 
+A different location for the configuration file can be specified using
+the `-c` option when running `bin/coquelicot`.
+
 ### Garbage collection
 
 To cleanup files automatically when they expired, coquelicot comes with
 a cleanup script, that does the garbage collection for you. The easiest
-way is to run `bin/coquelicot-collect-gabage` as a cron job that runs
-every 5 minutes (or so).
+way is to set up a cron job that will run every 5 minutes (or so):
+
+    bin/coquelicot gc
 
 ### Migrate from Jyraphe
 
 [Jyraphe] is another free software web file sharing application.
 Coquelicot provides a migration script to import Jyraphe 0.5
-repositories as `bin/coquelicot-migrate-jyraphe`:
+repositories as `bin/coquelicot migrate-jyraphe`:
 
-    Usage: coquelicot-migrate-jyraphe [options] jyraphe-var > rewrite-rules
+    Usage: coquelicot [options] migrate-jyraphe \ 
+                      [command options] JYRAPHE_VAR > REWRITE_RULES
 
     Options:
         -c, --config FILE            read settings from FILE
+
+    Command options:
         -p, --rewrite-prefix PREFIX  prefix URL in rewrite rules
-        -h, --help                   show this message
 
 The last argument must be a path to the `var` directory of the Jyraphe
 installation. After migrating the files to Coquelicot, directives for
@@ -205,7 +212,7 @@ just a matter of typing:
 
 Running a test server can be done with:
 
-    bundle exec rackup config-development.ru
+    bundle exec coquelicot start --no-daemon
 
 To update the translation source files, use:
 

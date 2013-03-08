@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
 # Copyright © 2012 potager.org <jardiniers@potager.org>
 #           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
@@ -17,17 +18,8 @@
 
 require 'rubygems'
 require 'bundler'
+Bundler.setup
 
-Bundler.require(:development)
-
-$:.unshift File.join(File.dirname(__FILE__), 'lib')
 require 'coquelicot'
 
-app = Coquelicot::Application
-
-app.set :environment, :development
-app.set :raise_errors, true
-app.set :logging, true
-app.disable :run
-
-run app
+Coquelicot.run!(ARGV)

@@ -200,70 +200,198 @@ describe Coquelicot::Application do
   end
 end
 
-describe Coquelicot, '.collect_garbage!' do
-  context 'when given no option' do
-    include_context 'with Coquelicot::Application'
+describe Coquelicot, '.run!' do
+  include_context 'with Coquelicot::Application'
 
-    it 'should use the default depot path' do
-      Coquelicot::Depot.should_receive(:new).
-        with(@depot_path).
-        and_return(double.as_null_object)
-      Coquelicot.collect_garbage!
-    end
-    it 'should call gc!' do
-      depot = double('Depot').as_null_object
-      depot.should_receive(:gc!)
-      Coquelicot::Depot.stub(:new).and_return(depot)
-      Coquelicot.collect_garbage!
-    end
-  end
-  context 'when using "-c <settings.yml>"' do
-    around(:each) do |example|
-      settings = Tempfile.new('coquelicot')
-      begin
-        settings.write(YAML.dump({ 'depot_path' => '/nonexistent' }))
-        settings.close
-        @settings_path = settings.path
-        example.run
-      ensure
-        settings.unlink
+  context 'when given no option' do
+    it 'should display help and exit' do
+      stderr = capture(:stderr) do
+        expect { Coquelicot.run! %w{} }.to raise_error(SystemExit)
       end
-    end
-    it 'should use the depot path defined in the given settings' do
-      Coquelicot::Depot.should_receive(:new).
-        with('/nonexistent').
-        and_return(double.as_null_object)
-      Coquelicot.collect_garbage! ['-c', @settings_path]
-    end
-    it 'should call gc!' do
-      depot = double('Depot').as_null_object
-      depot.should_receive(:gc!)
-      Coquelicot::Depot.stub(:new).and_return(depot)
-      Coquelicot.collect_garbage! ['-c', @settings_path]
+      stderr.should =~ /Usage:/
     end
   end
   context 'when using "-h"' do
     it 'should display help and exit' do
       stderr = capture(:stderr) do
-        expect { Coquelicot.collect_garbage! ['-h'] }.to raise_error(SystemExit)
+        expect { Coquelicot.run! %w{-h} }.to raise_error(SystemExit)
       end
       stderr.should =~ /Usage:/
     end
-    it 'should not call gc!' do
-      depot = double('Depot').as_null_object
-      depot.should_not_receive(:gc!)
-      Coquelicot::Depot.stub(:new).and_return(depot)
-      capture(:stderr) do
-        expect { Coquelicot.collect_garbage! ['-h'] }.to raise_error(SystemExit)
+  end
+  context 'when using "-c <settings.yml>"' do
+    it 'should use the given setting file' do
+      settings_file = File.expand_path('../../../conf/settings-default.yml', __FILE__)
+      Coquelicot::Application.should_receive(:config_file).with(settings_file)
+      stderr = capture(:stderr) do
+        expect { Coquelicot.run! ['-c', settings_file] }.to raise_error(SystemExit)
+      end
+    end
+    context 'when the given settings file exists' do
+      around(:each) do |example|
+        settings = Tempfile.new('coquelicot')
+        begin
+          settings.write(YAML.dump({ 'depot_path' => '/nonexistent' }))
+          settings.close
+          @settings_path = settings.path
+          example.run
+        ensure
+          settings.unlink
+        end
+      end
+      it 'should use the depot path defined in the given settings' do
+        # We don't give a command, so exit is expected
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run! ['-c', @settings_path] }.to raise_error(SystemExit)
+        end
+        Coquelicot.settings.depot_path.should == '/nonexistent'
+      end
+    end
+    context 'when the given settings file does not exist' do
+      it 'should display an error' do
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run! %w{-c non-existent.yml} }.to raise_error(SystemExit)
+        end
+        stderr.should =~ /cannot access/
       end
     end
   end
-end
+  context 'when given an invalid option' do
+    it 'should display an error' do
+      stderr = capture(:stderr) do
+        expect { Coquelicot.run! %w{--invalid-option} }.to raise_error(SystemExit)
+      end
+      stderr.should =~ /not a valid option/
+    end
+  end
+  context 'when given "whatever"' do
+    it 'should display an error' do
+      stderr = capture(:stderr) do
+        expect { Coquelicot.run! %w{whatever} }.to raise_error(SystemExit)
+      end
+      stderr.should =~ /not a valid command/
+    end
+  end
+  shared_context 'command accepts options' do
+    context 'when given "--help" option' do
+      it 'should display help and exit' do
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run!([command, '--help']) }.to raise_error(SystemExit)
+        end
+        stderr.should =~ /Usage:/
+      end
+    end
+    context 'when given an invalid option' do
+      it 'should display an error' do
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run!([command, '--invalid-option']) }.to raise_error(SystemExit)
+        end
+        stderr.should =~ /not a valid option/
+      end
+    end
+  end
+  context 'when given "start"' do
+    let(:command) { 'start' }
+    include_context 'command accepts options'
 
-describe Coquelicot, '.migrate_jyraphe!' do
-  it 'should call the migrator' do
-    args = ['whatever']
-    Coquelicot::JyrapheMigrator.should_receive(:run!).with(args)
-    Coquelicot.migrate_jyraphe! args
+    before(:each) do
+      # :stdout_path and :stderr_path should not be set, otherwise RSpec will break!
+      app.set :log, nil
+    end
+    context 'with default options' do
+      it 'should daemonize' do
+        ::Unicorn::Launcher.should_receive(:daemonize!)
+        ::Rainbows::HttpServer.stub(:new).and_return(double('HttpServer').as_null_object)
+        Coquelicot.run! %w{start}
+      end
+      it 'should start the web server' do
+        ::Unicorn::Launcher.stub(:daemonize!)
+        server = double('HttpServer')
+        server.should_receive(:start).and_return(double('Thread').as_null_object)
+        ::Rainbows::HttpServer.stub(:new).and_return(server)
+        Coquelicot.run! %w{start}
+      end
+    end
+    context 'when given the --no-daemon option' do
+      it 'should not daemonize' do
+        ::Unicorn::Launcher.should_receive(:daemonize!).never
+        ::Rainbows::HttpServer.stub(:new).and_return(double('HttpServer').as_null_object)
+        Coquelicot.run! %w{start --no-daemon}
+      end
+      it 'should set the default configuration' do
+        app.set :pid, @depot_path
+        app.set :listen, ['127.0.0.1:42']
+        ::Rainbows::HttpServer.any_instance.stub(:start) do
+          server = ::Rainbows.server
+          server.config.set[:pid].should == @depot_path
+          server.config.set[:listeners].should == ['127.0.0.1:42']
+          double('Thread').as_null_object
+        end
+        Coquelicot.run! %w{start --no-daemon}
+      end
+      it 'should start the web server' do
+        server = double('HttpServer')
+        server.should_receive(:start).and_return(double('Thread').as_null_object)
+        ::Rainbows::HttpServer.stub(:new).and_return(server)
+        Coquelicot.run! %w{start --no-daemon}
+      end
+    end
+  end
+  context 'when given "stop"' do
+    let(:command) { 'stop' }
+    include_context 'command accepts options'
+
+    context 'when the pid file is correct' do
+      let(:pid) { 42 }
+      before(:each) do
+        File.open("#{@depot_path}/pid", 'w') do |f|
+          f.write(pid.to_s)
+        end
+        app.set :pid, "#{@depot_path}/pid"
+      end
+      it 'should stop the web server' do
+        Process.should_receive(:kill).with(:TERM, pid)
+        Coquelicot.run! %w{stop}
+      end
+    end
+    context 'when the pid file does not exist' do
+      it 'should error out' do
+        app.set :pid, '/nonexistent'
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run! %w{stop} }.to raise_error(SystemExit)
+        end
+        stderr.should =~ /Unable to read/
+      end
+    end
+    context 'when the pid file contains garbage' do
+      before(:each) do
+        File.open("#{@depot_path}/pid", 'w') do |f|
+          f.write('The queerest of the queer')
+        end
+        app.set :pid, "#{@depot_path}/pid"
+      end
+      it 'should errour out' do
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run! %w{stop} }.to raise_error(SystemExit)
+        end
+        stderr.should =~ /Bad PID file/
+      end
+    end
+  end
+  context 'when given "gc"' do
+    let(:command) { 'gc' }
+    include_context 'command accepts options'
+
+    it 'should call gc!' do
+      Coquelicot.depot.should_receive(:gc!).once
+      Coquelicot.run! %w{gc}
+    end
+  end
+  context 'when given "migrate-jyraphe"' do
+    let(:args) { %w{all args} }
+    it 'should call the migrator' do
+      Coquelicot::JyrapheMigrator.should_receive(:run!).with(args)
+      Coquelicot.run!(%w{migrate-jyraphe} + args)
+    end
   end
 end

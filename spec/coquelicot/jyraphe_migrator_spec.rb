@@ -372,34 +372,6 @@ module Coquelicot
           stdout.strip.should == 'rules'
         end
       end
-      context 'when using "-c <settings.yml>"' do
-        around(:each) do |example|
-          settings = Tempfile.new('coquelicot')
-          begin
-            settings.write(YAML.dump({ 'depot_path' => '/nonexistent' }))
-            settings.close
-            @settings_path = settings.path
-            example.run
-          ensure
-            settings.unlink
-          end
-        end
-        it 'should use the depot path defined in the given settings' do
-          JyrapheMigrator.stub(:new).and_return(double.as_null_object)
-          capture(:stdout) do
-            JyrapheMigrator.run! ['-c', @settings_path, @jyraphe_var_path]
-          end
-          Coquelicot.settings.depot_path.should == '/nonexistent'
-        end
-        it 'should migrate' do
-          migrator = double('JyrapheMigrator').as_null_object
-          migrator.should_receive(:migrate!)
-          JyrapheMigrator.stub(:new).and_return(migrator)
-          capture(:stdout) do
-            JyrapheMigrator.run! ['-c', @settings_path, @jyraphe_var_path]
-          end
-        end
-      end
       context 'when using "-p"' do
         it 'should print rewrite rules using the given prefix' do
           migrator = double('JyrapheMigrator').as_null_object

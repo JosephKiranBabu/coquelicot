@@ -52,14 +52,11 @@ module Coquelicot
 
       def parser
         @parser ||= OptionParser.new do |opts|
-          opts.banner = "Usage: #{$0} [options] jyraphe-var > rewrite-rules"
+          opts.banner = "Usage: #{opts.program_name} [options] migrate-jyraphe [command options] JYRAPHE_VAR > REWRITE_RULES"
 
           opts.separator ""
-          opts.separator "Options:"
+          opts.separator "Command options:"
 
-          opts.on "-c", "--config FILE", "read settings from FILE" do |file|
-            Coquelicot.settings.config_file file
-          end
           opts.on "-p", "--rewrite-prefix PREFIX", "prefix URL in rewrite rules" do |prefix|
             options[:rewrite_prefix] = prefix
           end

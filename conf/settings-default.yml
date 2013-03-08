@@ -77,6 +77,34 @@ about_text: ""
 # Path to an additional stylesheet
 additional_css: ""
 
+# Path to the PID file of the web server
+pid: "./tmp/coquelicot.pid"
+
+# Path to Coquelicot log file
+#
+#   Set to an empty string to disable logging.
+#
+log: "./tmp/coquelicot.log"
+
+# Listening addresses of the web server
+#
+#   Each entries may be a port number for a TCP port, an “IP_ADDRESS:PORT” for
+#   TCP listeners or a pathname for UNIX domain sockets.
+#
+#   Examples:
+#    - "51161"                 # listen to port 51161 on all TCP interfaces
+#    - "127.0.0.1:51161"       # listen to port 51161 on the loopback interface
+#    - "/tmp/.coquelicot.sock" # listen on the given Unix domain socket
+#    - "[::1]:51161"           # listen to port 51161 on the IPv6 loopback interface
+#
+listen:
+ - "127.0.0.1:51161"
+
+# Display debugging data in the browser when an exception is raised
+#
+#   This should only be turned on when doing development.
+show_exceptions: false
+
 # Authentication method
 #
 #   Please have look at `conf/settings-simplepass.yml` and
