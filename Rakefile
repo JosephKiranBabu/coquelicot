@@ -1,5 +1,5 @@
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2010-2012 potager.org <jardiniers@potager.org>
+# Copyright © 2010-2013 potager.org <jardiniers@potager.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

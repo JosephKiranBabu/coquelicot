@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2012 potager.org <jardiniers@potager.org>
+# Copyright © 2012-2013 potager.org <jardiniers@potager.org>
 #           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
 #
 # This program is free software: you can redistribute it and/or modify
