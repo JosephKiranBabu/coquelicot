@@ -22,7 +22,7 @@ require 'sass'
 require 'digest/sha1'
 require 'fast_gettext'
 require 'upr'
-require 'moneta/memory'
+require 'moneta'
 require 'rainbows'
 require 'optparse'
 
@@ -86,7 +86,7 @@ module Coquelicot
 
     config_file File.expand_path('../../../conf/settings.yml', __FILE__)
 
-    set :upr_backend, Upr::Monitor.new(Moneta::Memory.new)
+    set :upr_backend, Upr::Monitor.new(Moneta.new(:Memory))
     if defined?(Rainbows) && !Rainbows.server.nil? && !Rainbows.server.rewindable_input
       use Upr, :backend => upr_backend, :path_info => %q{/upload}
     end
