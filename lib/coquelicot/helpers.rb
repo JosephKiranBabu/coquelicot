@@ -29,5 +29,9 @@ module Coquelicot
     def auth_method
       Coquelicot.settings.authenticator.class.name.gsub(/Coquelicot::Auth::([A-z0-9]+)Authenticator$/, '\1').downcase
     end
+
+    def about_text
+      settings.about_text[FastGettext.locale] || settings.about_text['en'] || ''
+    end
   end
 end

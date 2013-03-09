@@ -72,7 +72,10 @@ depot_path: "./files"
 
 # Text to display on top of the upload form
 #
-about_text: ""
+#   This is indexed by locale code to support multiple languages.
+#   It will fallback to English for unspecified languages.
+about_text:
+  en: ""
 
 # Path to an additional stylesheet
 additional_css: ""

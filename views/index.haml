@@ -25,8 +25,8 @@
 %form#upload{ :enctype => 'multipart/form-data',
               :action  => 'upload', :method => 'post' }
   #upload-authentication
-    - unless settings.about_text.empty?
-      %p.about= settings.about_text
+    - unless about_text.empty?
+      %p.about= about_text
     %script{ :type => 'text/javascript', :src => "javascripts/coquelicot.auth.#{auth_method}.js" }
     = render :haml, :"auth/#{auth_method}", :layout => false
   .field

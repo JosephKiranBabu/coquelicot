@@ -226,7 +226,7 @@ module Coquelicot
     set :gone_period, 60 * 24 * 7 # 1 week
     set :filename_length, 20
     set :random_pass_length, 16
-    set :about_text, ''
+    set :about_text, 'en' => ''
     set :additional_css, ''
     set :pid, Proc.new { File.join(root, 'tmp/coquelicot.pid') }
     set :log, Proc.new { File.join(root, 'tmp/coquelicot.log') }

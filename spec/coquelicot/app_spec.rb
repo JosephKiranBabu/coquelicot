@@ -55,15 +55,6 @@ describe Coquelicot::Application do
         find(:xpath, '//label[@for="file"]').
             should have_content("max. size: #{Coquelicot.settings.max_file_size.as_size}")
       end
-      context 'when an "about text" is set"' do
-        before(:each) do
-          app.set :about_text, 'This is an about text'
-        end
-        it 'should display the "about text"' do
-          visit '/'
-          page.should have_content('This is an about text')
-        end
-      end
       context 'when I explicitly request french' do
         it 'should display a page in french' do
           visit '/'
@@ -170,6 +161,33 @@ describe Coquelicot::Application do
           it 'should display a page in german' do
             page.should have_content('Verteile eine weitere Datei')
           end
+        end
+      end
+    end
+    context 'when an "about text" is set for English and French"' do
+      before(:each) do
+        app.set :about_text, 'en' => 'This is an about text',
+                             'fr' => 'Ceci est un texte'
+      end
+      context 'using the default language' do
+        it 'should display the "about text" in English' do
+          visit '/'
+          find('.about').text.should == 'This is an about text'
+        end
+      end
+      context 'when I explicitly request French' do
+        it 'should display the "about text" in French' do
+          visit '/'
+          click_link 'fr'
+          find('.about').text.should == 'Ceci est un texte'
+          reset_session!
+        end
+      end
+      context 'when my browser prefers french' do
+        include_context 'browser prefers french'
+        it 'should display the "about text" in French' do
+          visit '/'
+          find('.about').text.should == 'Ceci est un texte'
         end
       end
     end
