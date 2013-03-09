@@ -43,6 +43,15 @@ describe Coquelicot::Application do
         find(:xpath, '//label[@for="file"]').
             should have_content("max. size: #{Coquelicot.settings.max_file_size.as_size}")
       end
+      context 'when an "about text" is set"' do
+        before(:each) do
+          app.set :about_text, 'This is an about text'
+        end
+        it 'should display the "about text"' do
+          visit '/'
+          page.should have_content('This is an about text')
+        end
+      end
       context 'when I explicitly request french' do
         it 'should display a page in french' do
           visit '/'
