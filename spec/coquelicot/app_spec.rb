@@ -36,6 +36,17 @@ describe Coquelicot::Application do
                                     :upload_password => Digest::SHA1.hexdigest(upload_password)
   end
 
+  shared_context 'browser prefers french' do
+    around do |example|
+      begin
+        page.driver.header 'Accept-Language',  'fr-fr;q=1.0, en-gb;q=0.8, en;q=0.7'
+        example.run
+      ensure
+        page.driver.header 'Accept-Language', nil
+      end
+    end
+  end
+
   describe 'get /' do
     context 'using the default language' do
       it 'should display the maximum file size' do
@@ -81,14 +92,7 @@ describe Coquelicot::Application do
       end
     end
     context 'when my browser prefers french' do
-      around do |example|
-        begin
-          page.driver.header 'Accept-Language',  'fr-fr;q=1.0, en-gb;q=0.8, en;q=0.7'
-          example.run
-        ensure
-          page.driver.header 'Accept-Language', nil
-        end
-      end
+      include_context 'browser prefers french'
       context 'when I do nothing special' do
         it 'should display a page in french' do
           visit '/'
