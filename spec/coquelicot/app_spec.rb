@@ -43,6 +43,7 @@ describe Coquelicot::Application do
         example.run
       ensure
         page.driver.header 'Accept-Language', nil
+        reset_session!
       end
     end
   end
@@ -68,6 +69,7 @@ describe Coquelicot::Application do
           visit '/'
           click_link 'fr'
           page.should have_content('Partager')
+          reset_session!
         end
         # will fail without ordered Hash, see:
         # <https://github.com/jnicklas/capybara/issues/670>
@@ -83,6 +85,7 @@ describe Coquelicot::Application do
               example.run
             ensure
               file.close!
+              reset_session!
             end
           end
           it 'should display an error in french' do
@@ -147,9 +150,11 @@ describe Coquelicot::Application do
         end
       end
       context 'when I explicitly request german' do
-        before do
+        around(:each) do |example|
           visit '/'
           click_link 'de'
+          example.run
+          reset_session!
         end
         it 'should display a page in german' do
           page.should have_content('Verteile')
