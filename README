@@ -1,7 +1,7 @@
 About “Coquelicot”
 ==================
 
-Coquelicot is a "one-click" file sharing web application with a specific
+[Coquelicot] is a "one-click" file sharing web application with a specific
 focus on protecting users' privacy.
 
 Basic principle: users can upload a file to the server, in return they
@@ -11,6 +11,8 @@ the file.
 Coquelicot aims to protect, to some extent, users and system
 administrators from disclosure of the files exchanged from passive and
 not so active attackers.
+
+[Coquelicot]: https://coquelicot.potager.org/
 
 Features
 --------
@@ -406,9 +408,9 @@ Coquelicot is distributed under the [GNU Affero General Public License]
 version 3 or (at your option) any later version.
 
 Background image (`public/images/background.jpg`) derived from:  
-[“coquelicot”] © 2008 Jean-Louis Zimmermann  
+[“coquelicot” picture] © 2008 Jean-Louis Zimmermann  
 Licensed under [Creative Commons Attributions 2.0 Generic]  
 
-[“coquelicot”]: https://secure.flickr.com/photos/jeanlouis_zimmermann/2478019744/
+[“coquelicot” picture]: https://secure.flickr.com/photos/jeanlouis_zimmermann/2478019744/
 [GNU Affero General Public License]: http://www.gnu.org/licenses/agpl.txt
 [Creative Commons Attributions 2.0 Generic]: https://creativecommons.org/licenses/by/2.0/deed
