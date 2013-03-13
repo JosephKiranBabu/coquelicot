@@ -27,7 +27,8 @@ module Coquelicot
 
     helpers Coquelicot::Helpers
 
-    FastGettext.add_text_domain 'coquelicot', :path => 'po', :type => 'po'
+    FastGettext.add_text_domain 'coquelicot',
+        :path => File.expand_path('../../../po', __FILE__), :type => 'po'
     FastGettext.available_locales = AVAILABLE_LOCALES
     Haml::MagicTranslations.enable(:fast_gettext)
 

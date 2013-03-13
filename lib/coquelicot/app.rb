@@ -47,7 +47,7 @@ module Coquelicot
 
         opts.on "-c", "--config FILE", "read settings from FILE" do |file|
           if File.readable? file
-            settings.config_file file
+            settings.config_file File.expand_path(file)
           else
             $stderr.puts "#{opts.program_name}: cannot access configuration file '#{file}'."
             exit 1
