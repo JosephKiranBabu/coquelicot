@@ -33,10 +33,12 @@
     password.
 
     In case no *download password* has been specified, the password might
-    be kept in the server request logs.
+    be kept in the server request logs. This means that the server might
+    store enough information to retrieve the actual file content.
 
-    If a *download password* has been specified, the password will not be
-    stored anywhere on the server, except if it has been actively compromised
+    When a *download password* has been specified, the password will not be
+    stored anywhere on the server. This will prevent retrieval of the
+    file content, except if the server has been actively compromised
     beforehand.
   %h2 What if I don't trust the server admins?
   :markdown
