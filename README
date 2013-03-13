@@ -325,9 +325,12 @@ Future
    stored file size. Original file size will also be recorded in server
    logs. Padding could be used to improve this situation.
 
- * Make a Gem
+ * Make a usable Gem
 
-   Most Ruby stuff is installed using Gem, so Coquelicot should be one.
+   Most Ruby stuff is installed using Gem, so Coquelicot should also be
+   installable that way. What is mostly missing is an easy way to create
+   a default configuration and directories to hold uploaded files and
+   temp. data.
 
  * Package for Debian
 
