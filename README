@@ -325,6 +325,11 @@ Future
    stored file size. Original file size will also be recorded in server
    logs. Padding could be used to improve this situation.
 
+ * Investigate more secure encryption algorithm
+
+   Coquelicot currently uses AES-256-CBC. [AES is getting weaker] and
+   [CBC mode is subject to Padding Oracle attacks].
+
  * Make a usable Gem
 
    Most Ruby stuff is installed using Gem, so Coquelicot should also be
@@ -335,6 +340,9 @@ Future
  * Package for Debian
 
    A Debian package would be nice to spread Coquelicot setups.
+
+[AES is getting weaker]: https://www.schneier.com/blog/archives/2009/07/another_new_aes.html
+[CBC mode is subject to Padding Oracle attacks]: http://www.limited-entropy.com/padding-oracle-attacks
 
 Storage details
 ---------------
