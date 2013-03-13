@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 0.9\n"
 "POT-Creation-Date: 2013-03-13 18:10+0100\n"
-"PO-Revision-Date: 2010-08-03 17:15+0200\n"
+"PO-Revision-Date: 2013-03-13 18:22+0100\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
 "Language: \n"
@@ -26,19 +26,19 @@ msgstr "Trop tard…"
 
 #: views/forbidden.haml:1
 msgid "Forbidden"
-msgstr ""
+msgstr "Interdit"
 
 #: views/forbidden.haml:2
 msgid "This password does not allow access to this resource."
-msgstr ""
+msgstr "Ce mot de passe ne permet pas d'accéder à cette ressource."
 
 #: views/not_found.haml:1
 msgid "Not found"
-msgstr ""
+msgstr "Introuvable"
 
 #: views/not_found.haml:2
 msgid "The requested URL %s was not found on this server."
-msgstr ""
+msgstr "L'URL %s demandé est introuvable sur ce serveur."
 
 #: views/auth/simplepass.haml:19
 msgid "Upload password:"
@@ -69,7 +69,6 @@ msgid "Exchanges between your computer and %s are encrypted."
 msgstr "Les échanges entre votre ordinateur et %s sont chiffrés."
 
 #: views/about_your_data.haml:29
-#, fuzzy
 msgid ""
 "Files are stored encrypted. In case someone gets access to the server\n"
 "storage, they will know the size, arrival and expiration dates of the\n"
@@ -78,7 +77,7 @@ msgid ""
 "\n"
 "In case no *download password* has been specified, the password might\n"
 "be kept in the server request logs. This means that the server might\n"
-"store enough informations to retrieve the actual file content.\n"
+"store enough information to retrieve the actual file content.\n"
 "\n"
 "When a *download password* has been specified, the password will not be\n"
 "stored anywhere on the server. This will prevent retrieval of the\n"
@@ -91,11 +90,14 @@ msgstr ""
 "leur contenu sans mot de passe.\n"
 "\n"
 "Au cas où aucun *mot de passe de téléchargement* n'a été indiqué, le mot\n"
-"de passe a pu être gardé dans les journaux du serveur.\n"
+"de passe peut être noté dans les journaux du serveur. Cela veut dire que\n"
+"le serveur peut garder suffisamment d'informations pour permettre de\n"
+"récupérer le contenu du fichier.\n"
 "\n"
 "Si un *mot de passe de téléchargement* a été indiqué, le mot de passe\n"
-"ne sera pas enregistré sur le serveur, sauf s'il a été compromis au\n"
-"au préalable."
+"ne sera enregistré nul part sur le serveur. Cela devrait empêcher de\n"
+"récupérer le contenu du fichier, sauf si le serveur a été activement\n"
+"compromis au préalable."
 
 #: views/about_your_data.haml:20
 msgid ""
@@ -124,22 +126,22 @@ msgstr ""
 "[fichier README](README) pour savoir comment faire."
 
 #: views/error.haml:1
-#, fuzzy
 msgid "Error"
 msgstr "Erreur :"
 
 #: views/error.haml:2
 msgid "Something bad happened: %s"
-msgstr ""
+msgstr "Quelque chose de grave est arrivé : %s"
 
 #: views/download_in_progress.haml:1
-#, fuzzy
 msgid "Download in progress"
-msgstr "Mot de passe pour le téléchargement :"
+msgstr "Téléchargement en cours"
 
 #: views/download_in_progress.haml:2
 msgid "The requested file is currently being downloaded by another client."
 msgstr ""
+"Le fichier demandé est actuellement en train d'être téléchargé par un autre "
+"client."
 
 #: views/enter_file_key.haml:18
 msgid "Enter download password…"
@@ -182,13 +184,12 @@ msgid "Available for:"
 msgstr "Disponible pendant :"
 
 #: views/index.haml:48
-#, fuzzy
 msgid "Download password (<em>optional</em>):"
-msgstr "Mot de passe pour le téléchargement :"
+msgstr "Mot de passe pour le téléchargement (<em>optionnel</em>) :"
 
 #: views/index.haml:51
 msgid "File (<em>max. size: %s</em>):"
-msgstr ""
+msgstr "Fichier (<em>taille max. : %s</em>) :"
 
 #: views/index.haml:46
 msgid "Remove after one download"
@@ -212,7 +213,7 @@ msgstr "Coquelicot"
 
 #: views/layout.haml:37
 msgid "Don't forget to write it down!"
-msgstr ""
+msgstr "N'oubliez pas de le noter !"
 
 #: views/layout.haml:39
 msgid "Error:"
@@ -277,12 +278,3 @@ msgstr "Le fichier est plus gros que la taille maximale autorisée (%s)."
 #: lib/coquelicot/rack/upload.rb:201
 msgid "File has no content"
 msgstr "Le fichier est vide"
-
-#~ msgid "5 minutes"
-#~ msgstr "5 minutes"
-
-#~ msgid "File:"
-#~ msgstr "Fichier :"
-
-#~ msgid "Max. size: %s"
-#~ msgstr "Taille maximale : %s"
