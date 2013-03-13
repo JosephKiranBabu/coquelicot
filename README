@@ -74,10 +74,10 @@ Features
 
  * Download can be protected by a password
 
-   When uploading, a password can be specified which will be used as
-   the encryption key. In order to download the file, the password
-   must be entered through in a POST'ed form, preventing the password
-   from appearing in the server logs.
+   When uploading, a password can be specified which will then be used
+   to encrypt the file. For subsequent downloads, the password
+   must be entered through in a POST'ed form. This prevents the password
+   from appearing in most server logs.
 
  * Files are stored with a random name
 
