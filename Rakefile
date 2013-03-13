@@ -25,7 +25,8 @@ require 'haml/magic_translations/tasks'
 Haml::MagicTranslations::Tasks::UpdatePoFiles.new(:updatepo) do |t|
   t.text_domain = 'coquelicot'
   t.files = Dir.glob('views/**/*.{rb,haml}') + Dir.glob('lib/coquelicot/**/*.rb')
-  t.app_version = 'coquelicot 1.0.0'
+  spec = Gem::Specification.load('coquelicot.gemspec')
+  t.app_version = "coquelicot #{spec.version}"
 end
 
 task :create_archive do
