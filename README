@@ -115,7 +115,7 @@ Debian, please issue:
 
 Once Bundler is available, please issue:
 
-    $ bundle install --deployment --binstubs
+    $ bundle install --deployment
 
 Then, to start Coquelicot use:
 
