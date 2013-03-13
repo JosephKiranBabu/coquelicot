@@ -382,10 +382,10 @@ module Coquelicot
     end
 
     def send_stored_file(file)
-      last_modified file.created_at.httpdate
-      attachment file.meta['Filename']
       response['Content-Length'] = "#{file.meta['Length']}"
       response['Content-Type'] = file.meta['Content-Type'] || 'application/octet-stream'
+      last_modified file.created_at.httpdate
+      attachment file.meta['Filename']
       throw :halt, [200, file]
     end
 
