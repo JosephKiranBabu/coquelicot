@@ -5,8 +5,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: coquelicot 1.0.0\n"
-"POT-Creation-Date: 2012-03-23 19:34+0100\n"
+"Project-Id-Version: coquelicot 0.9\n"
+"POT-Creation-Date: 2013-03-13 18:10+0100\n"
 "PO-Revision-Date: 2010-08-03 17:15+0200\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
@@ -16,105 +16,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: views/ready.haml:25
-msgid "A password is required to download this file."
-msgstr "Un mot de passe est nécessaire pour télécharger ce fichier."
+#: views/expired.haml:20
+msgid "Sorry, file has expired."
+msgstr "Désolé, le fichier a expiré."
 
-#: views/ready.haml:28
-msgid "Share another file…"
-msgstr "Partager un autre fichier…"
+#: views/expired.haml:18
+msgid "Too late…"
+msgstr "Trop tard…"
 
-#: views/ready.haml:18
-msgid "Share this!"
-msgstr "À transmettre !"
+#: views/forbidden.haml:1
+msgid "Forbidden"
+msgstr ""
 
-#: views/ready.haml:26
-msgid "The file will be available until %s."
-msgstr "Ce fichier sera accessible jusqu'au %s."
+#: views/forbidden.haml:2
+msgid "This password does not allow access to this resource."
+msgstr ""
 
-#: views/layout.haml:23
-msgid "Coquelicot"
-msgstr "Coquelicot"
+#: views/not_found.haml:1
+msgid "Not found"
+msgstr ""
 
-#: views/layout.haml:37
-msgid "Error:"
-msgstr "Erreur :"
+#: views/not_found.haml:2
+msgid "The requested URL %s was not found on this server."
+msgstr ""
 
-#: views/layout.haml:34
-msgid "Generate random"
-msgstr "Générer aléatoirement"
+#: views/auth/simplepass.haml:19
+msgid "Upload password:"
+msgstr "Mot de passe pour envoyer :"
 
-#: views/layout.haml:35
-msgid "Generating…"
-msgstr "Génération…"
+#: views/auth/imap.haml:20
+msgid "E-mail User:"
+msgstr "Compte email :"
 
-#: views/layout.haml:36
-msgid "Please try again!"
-msgstr "Allez, essaye encore !"
-
-#: views/layout.haml:38
-msgid "Upload starting..."
-msgstr "Démarrage de l’envoi..."
-
-#: views/layout.haml:39
-msgid "Uploading: "
-msgstr "Envoi :"
-
-#: views/layout.haml:40
-msgid "kB"
-msgstr "ko"
-
-#: views/index.haml:37
-msgid "1 day"
-msgstr "1 jour"
-
-#: views/index.haml:36
-msgid "1 hour"
-msgstr "1 heure"
-
-#: views/index.haml:39
-msgid "1 month"
-msgstr "1 mois"
-
-#: views/index.haml:38
-msgid "1 week"
-msgstr "1 semaine"
-
-#: views/index.haml:35
-msgid "5 minutes"
-msgstr "5 minutes"
-
-#: views/index.haml:33
-msgid "Available for:"
-msgstr "Disponible pendant :"
-
-#: views/index.haml:49
-msgid "Download password:"
-msgstr "Mot de passe pour le téléchargement :"
-
-#: views/index.haml:52
-msgid "File:"
-msgstr "Fichier :"
-
-#: views/index.haml:54
-msgid "Max. size: %s"
-msgstr "Taille maximale : %s"
-
-#: views/index.haml:47
-msgid "Remove after one download"
-msgstr "Effacer après un téléchargement"
-
-#: views/index.haml:22
-msgid "Share a file!"
-msgstr "Partager un fichier !"
-
-#: views/index.haml:57
-msgid "Share!"
-msgstr "Partager !"
-
-#: views/index.haml:44
-msgid "Unlimited downloads until expiration"
-msgstr "Téléchargements illimités avant expiration"
+#: views/auth/imap.haml:23 views/enter_file_key.haml:22
+msgid "Password:"
+msgstr "Mot de passe :"
 
 #: views/about_your_data.haml:18
 msgid "About your data…"
@@ -133,6 +69,7 @@ msgid "Exchanges between your computer and %s are encrypted."
 msgstr "Les échanges entre votre ordinateur et %s sont chiffrés."
 
 #: views/about_your_data.haml:29
+#, fuzzy
 msgid ""
 "Files are stored encrypted. In case someone gets access to the server\n"
 "storage, they will know the size, arrival and expiration dates of the\n"
@@ -140,10 +77,12 @@ msgid ""
 "password.\n"
 "\n"
 "In case no *download password* has been specified, the password might\n"
-"be kept in the server request logs.\n"
+"be kept in the server request logs. This means that the server might\n"
+"store enough informations to retrieve the actual file content.\n"
 "\n"
-"If a *download password* has been specified, the password will not be\n"
-"stored anywhere on the server, except if it has been actively compromised\n"
+"When a *download password* has been specified, the password will not be\n"
+"stored anywhere on the server. This will prevent retrieval of the\n"
+"file content, except if the server has been actively compromised\n"
 "beforehand."
 msgstr ""
 "Les fichiers sont enregistrés sous forme chiffrée. Au cas où une personne\n"
@@ -166,7 +105,7 @@ msgstr ""
 "Bienvenue sur *Coquelicot*. Un moyen simple de partager des fichiers avec\n"
 "des personnes que vous connaissez, cela avec un peu d'intimité."
 
-#: views/about_your_data.haml:41
+#: views/about_your_data.haml:43
 msgid "What if I don't trust the server admins?"
 msgstr "Et si je ne fais pas confiance aux admin. du serveur ?"
 
@@ -174,7 +113,7 @@ msgstr "Et si je ne fais pas confiance aux admin. du serveur ?"
 msgid "What should I expect from “a little bit of privacy”?"
 msgstr "Que puis-je attendre d'« un peu d'intimité » ?"
 
-#: views/about_your_data.haml:42
+#: views/about_your_data.haml:44
 msgid ""
 "You are [free](http://www.gnu.org/licenses/agpl.txt) to install Coquelicot\n"
 "on your own system. Please refer to the [README](README) if you wish to\n"
@@ -184,29 +123,124 @@ msgstr ""
 "Coquelicot sur votre propre système. Veuillez vous référer au\n"
 "[fichier README](README) pour savoir comment faire."
 
+#: views/error.haml:1
+#, fuzzy
+msgid "Error"
+msgstr "Erreur :"
+
+#: views/error.haml:2
+msgid "Something bad happened: %s"
+msgstr ""
+
+#: views/download_in_progress.haml:1
+#, fuzzy
+msgid "Download in progress"
+msgstr "Mot de passe pour le téléchargement :"
+
+#: views/download_in_progress.haml:2
+msgid "The requested file is currently being downloaded by another client."
+msgstr ""
+
 #: views/enter_file_key.haml:18
 msgid "Enter download password…"
 msgstr "Entrer le passe de téléchargement…"
 
-#: views/enter_file_key.haml:22 views/auth/imap.haml:23
-msgid "Password:"
-msgstr "Mot de passe :"
+#: views/ready.haml:23
+msgid "A password is required to download this file."
+msgstr "Un mot de passe est nécessaire pour télécharger ce fichier."
 
-#: views/auth/simplepass.haml:19
-msgid "Upload password:"
-msgstr "Mot de passe pour envoyer :"
+#: views/ready.haml:26
+msgid "Share another file…"
+msgstr "Partager un autre fichier…"
 
-#: views/auth/imap.haml:20
-msgid "E-mail User:"
-msgstr "Compte email :"
+#: views/ready.haml:18
+msgid "Share this!"
+msgstr "À transmettre !"
 
-#: views/expired.haml:20
-msgid "Sorry, file has expired."
-msgstr "Désolé, le fichier a expiré."
+#: views/ready.haml:24
+msgid "The file will be available until %s."
+msgstr "Ce fichier sera accessible jusqu'au %s."
 
-#: views/expired.haml:18
-msgid "Too late…"
-msgstr "Trop tard…"
+#: views/index.haml:36
+msgid "1 day"
+msgstr "1 jour"
+
+#: views/index.haml:35
+msgid "1 hour"
+msgstr "1 heure"
+
+#: views/index.haml:38
+msgid "1 month"
+msgstr "1 mois"
+
+#: views/index.haml:37
+msgid "1 week"
+msgstr "1 semaine"
+
+#: views/index.haml:33
+msgid "Available for:"
+msgstr "Disponible pendant :"
+
+#: views/index.haml:48
+#, fuzzy
+msgid "Download password (<em>optional</em>):"
+msgstr "Mot de passe pour le téléchargement :"
+
+#: views/index.haml:51
+msgid "File (<em>max. size: %s</em>):"
+msgstr ""
+
+#: views/index.haml:46
+msgid "Remove after one download"
+msgstr "Effacer après un téléchargement"
+
+#: views/index.haml:22
+msgid "Share a file!"
+msgstr "Partager un fichier !"
+
+#: views/index.haml:55
+msgid "Share!"
+msgstr "Partager !"
+
+#: views/index.haml:43
+msgid "Unlimited downloads until expiration"
+msgstr "Téléchargements illimités avant expiration"
+
+#: views/layout.haml:23
+msgid "Coquelicot"
+msgstr "Coquelicot"
+
+#: views/layout.haml:37
+msgid "Don't forget to write it down!"
+msgstr ""
+
+#: views/layout.haml:39
+msgid "Error:"
+msgstr "Erreur :"
+
+#: views/layout.haml:35
+msgid "Generate random"
+msgstr "Générer aléatoirement"
+
+#: views/layout.haml:36
+msgid "Generating…"
+msgstr "Génération…"
+
+#: views/layout.haml:38
+msgid "Please try again!"
+msgstr "Allez, essaye encore !"
+
+#: views/layout.haml:40
+msgid "Upload starting..."
+msgstr "Démarrage de l’envoi..."
+
+#: views/layout.haml:41
+msgid "Uploading: "
+msgstr "Envoi :"
+
+#: views/layout.haml:42
+msgid "kB"
+msgstr "ko"
 
 #: lib/coquelicot/num.rb:25
 msgid "TiB"
@@ -228,7 +262,7 @@ msgstr "Kio"
 msgid "B"
 msgstr "o"
 
-#: lib/coquelicot/rack/upload.rb:199
+#: lib/coquelicot/rack/upload.rb:191
 msgid ""
 "File is bigger than maximum allowed size: %s would exceed the maximum "
 "allowed %s."
@@ -236,10 +270,19 @@ msgstr ""
 "Le fichier est plus gros que la taille maximale autorisée : %s dépasse le "
 "maximum autorisé (%s)."
 
-#: lib/coquelicot/rack/upload.rb:202
+#: lib/coquelicot/rack/upload.rb:194
 msgid "File is bigger than maximum allowed size %s."
 msgstr "Le fichier est plus gros que la taille maximale autorisée (%s)."
 
-#: lib/coquelicot/rack/upload.rb:209
+#: lib/coquelicot/rack/upload.rb:201
 msgid "File has no content"
 msgstr "Le fichier est vide"
+
+#~ msgid "5 minutes"
+#~ msgstr "5 minutes"
+
+#~ msgid "File:"
+#~ msgstr "Fichier :"
+
+#~ msgid "Max. size: %s"
+#~ msgstr "Taille maximale : %s"
