@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: coquelicot 0.9\n"
 "POT-Creation-Date: 2013-03-13 18:10+0100\n"
-"PO-Revision-Date: 2010-08-03 17:15+0200\n"
+"PO-Revision-Date: 2013-03-13 19:02+0100\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
 "Language: \n"
@@ -26,19 +26,19 @@ msgstr "Zu spät…"
 
 #: views/forbidden.haml:1
 msgid "Forbidden"
-msgstr ""
+msgstr "Verboten"
 
 #: views/forbidden.haml:2
 msgid "This password does not allow access to this resource."
-msgstr ""
+msgstr "Dieses Passwort erlaubt keinen Zugang zu dieser Ressource."
 
 #: views/not_found.haml:1
 msgid "Not found"
-msgstr ""
+msgstr "Nit gefunden"
 
 #: views/not_found.haml:2
 msgid "The requested URL %s was not found on this server."
-msgstr ""
+msgstr "Die angeforderte URL %s wurde nicht auf dem Server gefunden."
 
 #: views/auth/simplepass.haml:19
 msgid "Upload password:"
@@ -54,17 +54,17 @@ msgstr "Passwort:"
 
 #: views/about_your_data.haml:18
 msgid "About your data…"
-msgstr ""
+msgstr "Über deine Daten..."
 
 #: views/about_your_data.haml:26
 msgid ""
 "An attacker in-between will be able to see how much data is exchanged,\n"
 "but not its nature."
-msgstr ""
+msgstr "Ein zwischengeschalteter Angreifer wird sehen können, wieviel Daten übermittelt werden, aber nicht welcher Art."
 
 #: views/about_your_data.haml:25
 msgid "Exchanges between your computer and %s are encrypted."
-msgstr ""
+msgstr "Der Austausch zwischen deinem Computer und %s sind verschlüsselt."
 
 #: views/about_your_data.haml:29
 msgid ""
@@ -75,27 +75,40 @@ msgid ""
 "\n"
 "In case no *download password* has been specified, the password might\n"
 "be kept in the server request logs. This means that the server might\n"
-"store enough informations to retrieve the actual file content.\n"
+"store enough information to retrieve the actual file content.\n"
 "\n"
 "When a *download password* has been specified, the password will not be\n"
 "stored anywhere on the server. This will prevent retrieval of the\n"
 "file content, except if the server has been actively compromised\n"
 "beforehand."
 msgstr ""
+"Dateien werden verschlüsselt gespeichert. Falls jemand Zugriff auf den Server\n"
+"erlangt, werden sie die Größe, Ankunfts- und Ablaufdaten der Files kennen,\n"
+" aber sie werden den Inhalt ohne das Passwort nicht sehen können.\n"
+"\n"
+"Falls kein *Download-Passwort* angegeben wurde, könnte das Passwort in\n"
+"den Server-Logs gehalten werden. Das bedeutet, der Server könnte genug\n"
+"Informationen vorhalten um an den Datei-Inhalt zu gelangen.\n"
+"\n"
+"Falls ein *Download-Passwort* angegeben wurde, wird es nirgendwo\n"
+"gespeichert werden. Das wird die Abfrage des Datei-Inhalts verhindern,\n"
+"es sei denn der Server wurde vorher aktiv kompromitiert."
 
 #: views/about_your_data.haml:20
 msgid ""
 "Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
 "with a little bit of privacy."
 msgstr ""
+"Willkommen bei *Coquelicot*. Ein einfacher Weg um Dateien mit Freunden zu teilen,\n"
+"mit ein bisschen Privatsphäre."
 
 #: views/about_your_data.haml:43
 msgid "What if I don't trust the server admins?"
-msgstr ""
+msgstr "Was is, wenn ich den Server-Admins nicht vertraue?"
 
 #: views/about_your_data.haml:23
 msgid "What should I expect from “a little bit of privacy”?"
-msgstr ""
+msgstr "Was sollte ich von “ein bisschen Privatsphäre” erwarten?"
 
 #: views/about_your_data.haml:44
 msgid ""
@@ -103,24 +116,25 @@ msgid ""
 "on your own system. Please refer to the [README](README) if you wish to\n"
 "know how."
 msgstr ""
+"Du bist [frei](http://www.gnu.org/licenses/agpl.txt) Coquelicot auf deinem\n"
+"Computer zu installieren. Bitte verwende das [README](README), wenn du wissen\n"
+"möchtest wie."
 
 #: views/error.haml:1
-#, fuzzy
 msgid "Error"
 msgstr "Fehler:"
 
 #: views/error.haml:2
 msgid "Something bad happened: %s"
-msgstr ""
+msgstr "Etwas schlechtes ist passiert: %s"
 
 #: views/download_in_progress.haml:1
-#, fuzzy
 msgid "Download in progress"
-msgstr "Download-Passwort:"
+msgstr "Download läuft"
 
 #: views/download_in_progress.haml:2
 msgid "The requested file is currently being downloaded by another client."
-msgstr ""
+msgstr "Die angeforderte Datei wird gerade von einem anderen Client heruntergeladen."
 
 #: views/enter_file_key.haml:18
 msgid "Enter download password…"
@@ -163,13 +177,12 @@ msgid "Available for:"
 msgstr "Verfügbar für:"
 
 #: views/index.haml:48
-#, fuzzy
 msgid "Download password (<em>optional</em>):"
-msgstr "Download-Passwort:"
+msgstr "Download-Passwort (<em>optional</em>):"
 
 #: views/index.haml:51
 msgid "File (<em>max. size: %s</em>):"
-msgstr ""
+msgstr "Datei (<em>max. Größe: %s</em>):"
 
 #: views/index.haml:46
 msgid "Remove after one download"
@@ -193,7 +206,7 @@ msgstr "Coquelicot"
 
 #: views/layout.haml:37
 msgid "Don't forget to write it down!"
-msgstr ""
+msgstr "Vergiss nicht es aufzuschreiben!"
 
 #: views/layout.haml:39
 msgid "Error:"
@@ -225,40 +238,36 @@ msgstr "kB"
 
 #: lib/coquelicot/num.rb:25
 msgid "TiB"
-msgstr ""
+msgstr "TiB"
 
 #: lib/coquelicot/num.rb:25
 msgid "GiB"
-msgstr ""
+msgstr "GiB"
 
 #: lib/coquelicot/num.rb:25
 msgid "MiB"
-msgstr ""
+msgstr "MiB"
 
 #: lib/coquelicot/num.rb:25
 msgid "KiB"
-msgstr ""
+msgstr "KiB"
 
 #: lib/coquelicot/num.rb:25
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: lib/coquelicot/rack/upload.rb:191
 msgid ""
 "File is bigger than maximum allowed size: %s would exceed the maximum "
 "allowed %s."
 msgstr ""
+"Die Datei ist größer als die maximal erlaubte Größe: %s würde die\n"
+"maximal erlaubten %s überschreiten."
 
 #: lib/coquelicot/rack/upload.rb:194
 msgid "File is bigger than maximum allowed size %s."
-msgstr ""
+msgstr "Die Datei ist größer als die maximal erlaubte Größe %s"
 
 #: lib/coquelicot/rack/upload.rb:201
 msgid "File has no content"
-msgstr ""
-
-#~ msgid "5 minutes"
-#~ msgstr "5 Minuten"
-
-#~ msgid "File:"
-#~ msgstr "Datei:"
+msgstr "Die Datei hat keinen Inhalt"
