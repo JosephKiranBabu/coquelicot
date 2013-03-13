@@ -49,13 +49,11 @@
     #container
       = yield
     #footer
-      %a{ :href => 'about-your-data' }= 'About your data…'
-      = '—'
-      %a{ :href => 'README' }= 'Coquelicot'
-      %span= '© 2010-2013 potager.org'
-      %span
+      %div
+        %a{ :href => 'about-your-data' }= 'About your data…'
         = '—'
+        %a{ :href => 'README' }= 'Coquelicot'
+        = '© 2010-2013 potager.org —'
         %a{ :href => 'http://www.gnu.org/licenses/agpl.txt' }= 'AGPLv3'
-        = '—'
-      %span
-        %code= "git clone #{clone_url}"
+      %div
+        %code= "#{clone_command}"

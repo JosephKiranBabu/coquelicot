@@ -19,6 +19,7 @@ require 'spec_helper'
 require 'coquelicot/jyraphe_migrator'
 require 'capybara/dsl'
 require 'tempfile'
+require 'timecop'
 
 describe Coquelicot::Application do
   include Rack::Test::Methods
@@ -191,6 +192,54 @@ describe Coquelicot::Application do
         end
       end
     end
+    context 'when a local Git repository is usable' do
+      before(:each) do
+        # Might be pretty brittle… but will do for now
+        Coquelicot::Helpers.module_eval('remove_class_variable :@@can_provide_git_repository if defined? @@can_provide_git_repository')
+        File.stub(:readable?).and_return(true)
+      end
+      it 'should offer a "git clone" to the local URI' do
+        visit '/'
+        find('#footer').should have_content('git clone http://www.example.com/coquelicot.git')
+      end
+    end
+    context 'when a local Git repository is not usable' do
+      before(:each) do
+        # Might be pretty brittle… but will do for now
+        Coquelicot::Helpers.module_eval('remove_class_variable :@@can_provide_git_repository')
+        File.stub(:readable?) do |p|
+          p.end_with?('.git')
+        end
+      end
+      it 'should offer a link to retrieve the source' do
+        visit '/'
+        find('#footer').text.should =~ /curl.*gem unpack.*\.gem$/
+      end
+      it 'should log a warning' do
+        logger = double('Logger')
+        logger.should_receive(:warn).with(/Unable to provide access to local Git repository/)
+        app.any_instance.stub(:logger).and_return(logger)
+        visit '/'
+      end
+      it 'should log a warning only on the first request' do
+        logger = double('Logger')
+        logger.should_receive(:warn).once
+        app.any_instance.stub(:logger).and_return(logger)
+        visit '/'
+        visit '/'
+      end
+    end
+    context 'when there is no local Git repository' do
+      before(:each) do
+        # Might be pretty brittle… but will do for now
+        Coquelicot::Helpers.module_eval('remove_class_variable :@@can_provide_git_repository')
+        File.stub(:readable?).and_return(false)
+      end
+      it 'should offer a link to retrieve the source' do
+        visit '/'
+        find('#footer').text.should =~ /curl.*gem unpack.*\.gem$/
+      end
+    end
   end
 
   describe 'get /README' do
@@ -218,6 +267,51 @@ describe Coquelicot::Application do
       it 'should notice the connection is encrypted' do
         visit 'http://example.com/about-your-data'
         page.should_not have_content('Exchanges between your computer and example.org are encrypted.')
+      end
+    end
+  end
+
+  describe 'get /source' do
+    context 'when the server hostname is one-cool-hostname' do
+      before(:each) do
+        Coquelicot::Helpers.module_eval('remove_class_variable :@@hostname if defined? @@hostname')
+        Socket.stub(:gethostname).and_return('one-cool-hostname')
+        visit '/source'
+      end
+      it 'should send a file to be saved' do
+        page.response_headers['Content-Type'].should == 'application/octet-stream'
+        page.response_headers['Content-Disposition'].should =~ /^attachment;/
+      end
+      it 'should send a file with a proposed name correct for coquelicot gem' do
+        page.response_headers['Content-Disposition'].should =~ /filename="coquelicot-.*\.gem"/
+      end
+      context 'the downloaded gem' do
+        around(:each) do |example|
+          Gem::Package.open(StringIO.new(page.driver.response.body)) do |gem|
+            @gem = gem
+            example.run
+          end
+        end
+        it 'should be named "coquelicot"' do
+          @gem.metadata.name.should == 'coquelicot'
+        end
+        it "should have a version containing 'onecoolhostname' for the hostname" do
+          @gem.metadata.version.to_s.should =~ /\.onecoolhostname\./
+        end
+        it "should have a version containing today's date" do
+          Timecop.freeze(Time.now) do
+            date_str = Date.today.strftime('%Y%m%d')
+            @gem.metadata.version.to_s.should =~ /\.#{date_str}$/
+          end
+        end
+        it 'should at least contain this spec file' do
+          this_file = __FILE__.gsub(/^.*\/spec/, 'spec')
+          content = nil
+          @gem.each do |file|
+            content = file.read if file.full_name.end_with?(this_file)
+          end
+          content.should == File.open(__FILE__, 'rb').read
+        end
       end
     end
   end

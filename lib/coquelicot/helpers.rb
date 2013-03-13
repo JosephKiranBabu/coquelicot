@@ -18,8 +18,42 @@
 
 module Coquelicot
   module Helpers
-    def clone_url
-      settings.respond_to?(:clone_url) ? settings.clone_url : uri('coquelicot.git')
+    def can_provide_git_repository?
+      return @@can_provide_git_repository if defined?(@@can_provide_git_repository)
+
+      # Test if `git update-server-info` was executed in the local repository
+      @@can_provide_git_repository =
+         File.readable?(File.expand_path('coquelicot.git/info/refs', settings.public_folder)) &&
+         File.readable?(File.expand_path('coquelicot.git/objects/info/packs', settings.public_folder))
+
+      if File.readable?(File.expand_path('coquelicot.git', settings.public_folder)) &&
+         !@@can_provide_git_repository
+        logger.warn <<-MESSAGE.gsub(/\n */m, ' ').strip
+          Unable to provide access to local Git repository. Please ensure that
+          you have run `git update-server-info` in the Coquelicot directory,
+          and that the symlink `public/coquelicot.git` is properly set.
+        MESSAGE
+      end
+      @@can_provide_git_repository
+    end
+
+    def gem_hostname
+      # We need to mangle the hostname to fits Gem::Version constraints
+      @@hostname ||= Socket.gethostname.gsub(/[^0-9a-zA-Z]/, '')
+    end
+
+    def gem_version
+      spec = Gem::loaded_specs['coquelicot']
+      current_version = spec.version.to_s.gsub(/\.[0-9a-zA-Z]+\.[0-9]{8}/, '')
+      Gem::Version.new("#{current_version}.#{gem_hostname}.#{Date.today.strftime('%Y%m%d')}")
+    end
+
+    def clone_command
+      if can_provide_git_repository?
+        "git clone #{uri('coquelicot.git')}"
+      else
+        "curl -OJ #{uri('source')} && gem unpack coqueliot-#{gem_version}.gem"
+      end
     end
 
     def authenticate(params)
