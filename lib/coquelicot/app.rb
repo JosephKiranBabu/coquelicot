@@ -85,6 +85,31 @@ module Coquelicot
       $stderr.puts parser.to_s
       exit
     end
+    def monkeypatch_half_close
+      # This implements the behaviour outlined in Section 8 of
+      # <http://ftp.ics.uci.edu/pub/ietf/http/draft-ietf-http-connection-00.txt>.
+      #
+      # Half-closing the write part first and draining our input makes sure the
+      # client will properly receive an error message instead of TCP RST (a.k.a.
+      # "Connection reset by peer") when we interrupt it in the middle of a POST
+      # request.
+      #
+      # Thanks Eric Wong for these few lines. See
+      # <http://rubyforge.org/pipermail/rainbows-talk/2012-February/000328.html> for
+      # the discussion that lead him to propose what follows.
+      Rainbows::Client.class_eval <<-END_OF_METHOD
+        def close
+          close_write
+          buf = ""
+          loop do
+            kgio_wait_readable(2)
+            break unless kgio_tryread(512, buf)
+          end
+        ensure
+          super
+        end
+      END_OF_METHOD
+    end
     def start!(args)
       options = {}
       parser = OptionParser.new do |opts|
@@ -124,38 +149,26 @@ module Coquelicot
       rainbows_opts = {}
       ::Unicorn::Launcher.daemonize!(rainbows_opts) unless options[:no_daemon]
 
-      app = lambda do
-          ::Rack::Builder.new do
-            # This implements the behaviour outlined in Section 8 of
-            # <http://ftp.ics.uci.edu/pub/ietf/http/draft-ietf-http-connection-00.txt>.
-            #
-            # Half-closing the write part first and draining our input makes sure the
-            # client will properly receive an error message instead of TCP RST (a.k.a.
-            # "Connection reset by peer") when we interrupt it in the middle of a POST
-            # request.
-            #
-            # Thanks Eric Wong for these few lines. See
-            # <http://rubyforge.org/pipermail/rainbows-talk/2012-February/000328.html> for
-            # the discussion that lead him to propose what follows.
-            Rainbows::Client.class_eval <<-END_OF_METHOD
-              def close
-                close_write
-                buf = ""
-                loop do
-                  kgio_wait_readable(2)
-                  break unless kgio_tryread(512, buf)
-                end
-              ensure
-                super
+      if RUBY_VERSION >= '1.9'
+        app = lambda do
+                ::Rack::Builder.new do
+                  Coquelicot.monkeypatch_half_close
+                  use ::Rack::ContentLength
+                  use ::Rack::Chunked
+                  use ::Rack::CommonLogger, $stderr
+                  run Application
+                end.to_App
               end
-            END_OF_METHOD
-
-            use ::Rack::ContentLength
-            use ::Rack::Chunked
-            use ::Rack::CommonLogger, $stderr
-            run Application
-          end.to_app
-        end
+      else
+        # Wrapping the app inside a lambda does not work on Ruby 1.8.
+        # Unfortunetaly, this means we can't monkeypatch half-closing.
+        app = ::Rack::Builder.new do
+                use ::Rack::ContentLength
+                use ::Rack::Chunked
+                use ::Rack::CommonLogger, $stderr
+                run Application
+              end.to_app
+      end
 
       server = ::Rainbows::HttpServer.new(app, rainbows_opts)
       server.start.join
