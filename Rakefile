@@ -27,3 +27,29 @@ Haml::MagicTranslations::Tasks::UpdatePoFiles.new(:updatepo) do |t|
  t.files = Dir.glob('views/**/*.{rb,haml}') + Dir.glob('lib/coquelicot/**/*.rb')
  t.app_version = 'coquelicot 1.0.0'
 end
+
+task :create_archive do
+  spec = Gem::Specification.load('coquelicot.gemspec')
+
+  filename = "coquelicot-#{spec.version}.tar.gz"
+
+  File.open(filename, 'wb') do |archive|
+    Zlib::GzipWriter.wrap(archive) do |gzipped|
+      Gem::Package::TarWriter.new(gzipped) do |writer|
+        spec.files.each do |file|
+          next if File.directory? file
+          stat = File.stat(file)
+          mode = stat.mode & 0777
+          size = stat.size
+          writer.add_file_simple(file, mode, size) do |tar_io|
+            tar_io.write(open(file, 'rb') { |f| f.read })
+          end
+        end
+        # Add empty directories where there is place holders
+        Dir.glob('**/.placeholder') do |placeholder|
+          writer.mkdir File.dirname(placeholder), 0700
+        end
+      end
+    end
+  end
+end
