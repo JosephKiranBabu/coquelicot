@@ -37,7 +37,8 @@ Gem::Specification.new do |s|
     not so active attackers.
   DESCRIPTION
 
-  s.files         = `git ls-files`.split("\n")
+  s.files         = `git ls-files`.split("\n").
+      select { |p| !['.gitignore', '.placeholder', 'coquelicot.git'].include?(File.basename(p)) }
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
