@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://coquelicot.potager.org/'
   s.summary     = %q{"one-click" file sharing web application focusing on privacy}
   s.description = <<-DESCRIPTION.gsub(/^ */, '')
-    Coquelicot is a "one-click" file sharing web application with a specific
+    Coquelicot is a "one-click" file sharing web application with a
     focus on protecting users' privacy.
 
     Basic principle: users can upload a file to the server, in return they
