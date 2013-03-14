@@ -20,7 +20,7 @@ begin
   require 'rubygems'
   require 'bundler'
   Bundler.setup
-rescue
+rescue LoadError
   # Maybe all dependencies were handled by some other mechanisms
 end
 
