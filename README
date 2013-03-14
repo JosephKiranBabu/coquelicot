@@ -23,47 +23,46 @@ Features
    disk space, Coquelicot limits upload to authenticated users.
    It currently ships with two authentication mechanisms:
 
-    - "simplepass": users will need to provide a global, pre-shared,
-      password;
+    - "simplepass": uploading users need to provide a global,
+      pre-shared, password;
     - "imap": users will need to provide a login and a password,
-      those credentials will be used to authenticate against an existing
-      IMAP server.
+      that are used to authenticate against an existing IMAP server.
 
    It is possible to integrate more authentication mechanisms by
-   implementing a single method, some Javascript, and a template partial
+   implementing a single method, some JavaScript, and a partial template
    to render the common fields. For more information have a look at the
    notes below.
 
  * Mandatory expiration
 
    When uploading, a time limit has to be specified. The file will be
-   unavailable once this limit has been reached.
+   unavailable once this much time has passed.
 
    During a configurable period of time, trying to download the file
    will return a page saying "too late" instead of "not found".
 
  * Support for one-time download
 
-   An user might want to allow exactly _one_ download of a file, to more
+   A user might want to allow exactly _one_ download of a file, to more
    closely replace an email attachment. The file will be removed after
    the first complete download and concurrent downloads are prevented.
 
  * Upload progress bar
 
-   Users having javascript enabled will see a nice progress bar during
+   Users having JavaScript enabled will see a nice progress bar during
    the file upload.
 
  * Downgrade nicely
 
-   The application works fine without javascript or CSS.
+   The application works fine without JavaScript or CSS.
 
- * Download URL are hand-writing compatible
+ * Download URL can be written on paper
 
    URLs generated to download files uses the Base32 character set. This
    set is specifically designed to overcome misread of 'l', '1', '0' and
    'O' characters. Coquelicot will automatically convert case and
-   ambiguous characters to facilitate URL exchanges through
-   hand-writing.
+   ambiguous characters to facilitate URL exchanges using pieces of
+   paper.
 
  * Files are stored encrypted on the server
 
@@ -89,7 +88,8 @@ Features
 
    The random names given in download URLs do not map directly to file
    names on the server. This prevent server logs from giving a direct
-   mapping to the shared files.
+   mapping to the shared files. This creates another difficulty to
+   link users to files through forensic techniques.
 
  * File content is zero'ed before removal
 
@@ -100,10 +100,9 @@ Features
 Installation
 ------------
 
-Coquelicot is written in Ruby using the Sinatra web framework. Due to
-reasons detailed below, it needs to be run with the Rainbows! web
-server. The later should probably be made accessible through a reverse
-proxy.
+Coquelicot is written in Ruby using the Sinatra web framework and
+Rainbows! web server. The later should probably be made accessible
+through a reverse proxy.
 
 ### Initial setup
 
@@ -129,9 +128,11 @@ you will need to add the following directives:
     SetEnv proxy-sendchunks 1
     RequestHeader set X-Forwarded-SSL "on"
 
-Coquelicot has been written to use Rainbows! as its webserver. You can
+Coquelicot has been written to use [Rainbows!] as its webserver. You can
 also run Coquelicot with mod_passenger, Mongrel, Thin or any Rack
 compatible webserver, but please read below about buffered input.
+
+[Rainbows!]: http://rainbows.rubyforge.org/
 
 ### Configuration
 
@@ -185,8 +186,8 @@ repositories as `bin/coquelicot migrate-jyraphe`:
 The last argument must be a path to the `var` directory of the Jyraphe
 installation. After migrating the files to Coquelicot, directives for
 Apache mod_rewrite will be printed on stdout which ought to be
-redirected to a file. The `-p` option can be used to add a specific
-paths in the redirected URLs.
+redirected to a file. Using the `-p` option will prefix URL with the
+given path in the rewrite rules.
 
 [Jyraphe]: http://home.gna.org/jyraphe/
 
@@ -228,40 +229,41 @@ This will update `po/coquelicot.pot` and merge the new strings in the various
 The authentication part of Coquelicot has been made modular. Adding a
 new authentication mechanism should be fairly straightforward.
 
-New authentication mechanism needs to provide the following 3 files,
+A new authentication mechanism needs to provide the following 3 files,
 with the following responsabilities:
 
  * `lib/coquelicot/auth/<METHOD>.rb`:
 
    A class implementing the actual authentication. This class must
    implement an `authenticate` method. It will receive the form fields
-   as usual (params). This method should either return true if upload
+   as usual (params). This method must return true if upload
    should be allowed.
 
  * `public/javascripts/coquelicot.auth.<METHOD>.js:`
 
-    This file should define 'authentication' as an object with the
+    This file must define 'authentication' as an object with the
     following methods:
 
-    - `getData()`: returns an object of all the necessary data
-      to authenticate on the app side. Keys should have the same name
-      as the input fields used to authenticate without Javascript.
+    - `getData()`: return an object of all the necessary data
+      to authenticate on the app side. Keys must have the same name
+      as the input fields used to authenticate without JavaScript.
     - `focus()`: set the focus on the first authentication form field.
     - (optional) `handleSuccess()`: arbitrary action upon successful
-      authentication. This is called after the livebox is closed.
+      authentication. This is called after the livebox with
+      authentication fields is closed.
     - (optional) `handleReject()`: arbitrary action when access
-      get rejected. One can reset authentication fields after a failed
+      is denied. One can reset authentication fields after a failed
       authentication.
     - (optional) `handleFailure()`: arbitrary action when there was
       a problem in the authentication procedure.
 
  * `views/auth/<METHOD>.haml`:
 
-   Render the necessary form fields that will be used for
+   A template with the necessary form fields that will be used for
    authentication.
 
-   The authentication method can be set in the application settings
-   including mandatory options for this method.
+The authentication mechanism is set in the configuration file and
+can include options specific to the method chosen.
 
 ### Watch for buffered inputs!
 
@@ -269,45 +271,45 @@ Coquelicot is written in Ruby using Sinatra. Sinatra is based on the
 Rack webserver interface. Rack specification mandates that applications
 must be able to seek and rewind freely in the request content.
 
-Request data are always received as a stream through the network. So in
-order to comply with the specification, webservers implementing Rack will
+Request data is always received as a stream through the network. So in
+order to comply with the specification, webservers implementing Rack
 either buffer the input in memory (Webrick) or in a temporary file
 (Thin, Passenger or Mongrel).
 
 On top of that, when parsing `multipart/form-data` POST content,
-`Rack::Request` (used by Sinatra) will create a new temporary file for
+`Rack::Request` (used by Sinatra) creates a new temporary file for
 each files in the POST request.
 
-For the specific needs of Coquelicot, those behaviours will prevent
-users from uploading large files (if `/tmp` is in memory) or will be a
-breach of privacy, as a clear text version will be written to disk.
+For the specific needs of Coquelicot, these behaviours prevent users
+from uploading large files (if `/tmp` is in memory) or breach their
+privacy by writing a clear text version to disk.
 
 To overcome these limitations, Coquelicot first uses a specific feature
 of the Rainbows! webserver of streaming its input directly to
-applications, and second bypass `Rack::Request` to directly handle
+applications, and second bypasses `Rack::Request` to directly handle
 POST content. Usage of any other Rack webserver is strongly discouraged
 and should be restricted to development and testing.
 
 ### Implementation details
 
-Common application code lies in `Coquelicot::Application`. Except for
+Common application code lies in `Coquelicot::Application`, except for
 one specific (and important) type of requests, namely `POST /update`.
 These requests are handled directly at bare Rack level by
 `Coquelicot::Rack::Upload`.
 
 This allows to work directly with POST data as the browser is sending
-them, so we can directly stream the uploaded file to our encrypted
+it, so we can directly stream the uploaded file to our encrypted
 on-disk containers.
 
 The POST data must be in a very specific order, as we need to handle
-authentication, and various options prior to start recording the file
-content. Thanks to the W3C, the [HTML specification] states that parts
-of the POST data must be delivered in the same order the controls
-appears in the `<form/>` container.
+authentication and other option fields before we start recording the
+file content. Thanks to the W3C, the [HTML specification] states that
+parts of the POST data must be delivered in the same order as the
+controls appear in the `<form/>` container.
 
-`Coquelicot::Rack::Multipart` expose a simple DSL to parse the fields as
-they are delivered. The later is used by `Coquelicot::Rack::Upload` to
-perform its logic pretty nicely.
+`Coquelicot::Rack::Multipart` exposes a simple DSL to parse the fields
+as they are delivered. The later is used by `Coquelicot::Rack::Upload`
+to perform its logic pretty nicely.
 
 [HTML specification]: http://www.w3.org/TR/html4/interact/forms.html
 
@@ -376,7 +378,7 @@ Once decrypted, the metadata have the following format:
     Length: <content length is bytes>
     One-time-only: <true|false>
 
-Headers must be parseable using the YAML standard.
+Headers must be valid YAML.
 
 ### Content file
 
