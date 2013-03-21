@@ -252,9 +252,7 @@ module Coquelicot
     config_file File.expand_path('../../../conf/settings.yml', __FILE__)
 
     set :upr_backend, Upr::Monitor.new(Moneta.new(:Memory))
-    if defined?(Rainbows) && !Rainbows.server.nil? && !Rainbows.server.rewindable_input
-      use Upr, :backend => upr_backend, :path_info => %q{/upload}
-    end
+    use Upr, :backend => upr_backend, :path_info => %q{/upload}
     use Coquelicot::Rack::Upload
     # limit requests other than upload to an input body of 5 kiB max
     use Rainbows::MaxBody, 5 * 1024
