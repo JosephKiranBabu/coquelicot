@@ -157,7 +157,7 @@ module Coquelicot
                   use ::Rack::Chunked
                   use ::Rack::CommonLogger, $stderr
                   run Application
-                end.to_App
+                end.to_app
               end
       else
         # Wrapping the app inside a lambda does not work on Ruby 1.8.
