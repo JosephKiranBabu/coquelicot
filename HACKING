@@ -1,0 +1,55 @@
+How to make a new release?
+==========================
+
+ 1. Bump version number in `lib/coquelicot/version.rb` and `Gemfile.lock`.
+    Don't forget to commit the changes.
+
+ 2. Add a new entry in the NEWS file. For an outline:
+
+        git log --reverse --oneline $(git describe --abbrev=0)..
+
+    Don't forget to commit the changes.
+
+ 3. Tag the release:
+
+        git tag -s coquelicot-$VERSION -m "coquelicot $VERSION"
+
+ 4. Push changes to the main repository:
+
+        git push origin master coquelicot-$VERSION
+
+ 5. Create a source tarball:
+
+        bundle exec rake create_archive
+
+ 6. Sign it:
+
+        gpg --armor --sign coquelicot-$VERSION.tar.gz
+
+ 7. Switch to the website:
+
+        cd ../website
+
+ 8. Move the source tarball and signature to the website:
+
+        mv ../git/coquelicot-$VERSION.tar.gz* static/dist/
+
+ 9. Add them to the website repository:
+
+        git add static/dist/coquelicot-$VERSION.tar.gz*
+
+ 10. Update the version on the website homepage:
+
+        sed -e "s/coquelicot-$PREVIOUS_VERSION/coquelicot-$VERSION/g" \
+            -i dynamic/index.md
+
+ 11. Update the history on the website homepage.
+
+ 12. Commit changes to the website.
+
+ 13. Push the updated website:
+
+        make push
+        git push origin master
+
+ 14. Announce the release on `coquelicot@potager.org` mailing-list.
