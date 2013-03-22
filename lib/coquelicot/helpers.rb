@@ -46,7 +46,7 @@ module Coquelicot
 
     def gem_version
       spec = Gem::loaded_specs['coquelicot']
-      current_version = spec.version.to_s.gsub(/\.[0-9a-zA-Z]+\.[0-9]{8}/, '')
+      current_version = spec ? spec.version.to_s.gsub(/\.[0-9a-zA-Z]+\.[0-9]{8}/, '') : Coquelicot::VERSION
       Gem::Version.new("#{current_version}.#{gem_hostname}.#{Date.today.strftime('%Y%m%d')}")
     end
 
