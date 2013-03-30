@@ -53,3 +53,5 @@ How to make a new release?
         git push origin master
 
  14. Announce the release on `coquelicot@potager.org` mailing-list.
+
+ 15. Announce the release on freecode.com.
