@@ -42,9 +42,11 @@ task :create_archive do
           stat = File.stat(file)
           mode = stat.mode & 0777
           size = stat.size
+          mtime = stat.mtime
           name, prefix = writer.split_name(file)
           header = Gem::Package::TarHeader.new(:name => name, :mode => mode,
-                                               :size => size, :prefix => prefix).to_s
+                                               :size => size, :prefix => prefix,
+                                               :mtime => mtime).to_s
           gzipped.write header
           gzipped.write(open(file, 'rb') { |f| f.read })
           remainder = (512 - (size % 512)) % 512
@@ -54,9 +56,10 @@ task :create_archive do
         Dir.glob('**/.placeholder') do |placeholder|
           dir = File.dirname(placeholder)
           name, prefix = writer.split_name(dir)
+          mtime = File.stat(dir).mtime
           header = Gem::Package::TarHeader.new :name => name, :mode => 0700,
                                                :typeflag => "5", :size => 0,
-                                               :prefix => prefix
+                                               :prefix => prefix, :mtime => mtime
           gzipped.write header
         end
       end
