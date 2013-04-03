@@ -424,6 +424,12 @@ Background image (`public/images/background.jpg`) derived from:
 [“coquelicot” picture] © 2008 Jean-Louis Zimmermann  
 Licensed under [Creative Commons Attributions 2.0 Generic]  
 
+*jQuery* is © 2011 John Resig. Licensed under the [MIT license].  
+*jquery.uploadProgress* is © 2008 Piotr Sarnacki. Licensed under the
+[MIT license].  
+*lightboxFu* is © 2008 Piotr Sarnacki. Licensed under the [MIT license].
+
 [“coquelicot” picture]: https://secure.flickr.com/photos/jeanlouis_zimmermann/2478019744/
 [GNU Affero General Public License]: http://www.gnu.org/licenses/agpl.txt
 [Creative Commons Attributions 2.0 Generic]: https://creativecommons.org/licenses/by/2.0/deed
+[MIT license]: http://www.opensource.org/licenses/mit-license.php
