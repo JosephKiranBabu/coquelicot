@@ -436,5 +436,3 @@ module Coquelicot
     end
   end
 end
-
-Coquelicot::Application.run! if __FILE__ == $0
