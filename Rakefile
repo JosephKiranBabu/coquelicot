@@ -42,13 +42,22 @@ task :create_archive do
           stat = File.stat(file)
           mode = stat.mode & 0777
           size = stat.size
-          writer.add_file_simple(file, mode, size) do |tar_io|
-            tar_io.write(open(file, 'rb') { |f| f.read })
-          end
+          name, prefix = writer.split_name(file)
+          header = Gem::Package::TarHeader.new(:name => name, :mode => mode,
+                                               :size => size, :prefix => prefix).to_s
+          gzipped.write header
+          gzipped.write(open(file, 'rb') { |f| f.read })
+          remainder = (512 - (size % 512)) % 512
+          gzipped.write("\0" * remainder)
         end
         # Add empty directories where there is place holders
         Dir.glob('**/.placeholder') do |placeholder|
-          writer.mkdir File.dirname(placeholder), 0700
+          dir = File.dirname(placeholder)
+          name, prefix = writer.split_name(dir)
+          header = Gem::Package::TarHeader.new :name => name, :mode => 0700,
+                                               :typeflag => "5", :size => 0,
+                                               :prefix => prefix
+          gzipped.write header
         end
       end
     end
