@@ -315,7 +315,7 @@ module Coquelicot
             end
           end
           send_file gem_file.path, :filename => spec.file_name
-          #gem_file.unlink
+          gem_file.unlink
         end
       end
     end
