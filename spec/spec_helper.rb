@@ -26,6 +26,11 @@ require 'rack/test'
 require 'rspec'
 require 'stringio'
 
+# Set a default time zone. Otherwise tests using Timecop fail when
+# activesupport is loaded.
+require 'active_support/time'
+Time.zone = 'UTC'
+
 require 'coquelicot'
 
 shared_context 'with Coquelicot::Application' do
