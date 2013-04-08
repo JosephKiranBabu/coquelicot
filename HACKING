@@ -1,5 +1,200 @@
+Development notes
+=================
+
+[Coquelicot] is written in Ruby and should be quite easy to improve for
+anyone a little bit familiar with the Sinatra web framework. It is
+mostly written using Behaviour Driven Development, making the test suite
+a fine net to hack in confidence. So please go ahead!
+
+[Coquelicot]: https://coquelicot.potager.org/
+
+Setup a work environment
+------------------------
+
+As Coquelicot uses Bundle, the first step to work on Coquelicot
+after cloning its Git repository is installing the proper dependencies by
+issuing:
+
+    bundle install
+
+Basic operations
+----------------
+
+Coquelicot test suite is written using RSpec. Running the test suite is
+just a matter of typing:
+
+    bundle exec rspec
+
+Running a test server can be done with:
+
+    bundle exec coquelicot start --no-daemon
+
+To update the translation source files, use:
+
+    bundle exec rake updatepo
+
+This will update `po/coquelicot.pot` and merge the new strings in the various
+`po/*/coquelicot.po` files.
+
+Authentication mechanisms
+-------------------------
+
+The authentication part of Coquelicot has been made modular. Adding a
+new authentication mechanism should be fairly straightforward.
+
+A new authentication mechanism needs to provide the following 3 files,
+with the following responsabilities:
+
+ * `lib/coquelicot/auth/<METHOD>.rb`:
+
+   A class implementing the actual authentication. This class must
+   implement an `authenticate` method. It will receive the form fields
+   as usual (params). This method must return true if upload
+   should be allowed.
+
+ * `public/javascripts/coquelicot.auth.<METHOD>.js:`
+
+    This file must define 'authentication' as an object with the
+    following methods:
+
+    - `getData()`: return an object of all the necessary data
+      to authenticate on the app side. Keys must have the same name
+      as the input fields used to authenticate without JavaScript.
+    - `focus()`: set the focus on the first authentication form field.
+    - (optional) `handleSuccess()`: arbitrary action upon successful
+      authentication. This is called after the livebox with
+      authentication fields is closed.
+    - (optional) `handleReject()`: arbitrary action when access
+      is denied. One can reset authentication fields after a failed
+      authentication.
+    - (optional) `handleFailure()`: arbitrary action when there was
+      a problem in the authentication procedure.
+
+ * `views/auth/<METHOD>.haml`:
+
+   A template with the necessary form fields that will be used for
+   authentication.
+
+The authentication mechanism is set in the configuration file and
+can include options specific to the method chosen.
+
+Implementation details
+----------------------
+
+Common application code lies in `Coquelicot::Application`, except for
+one specific (and important) type of requests, namely `POST /update`.
+These requests are handled directly at bare Rack level by
+`Coquelicot::Rack::Upload`.
+
+This allows to work directly with POST data as the browser is sending
+it, so we can directly stream the uploaded file to our encrypted
+on-disk containers.
+
+The POST data must be in a very specific order, as we need to handle
+authentication and other option fields before we start recording the
+file content. Thanks to the W3C, the [HTML specification] states that
+parts of the POST data must be delivered in the same order as the
+controls appear in the `<form/>` container.
+
+`Coquelicot::Rack::Multipart` exposes a simple DSL to parse the fields
+as they are delivered. The later is used by `Coquelicot::Rack::Upload`
+to perform its logic pretty nicely.
+
+[HTML specification]: http://www.w3.org/TR/html4/interact/forms.html
+
+Watch for buffered inputs!
+--------------------------
+
+Coquelicot is written in Ruby using Sinatra. Sinatra is based on the
+Rack webserver interface. Rack specification mandates that applications
+must be able to seek and rewind freely in the request content.
+
+Request data is always received as a stream through the network. So in
+order to comply with the specification, webservers implementing Rack
+either buffer the input in memory (Webrick) or in a temporary file
+(Thin, Passenger or Mongrel).
+
+On top of that, when parsing `multipart/form-data` POST content,
+`Rack::Request` (used by Sinatra) creates a new temporary file for
+each files in the POST request.
+
+For the specific needs of Coquelicot, these behaviours prevent users
+from uploading large files (if `/tmp` is in memory) or breach their
+privacy by writing a clear text version to disk.
+
+To overcome these limitations, Coquelicot first uses a specific feature
+of the Rainbows! webserver of streaming its input directly to
+applications, and second bypasses `Rack::Request` to directly handle
+POST content. Usage of any other Rack webserver is strongly discouraged
+and should be restricted to development and testing.
+
+Storage details
+---------------
+
+Files are stored in the directory specified by the 'depot_path' setting.
+One file in Coquelicot is actually stored in two files: one for metadata and
+one for the file content.
+
+### Metadata file
+
+The format is the following:
+
+    --- 
+    Coquelicot: "2.0"
+    Salt: <8 bytes stored as Base64>
+    Expire-at: <expiration time in seconds since epoch>
+    --- 
+    <encrypted metadata>
+
+Encryption is done using OpenSSL. Cipher is AES-256-CBC with key and IV
+created using the `pbkdf2_hmac_sha1()` implementation of PKCS5. The later
+is fed using the former *Salt* and the given passphrase, using 2000
+iterations.
+
+Once decrypted, the metadata have the following format:
+
+    --- 
+    Created-at: <upload time in seconds since epoch>
+    Filename: "<original file name>"
+    Content-Type: "<MIME type>"
+    Length: <content length is bytes>
+    One-time-only: <true|false>
+
+Headers must be valid YAML.
+
+### Content file
+
+The content file contains the stored file in encrypted form. Encryption is done
+with the same algorithm and keys as the encrypted metadata (see above).
+
+The file name of the content file is the same as the one for metada, with an
+added suffix of '.content'. For example, if the metadata file name is
+`mqeb4pfcru2ymq3e6se7`, the associated content file will be
+`mqeb4pfcru2ymq3e6se7.content`.
+
+### Expired files
+
+Both the content file and the metadata file are truncated to zero length when
+they are "expired".
+
+### URL mapping
+
+In order to map download URLs to file name, a simple text file ".links"
+is used. It contains a line for each file in the form:
+
+    <URL name> <metadata file name>
+
+### Changes history
+
+  version 2.0
+  :    Current version described above.
+
+  version 1.0
+  :    File content is in the same file as the metadata. Content is put in the
+       after the metadata and an extra "--- \n".
+
 How to make a new release?
-==========================
+--------------------------
 
  1. Bump version number in `lib/coquelicot/version.rb` and `Gemfile.lock`.
     Don't forget to commit the changes.
@@ -40,18 +235,16 @@ How to make a new release?
 
  10. Update the version on the website homepage:
 
-        sed -e "s/coquelicot-$PREVIOUS_VERSION/coquelicot-$VERSION/g" \
-            -i dynamic/index.md
+         sed -e "s/coquelicot-$PREVIOUS_VERSION/coquelicot-$VERSION/g" \
+             -i dynamic/index.md
 
- 11. Update the history on the website homepage.
+ 11. Commit changes to the website.
 
- 12. Commit changes to the website.
+ 12. Push the updated website:
 
- 13. Push the updated website:
+         make push
+         git push origin master
 
-        make push
-        git push origin master
+ 13. Announce the release on `coquelicot@potager.org` mailing-list.
 
- 14. Announce the release on `coquelicot@potager.org` mailing-list.
-
- 15. Announce the release on freecode.com.
+ 14. Announce the release on `freecode.com`.

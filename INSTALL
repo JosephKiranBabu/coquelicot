@@ -1,0 +1,162 @@
+How to setup Coquelicot?
+========================
+
+Coquelicot is written in Ruby using the Sinatra web framework and
+Rainbows! web server. Coquelicot is intended to be run on a fully encrypted
+system and accessible only through HTTPS. In order to support HTTPS, Coquelicot
+needs the help of a non-buffering HTTPS reverse proxy.
+
+Install dependencies
+--------------------
+
+Coquelicot uses Bundler to manage its dependency. To install Bundler on
+Debian, please issue:
+
+    # apt-get install rubygems
+    $ gem install bundler
+
+Once Bundler is available, simply run:
+
+    $ bundle install --deployment
+
+Start Coquelicot!
+-----------------
+
+To start Coquelicot use:
+
+    $ bundle exec coquelicot start
+
+`start` can be replaced by `stop` to shut down the server.
+
+HTTPS reverse proxy
+-------------------
+
+Coquelicot itself is able to serve HTTPS directly, so a non-buffering HTTPS
+reverse proxy needs to be setup to protect users' privacy.
+
+### Apache
+
+To configure [Apache] as a reverse proxy, the `proxy`, `proxy_http` and `ssl`
+modules must be enabled. A minimal configuration would then look like:
+
+    <VirtualHost *:443>
+            ServerName dl.example.org
+            SSLEngine on
+            [… insert other SSL related directives here …]
+            ProxyPass / http://127.0.0.1:51161/
+            SetEnv proxy-sendchunks 1
+            RequestHeader set X-Forwarded-SSL "on"
+    </VirtualHost>
+
+[Apache]: http://httpd.apache.org/
+
+### Nginx
+
+Here is a sample configuration fox Nginx:
+
+    server {
+            listen 443;
+            server_name dl.example.org
+            ssl on;
+            [… insert other SSL related directives here …]
+            location / {
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-SSL on;
+                    proxy_pass http://127.0.0.1:51161;
+                    proxy_buffering off;
+            }
+    }
+
+[Nginx]: http://nginx.net
+
+### Pound
+
+Here is a sample configuration excerpt for [Pound]:
+
+    ListenHTTPS
+            Address 0.0.0.0
+            Port    443
+            Cert    "/etc/ssl/cert.pem"
+            AddHeader "X-Forwarded-SSL: on"
+            Service
+                    BackEnd
+                            Address 127.0.0.1
+                            Port    51161
+                    End
+            End
+    End
+
+[Pound]: http://www.apsis.ch/pound/
+
+### Using other Rack compatible webservers
+
+Coquelicot has been written to use [Rainbows!] as its webserver.
+It can probably be also run with other [Rack] compatible webservers
+like mod_passenger, Mongrel, Thin. Please note that such configurations
+have not been tested and that they are likely to **ruin privacy expectations**
+because of *buffered inputs*. See [HACKING](/HACKING) for details on the later.
+
+[Rainbows!]: http://rainbows.rubyforge.org/
+[Rack]: http://rack.rubyforge.org
+
+Configuration
+-------------
+
+By default Coquelicot is configured to authenticate with the
+"simplepass" mechanism and some other reasonable defaults.
+
+It is possible to overwrite these settings from a configuration file
+named `settings.yml` that will be used if it is present in the `conf`
+directory of the application.
+
+All available settings with their default values are documented in
+`conf/settings-default.yml`.
+
+Further settings example:
+
+ * `conf/settings-simplepass.yml`: shows how to change the default
+   password for the "simplepass" mechanism.
+
+ * `conf/settings-imap.yml`: necessary configuration for the "imap"
+   authentication mechanism.
+
+You can copy one of these examples to `conf/settings.yml` and adjust
+them according to your environment.
+
+A different location for the configuration file can be specified using
+the `-c` option when running `bin/coquelicot`.
+
+Garbage collection
+------------------
+
+To cleanup files automatically when they expired, coquelicot comes with
+a cleanup script, that does the garbage collection for you. The easiest
+way is to set up a cron job that will run every 5 minutes (or so):
+
+    bundle exec coquelicot gc
+
+Migrate from Jyraphe
+--------------------
+
+[Jyraphe] is another free software web file sharing application.
+Coquelicot provides a migration script to import Jyraphe 0.5
+repositories. It can be run using `bundle exec coquelicot migrate-jyraphe`:
+
+    Usage: coquelicot [options] migrate-jyraphe \ 
+                      [command options] JYRAPHE_VAR > REWRITE_RULES
+
+    Options:
+        -c, --config FILE            read settings from FILE
+
+    Command options:
+        -p, --rewrite-prefix PREFIX  prefix URL in rewrite rules
+
+The last argument must be a path to the `var` directory of the Jyraphe
+installation. After migrating the files to Coquelicot, directives for
+Apache mod_rewrite will be printed on stdout which ought to be
+redirected to a file. Using the `-p` option will prefix URL with the
+given path in the rewrite rules.
+
+[Jyraphe]: http://home.gna.org/jyraphe/

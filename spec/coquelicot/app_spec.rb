@@ -319,8 +319,8 @@ describe Coquelicot::Application do
   describe 'post /authenticate' do
     context 'when given a request with too much input' do
       before do
-        # README is bigger than 5 kiB
-        path = File.expand_path('../../../README', __FILE__)
+        # background image is bigger than 5 kiB
+        path = File.expand_path('../../../public/images/background.jpg', __FILE__)
         post '/authenticate', :file => Rack::Test::UploadedFile.new(path, 'text/plain')
       end
       it 'should get status 413 (Request entity too large)' do
