@@ -3,6 +3,27 @@ Release history
 
 Here is a list of changes that happened in each release of [Coquelicot]:
 
+Version 0.9.2
+-------------
+
+ * Minor code cleanups:
+   - Cleanup old stub launcher for `Coquelicot::Application`.
+   - Fallback on version available in source code when the gem version is
+     unavailable.
+   - Add missing require for `Coquelicot::Helpers`.
+   - Ensure gem files have been unlinked after they have been sent.
+     Files created with Tempfile should be unlinked by Ruby runtime,
+     but let's just do it when most appropriate.
+ * Source tarball cleanup:
+   - Stop shipping jquery.lightBoxFu.js with the executable bit set.
+   - Ship proper "mtimes" instead of setting every dates to 1970-01-01.
+ * Mention author and license for JavaScript libraries in README.
+ * Document the release process.
+ * Rework and split documentation in different files targeting different
+   audiences.
+
+Released 2013-04-08.
+
 Version 0.9.1
 -------------
 
