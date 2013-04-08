@@ -219,7 +219,7 @@ How to make a new release?
 
  6. Sign it:
 
-        gpg --armor --sign coquelicot-$VERSION.tar.gz
+        gpg --armor --detach-sign coquelicot-$VERSION.tar.gz
 
  7. Switch to the website:
 
