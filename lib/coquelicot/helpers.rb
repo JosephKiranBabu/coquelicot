@@ -54,7 +54,7 @@ module Coquelicot
       if can_provide_git_repository?
         "git clone #{uri('coquelicot.git')}"
       else
-        "curl -OJ #{uri('source')} && gem unpack coqueliot-#{gem_version}.gem"
+        "curl -OJ #{uri('source')} && gem unpack coquelicot-#{gem_version}.gem"
       end
     end
 
