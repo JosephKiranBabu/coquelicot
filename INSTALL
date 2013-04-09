@@ -19,6 +19,18 @@ Once Bundler is available, simply run:
 
     $ bundle install --deployment
 
+AGPL compliance
+---------------
+
+If you have downloaded Coquelicot from Git, AGPL compliance can be made
+by serving the local Git clone. This can be achieved with the following
+commands:
+
+    git update-server-info
+    echo '#!/bin/sh' > .git/hooks/post-update
+    echo 'exec git update-server-info' >> .git/hooks/post-update
+    chmod +x .git/hooks/post-update
+
 Start Coquelicot!
 -----------------
 
