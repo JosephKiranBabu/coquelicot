@@ -32,10 +32,6 @@ Here are a list of welcome changes to [Coquelicot]:
    a default configuration and directories to hold uploaded files and
    temp. data.
 
- * Package for Debian
-
-   A Debian package would be nice to spread Coquelicot setups.
-
 [Coquelicot]: https://coquelicot.potager.org/
 [AES is getting weaker]: https://www.schneier.com/blog/archives/2009/07/another_new_aes.html
 [CBC mode is subject to Padding Oracle attacks]: http://www.limited-entropy.com/padding-oracle-attacks
