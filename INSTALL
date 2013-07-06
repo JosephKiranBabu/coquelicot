@@ -12,7 +12,7 @@ Install dependencies
 Coquelicot uses Bundler to manage its dependency. To install Bundler on
 Debian, please issue:
 
-    # apt-get install rubygems
+    # apt-get install rubygems libxml2-dev libxslt-dev
     $ gem install bundler
 
 Once Bundler is available, simply run:
