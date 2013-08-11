@@ -9,6 +9,12 @@ Here are a list of welcome changes to [Coquelicot]:
    make Coquelicot available from a sub-directory, e.g.
    `https://example.org/dl/`.
 
+ * Implement optional client-side encryption
+
+   Using the new HTML 5FileAPI, encryption and decryption of the files
+   could be performed client side instead of server side. See
+   the [up-crypt] proof of concept from hellais on how this could be done.
+
  * More flexible expiration
 
    It might be interesting to also offer a calendar for specifying
@@ -32,6 +38,12 @@ Here are a list of welcome changes to [Coquelicot]:
    a default configuration and directories to hold uploaded files and
    temp. data.
 
+ * Better support consecutive uploads
+
+   Previous settings are lost when uploading several files in a row. This
+   is clearly suboptimal user experience.
+
+[up-crypt]: https://github.com/hellais/up-crypt
 [Coquelicot]: https://coquelicot.potager.org/
 [AES is getting weaker]: https://www.schneier.com/blog/archives/2009/07/another_new_aes.html
 [CBC mode is subject to Padding Oracle attacks]: http://www.limited-entropy.com/padding-oracle-attacks
