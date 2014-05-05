@@ -46,6 +46,17 @@ module Coquelicot
       end
     end
 
+    def read_meta(path)
+      File.open(path) do |f|
+        meta = f.readline
+        while buf = f.readline
+          break if buf =~ /^---( |\n)/
+          meta += buf
+        end
+        YAML.load(meta)
+      end
+    end
+
     describe '.get_cipher' do
       context 'when given an unknown method' do
         it 'should raise an error' do
@@ -172,7 +183,7 @@ module Coquelicot
           StoredFile.stub(:gen_salt).and_return(test_salt)
           create_stored_file('Expire-at' => expire_at)
         end
-        let(:clear_meta) { YAML.load_file(@stored_file_path) }
+        let(:clear_meta) { read_meta(@stored_file_path) }
         it 'should write Coquelicot file version' do
           clear_meta['Coquelicot'].should == '2.0'
         end
@@ -212,7 +223,7 @@ module Coquelicot
         include_context 'in encrypted part', /stored_file$/
         it 'should contain metadata as YAML block' do
           create_stored_file
-          @cipher.content.split(/^--- \n/, 3).length.should == 2
+          @cipher.content.split(/^---(?: |\n)/, 3).length.should == 2
           YAML.load(@cipher.content).should be_a(Hash)
         end
         context 'in encrypted metadata' do
@@ -398,7 +409,7 @@ module Coquelicot
     describe '#close' do
       for_all_file_versions do
         it 'should reset the cipher' do
-          salt = Base64::decode64(YAML.load_file(stored_file_path)['Salt'])
+          salt = Base64::decode64(read_meta(stored_file_path)['Salt'])
           cipher = StoredFile.get_cipher('secret', salt, :decrypt)
           StoredFile.stub(:get_cipher).and_return(cipher)
 

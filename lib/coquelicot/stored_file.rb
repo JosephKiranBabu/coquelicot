@@ -45,8 +45,6 @@ module Coquelicot
     end
 
     def self.create(path, pass, meta)
-      YAML::ENGINE.yamler = 'syck' if YAML.const_defined? :ENGINE
-
       salt = gen_salt
       clear_meta = { "Coquelicot" => COQUELICOT_VERSION,
                      "Salt" => Base64.encode64(salt).strip,
@@ -162,8 +160,6 @@ module Coquelicot
     end
 
     def initialize(path, pass)
-      YAML::ENGINE.yamler = 'syck' if YAML.const_defined? :ENGINE
-
       @path = path
       @file = File.open(@path)
       if @file.lstat.size == 0 then
