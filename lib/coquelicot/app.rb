@@ -149,26 +149,15 @@ module Coquelicot
       rainbows_opts = {}
       ::Unicorn::Launcher.daemonize!(rainbows_opts) unless options[:no_daemon]
 
-      if RUBY_VERSION >= '1.9'
-        app = lambda do
-                ::Rack::Builder.new do
-                  Coquelicot.monkeypatch_half_close
-                  use ::Rack::ContentLength
-                  use ::Rack::Chunked
-                  use ::Rack::CommonLogger, $stderr
-                  run Application
-                end.to_app
-              end
-      else
-        # Wrapping the app inside a lambda does not work on Ruby 1.8.
-        # Unfortunetaly, this means we can't monkeypatch half-closing.
-        app = ::Rack::Builder.new do
+      app = lambda do
+              ::Rack::Builder.new do
+                Coquelicot.monkeypatch_half_close
                 use ::Rack::ContentLength
                 use ::Rack::Chunked
                 use ::Rack::CommonLogger, $stderr
                 run Application
               end.to_app
-      end
+            end
 
       server = ::Rainbows::HttpServer.new(app, rainbows_opts)
       server.start.join

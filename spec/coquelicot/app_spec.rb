@@ -63,9 +63,7 @@ describe Coquelicot::Application do
           expect(page).to have_content('Partager')
           reset_session!
         end
-        # will fail without ordered Hash, see:
-        # <https://github.com/jnicklas/capybara/issues/670>
-        context 'when I upload an empty file', :if => RUBY_VERSION >= '1.9' do
+        context 'when I upload an empty file' do
           around do |example|
             file = Tempfile.new('coquelicot')
             begin
@@ -107,9 +105,7 @@ describe Coquelicot::Application do
             visit '/'
             expect(page).to have_content('1 Kio')
           end
-          # will fail without ordered Hash, see:
-          # <https://github.com/jnicklas/capybara/issues/670>
-          context 'when I upload something bigger', :if => RUBY_VERSION >= '1.9' do
+          context 'when I upload something bigger' do
             before do
               visit '/'
               fill_in 'upload_password', :with => upload_password
@@ -123,7 +119,7 @@ describe Coquelicot::Application do
         end
         # will fail without ordered Hash, see:
         # <https://github.com/jnicklas/capybara/issues/670>
-        context 'when I upload an empty file', :if => RUBY_VERSION >= '1.9' do
+        context 'when I upload an empty file' do
           around do |example|
             file = Tempfile.new('coquelicot')
             begin
@@ -153,7 +149,7 @@ describe Coquelicot::Application do
         end
 	# will fail without ordered Hash, see:
 	# <https://github.com/jnicklas/capybara/issues/670>
-        context 'after an upload', :if => RUBY_VERSION >= '1.9' do
+        context 'after an upload' do
           before do
             fill_in 'upload_password', :with => upload_password
             attach_file 'file', __FILE__
