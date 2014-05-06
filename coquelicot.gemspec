@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'rack-test'
   s.add_development_dependency 'capybara'
-  s.add_development_dependency 'active_support'
+  s.add_development_dependency 'activesupport'
   s.add_development_dependency 'gettext'
 
   s.add_runtime_dependency 'sinatra', '~>1.3'
