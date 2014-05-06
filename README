@@ -21,12 +21,14 @@ Features
 
    In order to prevent random Internet users to eat bandwidth and
    disk space, Coquelicot limits upload to authenticated users.
-   It currently ships with two authentication mechanisms:
+   It currently ships with three authentication mechanisms:
 
     - "simplepass": uploading users need to provide a global,
       pre-shared, password;
     - "imap": users will need to provide a login and a password,
       that are used to authenticate against an existing IMAP server.
+    - "ldap": users will need to provide a uid and a password,
+      that are used to authenticate against an existing LDAP server.
 
    It is possible to integrate more authentication mechanisms by
    implementing a single method, some JavaScript, and a partial template
@@ -109,6 +111,8 @@ version 3 or (at your option) any later version.
 Background image (`public/images/background.jpg`) derived from:  
 [“coquelicot” picture] © 2008 Jean-Louis Zimmermann  
 Licensed under [Creative Commons Attributions 2.0 Generic]  
+
+LDAP authentication code initially provided by Rowan Thorpe.
 
 *jQuery* is © 2011 John Resig. Licensed under the [MIT license].  
 *jquery.uploadProgress* is © 2008 Piotr Sarnacki. Licensed under the

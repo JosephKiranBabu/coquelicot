@@ -110,8 +110,8 @@ show_exceptions: false
 
 # Authentication method
 #
-#   Please have look at `conf/settings-simplepass.yml` and
-#   `conf/settings-imap.yml` for more details.
+#   Please have a look at `conf/settings-simplepass.yml`,
+#   `conf/settings-imap.yml` and `conf/settings-ldap.yml` for more details.
 #
 # The default password is 'test'.
 authentication_method:

@@ -1,0 +1,20 @@
+# Settings for the LDAP authentication method
+# -------------------------------------------
+#
+# When using the LDAP authentication method users will be
+# asked for a login and a password. Those credentials will
+# be tested against the given LDAP server.
+#
+# Connections to the LDAP server are made using SSL/TLS.
+
+authentication_method:
+  name: ldap
+
+  # Hostname of the authenticating LDAP server
+  ldap_server: "ldap.example.com"
+
+  # Port of the authenticating LDAP server
+  ldap_port: 636
+
+  # Search base of the authenticating LDAP server
+  ldap_base: "dc=example,dc=com"

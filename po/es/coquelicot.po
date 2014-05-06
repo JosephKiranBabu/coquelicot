@@ -48,7 +48,11 @@ msgstr "Contraseña para el envío:"
 msgid "E-mail User:"
 msgstr "Correo electrónico:"
 
-#: views/auth/imap.haml:23 views/enter_file_key.haml:22
+#: views/auth/ldap.haml:20
+msgid "LDAP User:"
+msgstr ""
+
+#: views/auth/imap.haml:23 views/auth/ldap.haml:23 views/enter_file_key.haml:22
 msgid "Password:"
 msgstr "Contraseña:"
 

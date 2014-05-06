@@ -48,7 +48,11 @@ msgstr "Upload Passwort:"
 msgid "E-mail User:"
 msgstr "Email User:"
 
-#: views/auth/imap.haml:23 views/enter_file_key.haml:22
+#: views/auth/ldap.haml:20
+msgid "LDAP User:"
+msgstr "LDAP User:"
+
+#: views/auth/imap.haml:23 views/auth/ldap.haml:23 views/enter_file_key.haml:22
 msgid "Password:"
 msgstr "Passwort:"
 

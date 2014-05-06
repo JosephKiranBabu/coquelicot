@@ -341,4 +341,46 @@ PART
       expect(last_response).to be_ok
     end
   end
+
+  context "when using 'ldap' authentication mechanism" do
+    before(:each) do
+      app.set :authentication_method, :name => 'ldap',
+                                      :ldap_server => 'example.org',
+                                      :ldap_port => 636,
+                                      :ldap_base => 'dc=example,dc=com'
+    end
+
+    it "should try to login to the LDAP server when using AJAX" do
+      ldap = double('Net::LDAP').as_null_object
+      expect(ldap).to receive(:bind_as).with(
+            :base => 'dc=example,dc=com',
+            :filter => '(uid=user)',
+            :password => 'password').
+        and_return(double('Net::LDAP::PDU'))
+      expect(Net::LDAP).to receive(:new).with(
+          :host => 'example.org',
+          :port => 636,
+          :base => 'dc=example,dc=com',
+          :encryption => :simple_tls,
+          :auth => { :method => :anonymous }).
+        and_return(ldap)
+      request '/authenticate', :method => 'POST', :xhr => true,
+                               :params => { :ldap_user     => 'user',
+                                            :ldap_password => 'password' }
+      expect(last_response).not_to be_nil
+    end
+
+    it "should properly escape the given username" do
+      ldap = double('Net::LDAP').as_null_object
+      expect(ldap).to receive(:bind_as).with(
+            :base => 'dc=example,dc=com',
+            :filter => '(uid=us\\29er)',
+            :password => 'password').
+        and_return(double('Net::LDAP::PDU'))
+      expect(Net::LDAP).to receive(:new).and_return(ldap)
+      request '/authenticate', :method => 'POST', :xhr => true,
+                               :params => { :ldap_user     => 'us)er',
+                                            :ldap_password => 'password' }
+    end
+  end
 end

@@ -134,8 +134,14 @@ Further settings example:
  * `conf/settings-imap.yml`: necessary configuration for the "imap"
    authentication mechanism.
 
+ * `conf/settings-ldap.yml`: necessary configuration for the "ldap"
+   authentication mechanism.
+
 You can copy one of these examples to `conf/settings.yml` and adjust
 them according to your environment.
+
+Using the LDAP authentication method requires the `net-ldap` gem
+to be installed manually.
 
 A different location for the configuration file can be specified using
 the `-c` option when running `bin/coquelicot`.
