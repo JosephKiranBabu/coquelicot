@@ -20,13 +20,13 @@ Bundler.require(:default, :development)
 Bundler.setup
 
 require 'bundler/gem_tasks'
-require 'haml/magic_translations/tasks'
+require 'gettext/tools/task'
+require 'haml/magic_translations/xgettext/haml_parser'
 
-Haml::MagicTranslations::Tasks::UpdatePoFiles.new(:updatepo) do |t|
-  t.text_domain = 'coquelicot'
-  t.files = Dir.glob('views/**/*.{rb,haml}') + Dir.glob('lib/coquelicot/**/*.rb')
-  spec = Gem::Specification.load('coquelicot.gemspec')
-  t.app_version = "coquelicot #{spec.version}"
+GetText::Tools::XGetText.add_parser(Haml::MagicTranslations::XGetText::HamlParser)
+GetText::Tools::Task.define do |task|
+  task.spec = Gem::Specification.load('coquelicot.gemspec')
+  task.files = Dir.glob('views/**/*.{rb,haml}') + Dir.glob('lib/coquelicot/**/*.rb')
 end
 
 task :create_archive do

@@ -31,7 +31,7 @@ Running a test server can be done with:
 
 To update the translation source files, use:
 
-    bundle exec rake updatepo
+    bundle exec rake gettext:po:update
 
 This will update `po/coquelicot.pot` and merge the new strings in the various
 `po/*/coquelicot.po` files.

@@ -3,6 +3,7 @@ PATH
   specs:
     coquelicot (0.9.2)
       fast_gettext
+      gettext (~> 3)
       haml (~> 3.1)
       haml-magic-translations (~> 0.3)
       json
