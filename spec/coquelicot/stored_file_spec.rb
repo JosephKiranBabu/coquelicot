@@ -271,7 +271,7 @@ module Coquelicot
       context 'with a new file' do
         include_context 'create new StoredFile'
         it 'should return the creation time' do
-          Timecop.freeze(2012, 1, 1) do
+          Timecop.freeze(Time.local(2012, 1, 1)) do
             create_stored_file
             stored_file = StoredFile.open(@stored_file_path, @pass)
             expect(stored_file.created_at).to be == Time.local(2012, 1, 1)
