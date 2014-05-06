@@ -272,7 +272,11 @@ module Coquelicot
 
     error 500..510 do
       @error = env['sinatra.error'] || response.body.join
-      haml :error
+      if request.xhr?
+        "#{response.body.join}"
+      else
+        haml :error
+      end
     end
 
     get '/style.css' do
@@ -377,6 +381,9 @@ module Coquelicot
         'OK'
       rescue Coquelicot::Auth::Error => ex
         error 503, ex.message
+      rescue => ex
+        dump_errors! ex
+        error 500, "Issue has been logged."
       end
     end
 
