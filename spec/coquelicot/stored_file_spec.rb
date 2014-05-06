@@ -72,7 +72,7 @@ module Coquelicot
         let(:hmac) { (1..hmac_len).to_a.collect { |c| c.chr }.join }
         context "when given #{method} as method" do
           it 'should use PKCS5.pbkdf2_hmac_sha1' do
-            OpenSSL::PKCS5.should_receive(:pbkdf2_hmac_sha1).
+            expect(OpenSSL::PKCS5).to receive(:pbkdf2_hmac_sha1).
               with('secret', 'salt', 2000, hmac_len).
               and_return(hmac)
             StoredFile.get_cipher('secret', 'salt', method)
@@ -81,7 +81,7 @@ module Coquelicot
             OpenSSL::PKCS5.stub(:pbkdf2_hmac_sha1).
               and_return(hmac)
             cipher = OpenSSL::Cipher.new 'AES-256-CBC'
-            cipher.should_receive(:key=).with(hmac[0..key_len-1])
+            expect(cipher).to receive(:key=).with(hmac[0..key_len-1])
             OpenSSL::Cipher.stub(:new).and_return(cipher)
             StoredFile.get_cipher('secret', 'salt', method)
           end
@@ -89,13 +89,13 @@ module Coquelicot
             OpenSSL::PKCS5.stub(:pbkdf2_hmac_sha1).
               and_return(hmac)
             cipher = OpenSSL::Cipher.new 'AES-256-CBC'
-            cipher.should_receive(:iv=).with(hmac[key_len..-1])
+            expect(cipher).to receive(:iv=).with(hmac[key_len..-1])
             OpenSSL::Cipher.stub(:new).and_return(cipher)
             StoredFile.get_cipher('secret', 'salt', method)
           end
           it 'should return an OpenSSL::Cipher' do
             cipher = StoredFile.get_cipher('secret', 'salt', method)
-            cipher.should be_a(OpenSSL::Cipher)
+            expect(cipher).to be_a(OpenSSL::Cipher)
           end
         end
       end
@@ -106,7 +106,7 @@ module Coquelicot
         StoredFile.gen_salt.length == StoredFile::SALT_LEN
       end
       it 'should call OpenSSL::Random every time' do
-        OpenSSL::Random.should_receive(:random_bytes).
+        expect(OpenSSL::Random).to receive(:random_bytes).
             and_return(1, 2)
         StoredFile.gen_salt == 1
         StoredFile.gen_salt == 2
@@ -185,14 +185,14 @@ module Coquelicot
         end
         let(:clear_meta) { read_meta(@stored_file_path) }
         it 'should write Coquelicot file version' do
-          clear_meta['Coquelicot'].should == '2.0'
+          expect(clear_meta['Coquelicot']).to be == '2.0'
         end
         it 'should generate a random Salt' do
           salt = Base64.decode64(clear_meta['Salt'])
-          salt.should == test_salt
+          expect(salt).to be == test_salt
         end
         it 'should record expiration time' do
-          clear_meta['Expire-at'].should == expire_at
+          expect(clear_meta['Expire-at']).to be == expire_at
         end
       end
       shared_context 'in encrypted part' do |path_regex|
@@ -208,7 +208,7 @@ module Coquelicot
           StoredFile.stub(:get_cipher).and_return(cipher)
           @content = StringIO.new
           open = File.method(:open)
-          File.should_receive(:open).at_least(1).times do |path, *args, &block|
+          expect(File).to receive(:open).at_least(1).times do |path, *args, &block|
             if path =~ path_regex
               ret = block.call(@content)
               @cipher = cipher.dup
@@ -223,8 +223,8 @@ module Coquelicot
         include_context 'in encrypted part', /stored_file$/
         it 'should contain metadata as YAML block' do
           create_stored_file
-          @cipher.content.split(/^---(?: |\n)/, 3).length.should == 2
-          YAML.load(@cipher.content).should be_a(Hash)
+          expect(@cipher.content.split(/^---(?: |\n)/, 3).length).to be == 2
+          expect(YAML.load(@cipher.content)).to be_a(Hash)
         end
         context 'in encrypted metadata' do
           before(:each) do
@@ -232,10 +232,10 @@ module Coquelicot
             @meta = YAML.load(@cipher.content)
           end
           it 'should contain Length' do
-            @meta['Length'].should == @src_length
+            expect(@meta['Length']).to be == @src_length
           end
           it 'should Created-at' do
-            @meta.should include('Created-at')
+            expect(@meta).to include('Created-at')
           end
         end
       end
@@ -245,7 +245,7 @@ module Coquelicot
           create_stored_file
         end
         it 'should contain the file content' do
-          @cipher.content.should == slurp(@src)
+          expect(@cipher.content).to be == slurp(@src)
         end
         it 'should have the whole file for encrypted content' do
           @content.string == slurp(@src)
@@ -274,13 +274,13 @@ module Coquelicot
           Timecop.freeze(2012, 1, 1) do
             create_stored_file
             stored_file = StoredFile.open(@stored_file_path, @pass)
-            stored_file.created_at.should == Time.local(2012, 1, 1)
+            expect(stored_file.created_at).to be == Time.local(2012, 1, 1)
           end
         end
       end
       for_all_file_versions do
         it 'should return the creation time' do
-          stored_file.created_at.should == Time.at(reference['Created-at'])
+          expect(stored_file.created_at).to be == Time.at(reference['Created-at'])
         end
       end
     end
@@ -291,11 +291,11 @@ module Coquelicot
         it 'should return the date of expiration' do
           create_stored_file('Expire-at' => Time.local(2012, 1, 1))
           stored_file = StoredFile.open(@stored_file_path, @pass)
-          stored_file.expire_at.should == Time.local(2012, 1, 1)
+          expect(stored_file.expire_at).to be == Time.local(2012, 1, 1)
         end
       end
       for_all_file_versions do
-        specify { stored_file.expire_at.should == Time.at(reference['Expire-at']) }
+        specify { expect(stored_file.expire_at).to be == Time.at(reference['Expire-at']) }
       end
     end
 
@@ -306,7 +306,7 @@ module Coquelicot
           Timecop.freeze do
             create_stored_file('Expire-at' => Time.now - 60)
             stored_file = StoredFile.open(@stored_file_path, @pass)
-            stored_file.should be_expired
+            expect(stored_file).to be_expired
           end
         end
       end
@@ -315,7 +315,7 @@ module Coquelicot
           Timecop.freeze do
             create_stored_file('Expire-at' => Time.now + 60)
             stored_file = StoredFile.open(@stored_file_path, @pass)
-            stored_file.should_not be_expired
+            expect(stored_file).not_to be_expired
           end
         end
       end
@@ -327,14 +327,14 @@ module Coquelicot
         it 'should be true' do
           create_stored_file('One-time-only' => true)
           stored_file = StoredFile.open(@stored_file_path, @pass)
-          stored_file.should be_one_time_only
+          expect(stored_file).to be_one_time_only
         end
       end
       context 'when file is not labelled as "one time only"' do
         it 'should be false' do
           create_stored_file
           stored_file = StoredFile.open(@stored_file_path, @pass)
-          stored_file.should_not be_one_time_only
+          expect(stored_file).not_to be_one_time_only
         end
       end
     end
@@ -349,11 +349,11 @@ module Coquelicot
         end
         it 'should overwrite file contents with \0' do
           Dir.glob("#{@stored_file_path}*").each do |path|
-            File.should_receive(:open) do |*args, &block|
+            expect(File).to receive(:open) do |*args, &block|
               length = File.stat(path).size
               file = StringIO.new(slurp(path))
               block.call(file)
-              file.string.should == "\0" * length
+              expect(file.string).to be == "\0" * length
             end
           end
           @stored_file.empty!
@@ -361,7 +361,7 @@ module Coquelicot
         it 'should truncate files' do
           @stored_file.empty!
           Dir.glob("#{@stored_file_path}*").each do |path|
-            File.stat(path).size.should == 0
+            expect(File.stat(path).size).to be == 0
           end
         end
       end
@@ -371,11 +371,11 @@ module Coquelicot
       for_all_file_versions do
         let(:stored_file) { StoredFile.open(stored_file_path, 'secret') }
         it 'should return a Lockfile' do
-          stored_file.lockfile.should be_a(Lockfile)
+          expect(stored_file.lockfile).to be_a(Lockfile)
         end
         it 'should create a Lockfile using the path followed by ".lock"' do
-          Lockfile.should_receive(:new) do |path, options|
-            path.should == "#{stored_file_path}.lock"
+          expect(Lockfile).to receive(:new) do |path, options|
+            expect(path).to be == "#{stored_file_path}.lock"
           end
           stored_file.lockfile
         end
@@ -390,7 +390,7 @@ module Coquelicot
             stored_file.each do |data|
               buf << data
             end
-            buf.should == reference['Content']
+            expect(buf).to be == reference['Content']
           end
         end
       end
@@ -414,7 +414,7 @@ module Coquelicot
           StoredFile.stub(:get_cipher).and_return(cipher)
 
           stored_file = StoredFile.open(stored_file_path, 'secret')
-          cipher.should_receive(:reset)
+          expect(cipher).to receive(:reset)
           stored_file.close
         end
       end
@@ -437,7 +437,7 @@ module Coquelicot
             another = StoredFile.open(@stored_file_path, @pass)
             buf = ''
             another.each { |data| buf << data }
-            buf.should == slurp(@src)
+            expect(buf).to be == slurp(@src)
           end
         end
         context 'when the file has been fully sent' do
@@ -446,7 +446,7 @@ module Coquelicot
             @stored_file.each { |data| nil }
           end
           it 'should empty the file' do
-            @stored_file.should_receive(:empty!)
+            expect(@stored_file).to receive(:empty!)
             @stored_file.close
           end
         end

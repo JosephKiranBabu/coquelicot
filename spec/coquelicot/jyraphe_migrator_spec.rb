@@ -87,10 +87,10 @@ module Coquelicot
           before(:each) { migrator.migrate! }
           subject { get_first_migrated_file }
           it 'should have the same length' do
-            subject.meta['Length'].should == File.stat(__FILE__).size
+            expect(subject.meta['Length']).to be == File.stat(__FILE__).size
           end
           it 'should have the same mime type' do
-            subject.meta['Content-type'].should == 'application/x-ruby'
+            expect(subject.meta['Content-type']).to be == 'application/x-ruby'
           end
         end
       end
@@ -122,7 +122,7 @@ module Coquelicot
           before(:each) { migrator.migrate! }
           subject { get_first_migrated_file }
           it 'should be labeled as "one-time only"' do
-            subject.meta['One-time-only'].should be_true
+            expect(subject.meta['One-time-only']).to be_true
           end
         end
       end
@@ -142,7 +142,7 @@ module Coquelicot
           before(:each) { migrator.migrate! }
           it 'should need a pass' do
             stored_file = get_first_migrated_file
-            stored_file.meta.should_not include('Content-type')
+            expect(stored_file.meta).not_to include('Content-type')
           end
           it 'should be readable with a wrong pass' do
             expect {
@@ -151,7 +151,7 @@ module Coquelicot
           end
           it 'should be readable with the same pass' do
             stored_file = get_first_migrated_file(pass)
-            stored_file.meta.should include('Content-type')
+            expect(stored_file.meta).to include('Content-type')
           end
         end
       end
@@ -162,7 +162,7 @@ module Coquelicot
                                         :expire_at => -1)
         end
         it 'should issue a warning' do
-          output.should_receive(:puts).
+          expect(output).to receive(:puts).
               with(/^W: R[0-9a-z]{32} expiration time has been reduced/)
           migrator.migrate!
         end
@@ -176,7 +176,7 @@ module Coquelicot
             Timecop.freeze(Time.now) do
               migrator.migrate!
               stored_file = get_first_migrated_file
-              stored_file.meta['Expire-at'].should ==
+              expect(stored_file.meta['Expire-at']).to be ==
                   (Time.now + Coquelicot.settings.maximum_expire * 60).to_i
             end
           end
@@ -191,7 +191,7 @@ module Coquelicot
              :expire_at => (Time.now + Coquelicot.settings.maximum_expire * 60 + 5).to_i)
         end
         it 'should issue a warning' do
-          output.should_receive(:puts).
+          expect(output).to receive(:puts).
               with(/^W: R[0-9a-z]{32} expiration time has been reduced/)
           migrator.migrate!
         end
@@ -205,7 +205,7 @@ module Coquelicot
             Timecop.freeze(Time.now) do
               migrator.migrate!
               stored_file = get_first_migrated_file
-              stored_file.meta['Expire-at'].should ==
+              expect(stored_file.meta['Expire-at']).to be ==
                   (Time.now + Coquelicot.settings.maximum_expire * 60).to_i
             end
           end
@@ -218,7 +218,7 @@ module Coquelicot
                                         :expire_at => 'unparseable')
         end
         it 'should issue a warning' do
-          output.should_receive(:puts).
+          expect(output).to receive(:puts).
               with(/^W: R[0-9a-z]{32} has an unparseable expiration time\. Skipping\./)
           migrator.migrate!
         end
@@ -235,7 +235,7 @@ module Coquelicot
           FileUtils.rm(File.expand_path(File.basename(__FILE__), "#{@jyraphe_var_path}/files"))
         end
         it 'should issue a warning' do
-          output.should_receive(:puts).
+          expect(output).to receive(:puts).
               with(/^W: R[0-9a-z]{32} refers to a non-existent file\. Skipping\./)
           migrator.migrate!
         end
@@ -252,7 +252,7 @@ module Coquelicot
           File.truncate(File.expand_path(File.basename(__FILE__), "#{@jyraphe_var_path}/files"), 0)
         end
         it 'should issue a warning' do
-          output.should_receive(:puts).
+          expect(output).to receive(:puts).
               with(/^W: R[0-9a-z]{32} refers to a file with mismatching size\. Skipping\./)
           migrator.migrate!
         end
@@ -278,21 +278,21 @@ module Coquelicot
           migrator.migrate!
         end
         it 'should begin with "RewriteEngine on"' do
-          migrator.apache_rewrites.should satisfy do |s|
+          expect(migrator.apache_rewrites).to satisfy do |s|
             s.start_with?('RewriteEngine on')
           end
         end
         context 'when given no prefix' do
           it 'should contain a rule appropriate for an .htaccess' do
             jyraphe, coquelicot = migrator.migrated.to_a[0]
-            migrator.apache_rewrites.split("\n").should include(
+            expect(migrator.apache_rewrites.split("\n")).to include(
                 "RewriteRule ^file-#{jyraphe}$ #{coquelicot} [L,R=301]")
           end
         end
         context 'when given a prefix' do
           it 'should contain rules with the prefix' do
             jyraphe, coquelicot = migrator.migrated.to_a[0]
-            migrator.apache_rewrites('/dl/').split("\n").should include(
+            expect(migrator.apache_rewrites('/dl/').split("\n")).to include(
                 "RewriteRule ^/dl/file-#{jyraphe}$ /dl/#{coquelicot} [L,R=301]")
           end
         end
@@ -308,10 +308,10 @@ module Coquelicot
         context 'when given no prefix' do
           it 'should contain two rule appropriate for an .htaccess' do
             jyraphe, coquelicot = migrator.migrated.to_a[0]
-            migrator.apache_rewrites.split("\n").should include(
+            expect(migrator.apache_rewrites.split("\n")).to include(
                 "RewriteRule ^file-#{jyraphe}$ #{coquelicot} [L,R=301]")
             jyraphe, coquelicot = migrator.migrated.to_a[1]
-            migrator.apache_rewrites.split("\n").should include(
+            expect(migrator.apache_rewrites.split("\n")).to include(
                 "RewriteRule ^file-#{jyraphe}$ #{coquelicot} [L,R=301]")
           end
         end
@@ -329,8 +329,8 @@ module Coquelicot
               JyrapheMigrator.run! []
             }.to raise_error(SystemExit)
           end
-          stderr.should =~ /Usage:/
-          stderr.should =~ /--help for more details/
+          expect(stderr).to match /Usage:/
+          expect(stderr).to match /--help for more details/
         end
       end
       context 'when given a path to a random directory' do
@@ -341,7 +341,7 @@ module Coquelicot
               JyrapheMigrator.run! [path]
             }.to raise_error(SystemExit)
           end
-          stderr.should =~ /is not a Jyraphe/
+          expect(stderr).to match /is not a Jyraphe/
         end
       end
       context 'when given a path to a Jyraphe var directory' do
@@ -350,12 +350,12 @@ module Coquelicot
           capture(:stdout) do
             JyrapheMigrator.run! [@jyraphe_var_path]
           end
-          Coquelicot.settings.depot_path.should == @depot_path
+          expect(Coquelicot.settings.depot_path).to be == @depot_path
         end
         it 'should migrate using the given Jyraphe var directory' do
           migrator = double('JyrapheMigrator').as_null_object
-          migrator.should_receive(:migrate!)
-          JyrapheMigrator.should_receive(:new).with(@jyraphe_var_path).
+          expect(migrator).to receive(:migrate!)
+          expect(JyrapheMigrator).to receive(:new).with(@jyraphe_var_path).
               and_return(migrator)
           capture(:stdout) do
             JyrapheMigrator.run! [@jyraphe_var_path]
@@ -363,19 +363,19 @@ module Coquelicot
         end
         it 'should print rewrite rules after migrating' do
           migrator = double('JyrapheMigrator').as_null_object
-          migrator.should_receive(:migrate!).ordered
-          migrator.should_receive(:apache_rewrites).ordered.and_return('rules')
+          expect(migrator).to receive(:migrate!).ordered
+          expect(migrator).to receive(:apache_rewrites).ordered.and_return('rules')
           JyrapheMigrator.stub(:new).and_return(migrator)
           stdout = capture(:stdout) do
             JyrapheMigrator.run! [@jyraphe_var_path]
           end
-          stdout.strip.should == 'rules'
+          expect(stdout.strip).to be == 'rules'
         end
       end
       context 'when using "-p"' do
         it 'should print rewrite rules using the given prefix' do
           migrator = double('JyrapheMigrator').as_null_object
-          migrator.should_receive(:apache_rewrites).with('/prefix/')
+          expect(migrator).to receive(:apache_rewrites).with('/prefix/')
           JyrapheMigrator.stub(:new).and_return(migrator)
           capture(:stdout) do
             JyrapheMigrator.run! ['-p', '/prefix/', @jyraphe_var_path]
@@ -389,7 +389,7 @@ module Coquelicot
               JyrapheMigrator.run! ['-h']
             }.to raise_error(SystemExit)
           end
-          stderr.should =~ /Usage:/
+          expect(stderr).to match /Usage:/
         end
       end
     end

@@ -31,7 +31,7 @@ module Coquelicot::Rack
       context 'when given a block taking one argument' do
         it 'should run the block with a new parser as argument' do
           MultipartParser.parse(env) do |p|
-            p.should be_a(MultipartParser)
+            expect(p).to be_a(MultipartParser)
           end
         end
       end
@@ -48,7 +48,7 @@ module Coquelicot::Rack
       context 'when used once' do
         it 'should call the block on start' do
           mock = double
-          mock.should_receive(:act)
+          expect(mock).to receive(:act)
           MultipartParser.parse(env) do |p|
             p.start { mock.act }
           end
@@ -57,8 +57,8 @@ module Coquelicot::Rack
       context 'when used twice in a row' do
         it 'should call both blocks on start' do
           mock = double
-          mock.should_receive(:run).ordered
-          mock.should_receive(:walk).ordered
+          expect(mock).to receive(:run).ordered
+          expect(mock).to receive(:walk).ordered
           MultipartParser.parse(env) do |p|
             p.start { mock.run }
             p.start { mock.walk }
@@ -68,8 +68,8 @@ module Coquelicot::Rack
       context 'when used twice with steps inbetween' do
         it 'should call both blocks on start' do
           mock = double
-          mock.should_receive(:run).ordered
-          mock.should_receive(:walk).ordered
+          expect(mock).to receive(:run).ordered
+          expect(mock).to receive(:walk).ordered
           MultipartParser.parse(env) do |p|
             p.start { mock.run }
             p.many_fields
@@ -99,7 +99,7 @@ module Coquelicot::Rack
       context 'when used alone' do
         it 'should call the given block only once' do
           mock = double
-          mock.should_receive(:act).once
+          expect(mock).to receive(:act).once
           MultipartParser.parse(env) do |p|
             p.many_fields do |params|
               mock.act
@@ -109,7 +109,7 @@ module Coquelicot::Rack
         it 'should call the given block for all fields' do
           MultipartParser.parse(env) do |p|
             p.many_fields do |params|
-              params.should == { 'one' => '1', 'two' => '2', 'three' => '3' }
+              expect(params).to be == { 'one' => '1', 'two' => '2', 'three' => '3' }
             end
           end
         end
@@ -117,7 +117,7 @@ module Coquelicot::Rack
       context 'positioned after "field"' do
         it 'should call the given block only once' do
           mock = double
-          mock.should_receive(:act).once
+          expect(mock).to receive(:act).once
           MultipartParser.parse(env) do |p|
             p.field :one
             p.many_fields do |params|
@@ -129,7 +129,7 @@ module Coquelicot::Rack
           MultipartParser.parse(env) do |p|
             p.field :one
             p.many_fields do |params|
-              params.should == { 'two' => '2', 'three' => '3' }
+              expect(params).to be == { 'two' => '2', 'three' => '3' }
             end
           end
         end
@@ -137,7 +137,7 @@ module Coquelicot::Rack
       context 'positioned before "field"' do
         it 'should call the given block only once' do
           mock = double
-          mock.should_receive(:act).once
+          expect(mock).to receive(:act).once
           MultipartParser.parse(env) do |p|
             p.many_fields do |params|
               mock.act
@@ -148,7 +148,7 @@ module Coquelicot::Rack
         it 'should call the given block for the first two fields' do
           MultipartParser.parse(env) do |p|
             p.many_fields do |params|
-              params.should == { 'one' => '1', 'two' => '2' }
+              expect(params).to be == { 'one' => '1', 'two' => '2' }
             end
             p.field :three
           end
@@ -157,8 +157,8 @@ module Coquelicot::Rack
       context 'before and after "field"' do
         it 'should call each given block only once' do
           mock = double
-          mock.should_receive(:run).ordered
-          mock.should_receive(:walk).ordered
+          expect(mock).to receive(:run).ordered
+          expect(mock).to receive(:walk).ordered
           MultipartParser.parse(env) do |p|
             p.many_fields do |params|
               mock.run
@@ -172,11 +172,11 @@ module Coquelicot::Rack
         it 'should call each given block for the first and last fields, respectively' do
           MultipartParser.parse(env) do |p|
             p.many_fields do |params|
-              params.should == { 'one' => '1' }
+              expect(params).to be == { 'one' => '1' }
             end
             p.field :two
             p.many_fields do |params|
-              params.should == { 'three' => '3' }
+              expect(params).to be == { 'three' => '3' }
             end
           end
         end
@@ -202,9 +202,9 @@ module Coquelicot::Rack
       context 'when positioned like the request' do
         it 'should call a block for each field' do
           mock = double
-          mock.should_receive(:first).with('1').ordered
-          mock.should_receive(:second).with('2').ordered
-          mock.should_receive(:third).with('3').ordered
+          expect(mock).to receive(:first).with('1').ordered
+          expect(mock).to receive(:second).with('2').ordered
+          expect(mock).to receive(:third).with('3').ordered
           MultipartParser.parse(env) do |p|
             p.field(:one)   { |value| mock.first  value }
             p.field(:two)   { |value| mock.second value }
@@ -224,7 +224,7 @@ module Coquelicot::Rack
       context 'when request field does not match after many_fields' do
         it 'should not call the field block' do
           mock = double
-          mock.should_not_receive(:foo)
+          expect(mock).not_to receive(:foo)
           MultipartParser.parse(env) do |p|
             p.many_fields
             p.field(:whatever) { mock.foo }
@@ -234,7 +234,7 @@ module Coquelicot::Rack
       context 'when request field  match after many_fields' do
         it 'should call the field block' do
           mock = double
-          mock.should_receive(:foo).with('3')
+          expect(mock).to receive(:foo).with('3')
           MultipartParser.parse(env) do |p|
             p.many_fields
             p.field(:three) { |value| mock.foo(value) }
@@ -253,9 +253,9 @@ module Coquelicot::Rack
         context 'when positioned like the request' do
           it 'should call the given block in the right order' do
             mock = double
-            mock.should_receive(:first).ordered
-            mock.should_receive(:second).ordered
-            mock.should_receive(:third).ordered
+            expect(mock).to receive(:first).ordered
+            expect(mock).to receive(:second).ordered
+            expect(mock).to receive(:third).ordered
             MultipartParser.parse(env) do |p|
               p.field(:field1) { |value| mock.first }
               p.field(:field2) { |value| mock.second }
@@ -270,7 +270,7 @@ module Coquelicot::Rack
             MultipartParser.parse(env) do |p|
               p.many_fields
               p.file(:field3) do |filename, content_type, reader|
-                filename.should == filename
+                expect(filename).to be == filename
                 while reader.call; end # flush file data
               end
             end
@@ -279,7 +279,7 @@ module Coquelicot::Rack
             MultipartParser.parse(env) do |p|
               p.many_fields
               p.file(:field3) do |filename, content_type, reader|
-                content_type.should == 'text/plain'
+                expect(content_type).to be == 'text/plain'
                 while reader.call; end # flush file data
               end
             end
@@ -293,7 +293,7 @@ module Coquelicot::Rack
                 data << buf until (buf = reader.call).nil?
               end
             end
-            data.should == slurp(file)
+            expect(data).to be == slurp(file)
           end
         end
       end
@@ -308,9 +308,9 @@ module Coquelicot::Rack
         context 'when positioned like the request' do
           it 'should call the given block in the right order' do
             mock = double
-            mock.should_receive(:first).ordered
-            mock.should_receive(:second).ordered
-            mock.should_receive(:third).ordered
+            expect(mock).to receive(:first).ordered
+            expect(mock).to receive(:second).ordered
+            expect(mock).to receive(:third).ordered
             MultipartParser.parse(env) do |p|
               p.field(:field1) { |value| mock.first }
               p.file(:field2) do |filename, content_type, reader|
@@ -330,7 +330,7 @@ module Coquelicot::Rack
               end
               p.field(:field3)
             end
-            data.should == slurp(file)
+            expect(data).to be == slurp(file)
           end
         end
       end
@@ -344,8 +344,8 @@ module Coquelicot::Rack
         context 'when positioned like the request' do
           it 'should call the given block in the right order' do
             mock = double
-            mock.should_receive(:first).ordered
-            mock.should_receive(:second).ordered
+            expect(mock).to receive(:first).ordered
+            expect(mock).to receive(:second).ordered
             MultipartParser.parse(env) do |p|
               p.file(:field1) do |filename, content_type, reader|
                 mock.first
@@ -365,18 +365,18 @@ module Coquelicot::Rack
             data2 = ''
             MultipartParser.parse(env) do |p|
               p.file(:field1) do |filename, content_type, reader|
-                filename.should == filename1
+                expect(filename).to be == filename1
                 buf = ''
                 data1 << buf until (buf = reader.call).nil?
               end
               p.file(:field2) do |filename, content_type, reader|
-                filename.should == filename2
+                expect(filename).to be == filename2
                 buf = ''
                 data2 << buf until (buf = reader.call).nil?
               end
             end
-            data1.should == slurp(file1)
-            data2.should == slurp(file2)
+            expect(data1).to be == slurp(file1)
+            expect(data2).to be == slurp(file2)
           end
         end
       end
@@ -392,8 +392,8 @@ module Coquelicot::Rack
       end
       context 'when used once' do
         it 'should call the block on finish' do
-          mock = mock('Object')
-          mock.should_receive(:act)
+          mock = double
+          expect(mock).to receive(:act)
           MultipartParser.parse(env) do |p|
             p.finish { mock.act }
           end
@@ -402,8 +402,8 @@ module Coquelicot::Rack
       context 'when used twice in a row' do
         it 'should call both blocks on finish (in reverse order)' do
           mock = double
-          mock.should_receive(:run).ordered
-          mock.should_receive(:walk).ordered
+          expect(mock).to receive(:run).ordered
+          expect(mock).to receive(:walk).ordered
           MultipartParser.parse(env) do |p|
             p.finish { mock.walk }
             p.finish { mock.run }
@@ -413,8 +413,8 @@ module Coquelicot::Rack
       context 'when used twice with steps inbetween' do
         it 'should call both blocks on finish (in reverse order)' do
           mock = double
-          mock.should_receive(:run).ordered
-          mock.should_receive(:walk).ordered
+          expect(mock).to receive(:run).ordered
+          expect(mock).to receive(:walk).ordered
           MultipartParser.parse(env) do |p|
             p.finish { mock.walk }
             p.many_fields

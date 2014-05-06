@@ -23,7 +23,7 @@ module Coquelicot
     describe '.new' do
       it 'should record the given path' do
         depot = Depot.new('/test')
-        depot.path.should == '/test'
+        expect(depot.path).to be == '/test'
       end
     end
 
@@ -47,27 +47,27 @@ module Coquelicot
 
     describe '#add_file' do
       it 'should generate a random file name' do
-        depot.should_receive(:gen_random_file_name).
+        expect(depot).to receive(:gen_random_file_name).
           and_return('file', 'link')
         add_file
       end
       context 'when it generates a name that is already in use' do
         it 'should find another name' do
           FileUtils.touch File.expand_path('file', @tmpdir)
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'another', 'link')
           add_file
         end
       end
       context 'when it generates the same name with another client' do
         it 'should find another name' do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'another', 'link')
           raised = false
-          StoredFile.should_receive(:create).ordered.
+          expect(StoredFile).to receive(:create).ordered.
               with(/\/file$/, pass, instance_of(Hash)).
               and_raise(Errno::EEXIST.new(File.expand_path('file', @tmpdir)))
-          StoredFile.should_receive(:create).ordered.
+          expect(StoredFile).to receive(:create).ordered.
               with(/\/another$/, pass, instance_of(Hash))
           add_file
         end
@@ -99,16 +99,16 @@ module Coquelicot
           }.to change { depot.size }.by(1)
         end
         it 'should return a randomly generated link name' do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           link = add_file
-          link.should == 'link'
+          expect(link).to be == 'link'
         end
         it 'should add the new link to the ".links" file' do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
-          File.read(File.expand_path('.links', @tmpdir)).should =~ /^link\s+file$/
+          expect(File.read(File.expand_path('.links', @tmpdir))).to match /^link\s+file$/
         end
         context 'when it generates a link name that is already taken' do
           before(:each) do
@@ -120,10 +120,10 @@ module Coquelicot
             @link = add_file
           end
           it 'should not overwrite the existing link' do
-            depot.size.should == 2
+            expect(depot.size).to be == 2
           end
           it 'should find another name' do
-            @link.should == 'another_link'
+            expect(@link).to be == 'another_link'
           end
         end
       end
@@ -132,7 +132,7 @@ module Coquelicot
     describe '#get_file' do
       context 'when there is no link with the given name' do
         it 'should return nil' do
-          depot.get_file('link').should be_nil
+          expect(depot.get_file('link')).to be_nil
         end
       end
       context 'when there is a link with the given name' do
@@ -140,24 +140,24 @@ module Coquelicot
           @link = add_file
         end
         it 'should return a StoredFile' do
-          depot.get_file(@link).should be_a(StoredFile)
+          expect(depot.get_file(@link)).to be_a(StoredFile)
         end
         it 'should return the right file' do
           stored_file = depot.get_file(@link, pass)
           buf = ''
           stored_file.each { |data| buf << data }
-          buf.should == 'Content'
+          expect(buf).to be == 'Content'
         end
       end
       context 'when there is a link with no matching file' do
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           @link = add_file
           File.unlink File.expand_path('file', @tmpdir)
         end
         it 'should return nil' do
-          depot.get_file(@link).should be_nil
+          expect(depot.get_file(@link)).to be_nil
         end
       end
     end
@@ -169,7 +169,7 @@ module Coquelicot
       end
       context 'when there is a link with the given name' do
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
         end
@@ -177,7 +177,7 @@ module Coquelicot
       end
       context 'when there is a link with no matching file' do
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
           File.unlink File.expand_path('file', @tmpdir)
@@ -194,7 +194,7 @@ module Coquelicot
       end
       context 'when there is a file' do
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
         end
@@ -234,14 +234,14 @@ module Coquelicot
           end
           it 'should remove files' do
             subject
-            Dir.glob("#{@tmpdir}/file*").should be_empty
+            expect(Dir.glob("#{@tmpdir}/file*")).to be_empty
           end
         end
       end
       context 'when there is a file that expires after the gone period' do
         let(:expire) { Coquelicot.settings.gone_period + 42 }
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
         end
@@ -259,7 +259,7 @@ module Coquelicot
       end
       context 'when there is a link but no associated file' do
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
           File.unlink File.expand_path('file', @tmpdir)
@@ -270,7 +270,7 @@ module Coquelicot
       end
       context 'when there is a corrupted file' do
         before(:each) do
-          depot.should_receive(:gen_random_file_name).
+          expect(depot).to receive(:gen_random_file_name).
             and_return('file', 'link')
           add_file
           @file_path = File.expand_path('file', @tmpdir)
@@ -282,7 +282,7 @@ module Coquelicot
           stderr = capture(:stderr) do
             depot.gc!
           end
-          stderr.should =~ /^W: #{@file_path} is not a Coquelicot file\. Skipping\./
+          expect(stderr).to match /^W: #{@file_path} is not a Coquelicot file\. Skipping\./
         end
         it 'should not remove files' do
           capture(:stderr) do

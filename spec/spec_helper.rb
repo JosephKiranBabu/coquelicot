@@ -109,4 +109,8 @@ end
 ::RSpec.configure do |c|
   c.extend StoredFileHelpers
   c.include CoquelicotSpecHelpers
+
+  c.expect_with :rspec do |e|
+    e.syntax = :expect
+  end
 end

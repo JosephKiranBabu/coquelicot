@@ -53,14 +53,14 @@ describe Coquelicot::Application do
     context 'using the default language' do
       it 'should display the maximum file size' do
         visit '/'
-        find(:xpath, '//label[@for="file"]').
-            should have_content("max. size: #{Coquelicot.settings.max_file_size.as_size}")
+        expect(find(:xpath, '//label[@for="file"]')).
+            to have_content("max. size: #{Coquelicot.settings.max_file_size.as_size}")
       end
       context 'when I explicitly request french' do
         it 'should display a page in french' do
           visit '/'
           click_link 'fr'
-          page.should have_content('Partager')
+          expect(page).to have_content('Partager')
           reset_session!
         end
         # will fail without ordered Hash, see:
@@ -81,7 +81,7 @@ describe Coquelicot::Application do
             end
           end
           it 'should display an error in french' do
-            page.should have_content('Le fichier est vide')
+            expect(page).to have_content('Le fichier est vide')
           end
         end
       end
@@ -91,7 +91,7 @@ describe Coquelicot::Application do
       context 'when I do nothing special' do
         it 'should display a page in french' do
           visit '/'
-          page.should have_content('Partager')
+          expect(page).to have_content('Partager')
         end
         context 'when the max upload size is 1 KiB' do
           around do |example|
@@ -105,7 +105,7 @@ describe Coquelicot::Application do
           end
           it 'should display "1 Kio" as the max upload size' do
             visit '/'
-            page.should have_content('1 Kio')
+            expect(page).to have_content('1 Kio')
           end
           # will fail without ordered Hash, see:
           # <https://github.com/jnicklas/capybara/issues/670>
@@ -117,7 +117,7 @@ describe Coquelicot::Application do
               click_button 'submit'
             end
             it 'should display an error in french' do
-              page.should have_content('plus gros que la taille maximale')
+              expect(page).to have_content('plus gros que la taille maximale')
             end
           end
         end
@@ -137,7 +137,7 @@ describe Coquelicot::Application do
             end
           end
           it 'should display an error in french' do
-            page.should have_content('Le fichier est vide')
+            expect(page).to have_content('Le fichier est vide')
           end
         end
       end
@@ -149,7 +149,7 @@ describe Coquelicot::Application do
           reset_session!
         end
         it 'should display a page in german' do
-          page.should have_content('Verteile')
+          expect(page).to have_content('Verteile')
         end
 	# will fail without ordered Hash, see:
 	# <https://github.com/jnicklas/capybara/issues/670>
@@ -160,7 +160,7 @@ describe Coquelicot::Application do
             click_button 'submit'
           end
           it 'should display a page in german' do
-            page.should have_content('Verteile eine weitere Datei')
+            expect(page).to have_content('Verteile eine weitere Datei')
           end
         end
       end
@@ -173,14 +173,14 @@ describe Coquelicot::Application do
       context 'using the default language' do
         it 'should display the "about text" in English' do
           visit '/'
-          find('.about').text.should == 'This is an about text'
+          expect(find('.about').text).to be == 'This is an about text'
         end
       end
       context 'when I explicitly request French' do
         it 'should display the "about text" in French' do
           visit '/'
           click_link 'fr'
-          find('.about').text.should == 'Ceci est un texte'
+          expect(find('.about').text).to be == 'Ceci est un texte'
           reset_session!
         end
       end
@@ -188,7 +188,7 @@ describe Coquelicot::Application do
         include_context 'browser prefers french'
         it 'should display the "about text" in French' do
           visit '/'
-          find('.about').text.should == 'Ceci est un texte'
+          expect(find('.about').text).to be == 'Ceci est un texte'
         end
       end
     end
@@ -200,7 +200,7 @@ describe Coquelicot::Application do
       end
       it 'should offer a "git clone" to the local URI' do
         visit '/'
-        find('#footer').should have_content('git clone http://www.example.com/coquelicot.git')
+        expect(find('#footer')).to have_content('git clone http://www.example.com/coquelicot.git')
       end
     end
     context 'when a local Git repository is not usable' do
@@ -213,17 +213,17 @@ describe Coquelicot::Application do
       end
       it 'should offer a link to retrieve the source' do
         visit '/'
-        find('#footer').text.should =~ /curl.*gem unpack.*\.gem$/
+        expect(find('#footer').text).to match /curl.*gem unpack.*\.gem$/
       end
       it 'should log a warning' do
         logger = double('Logger')
-        logger.should_receive(:warn).with(/Unable to provide access to local Git repository/)
+        expect(logger).to receive(:warn).with(/Unable to provide access to local Git repository/)
         app.any_instance.stub(:logger).and_return(logger)
         visit '/'
       end
       it 'should log a warning only on the first request' do
         logger = double('Logger')
-        logger.should_receive(:warn).once
+        expect(logger).to receive(:warn).once
         app.any_instance.stub(:logger).and_return(logger)
         visit '/'
         visit '/'
@@ -237,7 +237,7 @@ describe Coquelicot::Application do
       end
       it 'should offer a link to retrieve the source' do
         visit '/'
-        find('#footer').text.should =~ /curl.*gem unpack.*\.gem$/
+        expect(find('#footer').text).to match /curl.*gem unpack.*\.gem$/
       end
     end
   end
@@ -248,25 +248,25 @@ describe Coquelicot::Application do
     end
     it 'should display the README file' do
       title = File.open(File.expand_path('../../../README', __FILE__)) { |f| f.readline.strip }
-      find('h1').should have_content(title)
+      expect(find('h1')).to have_content(title)
     end
   end
 
   describe 'get /about-your-data' do
     it 'should display some info about data retention' do
       visit '/about-your-data'
-      find('h1').should have_content('About your data…')
+      expect(find('h1')).to have_content('About your data…')
     end
     context 'when using SSL' do
       it 'should notice the connection is encrypted' do
         visit 'https://example.com/about-your-data'
-        page.should have_content('Exchanges between your computer and example.com are encrypted.')
+        expect(page).to have_content('Exchanges between your computer and example.com are encrypted.')
       end
     end
     context 'when not using SSL' do
       it 'should notice the connection is encrypted' do
         visit 'http://example.com/about-your-data'
-        page.should_not have_content('Exchanges between your computer and example.org are encrypted.')
+        expect(page).to_not have_content('Exchanges between your computer and example.org are encrypted.')
       end
     end
   end
@@ -279,11 +279,11 @@ describe Coquelicot::Application do
         visit '/source'
       end
       it 'should send a file to be saved' do
-        page.response_headers['Content-Type'].should == 'application/octet-stream'
-        page.response_headers['Content-Disposition'].should =~ /^attachment;/
+        expect(page.response_headers['Content-Type']).to be == 'application/octet-stream'
+        expect(page.response_headers['Content-Disposition']).to match /^attachment;/
       end
       it 'should send a file with a proposed name correct for coquelicot gem' do
-        page.response_headers['Content-Disposition'].should =~ /filename="coquelicot-.*\.gem"/
+        expect(page.response_headers['Content-Disposition']).to match /filename="coquelicot-.*\.gem"/
       end
       if defined? Gem::Package.new
         context 'the downloaded gem' do
@@ -296,15 +296,15 @@ describe Coquelicot::Application do
             end
           end
           it 'should be named "coquelicot"' do
-            @gem.spec.name.should == 'coquelicot'
+            expect(@gem.spec.name).to be == 'coquelicot'
           end
           it "should have a version containing 'onecoolhostname' for the hostname" do
-            @gem.spec.version.to_s.should =~ /\.onecoolhostname\./
+            expect(@gem.spec.version.to_s).to match /\.onecoolhostname\./
           end
           it "should have a version containing today's date" do
             Timecop.freeze(Time.now) do
               date_str = Date.today.strftime('%Y%m%d')
-              @gem.spec.version.to_s.should =~ /\.#{date_str}$/
+              expect(@gem.spec.version.to_s).to match /\.#{date_str}$/
             end
           end
           it 'should at least contain this spec file' do
@@ -313,7 +313,7 @@ describe Coquelicot::Application do
             @gem.spec.files.each do |file|
               content = File.read(file, :encoding => 'binary') if file.end_with?(this_file)
             end
-            content.should == File.read(__FILE__, :encoding => 'binary')
+            expect(content).to be == File.read(__FILE__, :encoding => 'binary')
           end
         end
       else
@@ -325,15 +325,15 @@ describe Coquelicot::Application do
             end
           end
           it 'should be named "coquelicot"' do
-            @gem.metadata.name.should == 'coquelicot'
+            expect(@gem.metadata.name).to be == 'coquelicot'
           end
           it "should have a version containing 'onecoolhostname' for the hostname" do
-            @gem.metadata.version.to_s.should =~ /\.onecoolhostname\./
+            expect(@gem.metadata.version.to_s).to match /\.onecoolhostname\./
           end
           it "should have a version containing today's date" do
             Timecop.freeze(Time.now) do
               date_str = Date.today.strftime('%Y%m%d')
-              @gem.metadata.version.to_s.should =~ /\.#{date_str}$/
+              expect(@gem.metadata.version.to_s).to match /\.#{date_str}$/
             end
           end
           it 'should at least contain this spec file' do
@@ -342,7 +342,7 @@ describe Coquelicot::Application do
             @gem.each do |file|
               content = file.read if file.full_name.end_with?(this_file)
             end
-            content.should == File.open(__FILE__, 'rb').read
+            expect(content).to be == File.open(__FILE__, 'rb').read
           end
         end
       end
@@ -357,7 +357,7 @@ describe Coquelicot::Application do
         post '/authenticate', :file => Rack::Test::UploadedFile.new(path, 'text/plain')
       end
       it 'should get status 413 (Request entity too large)' do
-        last_response.status.should == 413
+        expect(last_response.status).to be == 413
       end
     end
   end
@@ -371,7 +371,7 @@ describe Coquelicot, '.run!' do
       stderr = capture(:stderr) do
         expect { Coquelicot.run! %w{} }.to raise_error(SystemExit)
       end
-      stderr.should =~ /Usage:/
+      expect(stderr).to match /Usage:/
     end
   end
   context 'when using "-h"' do
@@ -379,13 +379,13 @@ describe Coquelicot, '.run!' do
       stderr = capture(:stderr) do
         expect { Coquelicot.run! %w{-h} }.to raise_error(SystemExit)
       end
-      stderr.should =~ /Usage:/
+      expect(stderr).to match /Usage:/
     end
   end
   context 'when using "-c <settings.yml>"' do
     it 'should use the given setting file' do
       settings_file = File.expand_path('../../../conf/settings-default.yml', __FILE__)
-      Coquelicot::Application.should_receive(:config_file).with(settings_file)
+      expect(Coquelicot::Application).to receive(:config_file).with(settings_file)
       stderr = capture(:stderr) do
         expect { Coquelicot.run! ['-c', settings_file] }.to raise_error(SystemExit)
       end
@@ -407,7 +407,7 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run! ['-c', @settings_path] }.to raise_error(SystemExit)
         end
-        Coquelicot.settings.depot_path.should == '/nonexistent'
+        expect(Coquelicot.settings.depot_path).to be == '/nonexistent'
       end
     end
     context 'when the given settings file does not exist' do
@@ -415,7 +415,7 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run! %w{-c non-existent.yml} }.to raise_error(SystemExit)
         end
-        stderr.should =~ /cannot access/
+        expect(stderr).to match /cannot access/
       end
     end
   end
@@ -424,7 +424,7 @@ describe Coquelicot, '.run!' do
       stderr = capture(:stderr) do
         expect { Coquelicot.run! %w{--invalid-option} }.to raise_error(SystemExit)
       end
-      stderr.should =~ /not a valid option/
+      expect(stderr).to match /not a valid option/
     end
   end
   context 'when given "whatever"' do
@@ -432,7 +432,7 @@ describe Coquelicot, '.run!' do
       stderr = capture(:stderr) do
         expect { Coquelicot.run! %w{whatever} }.to raise_error(SystemExit)
       end
-      stderr.should =~ /not a valid command/
+      expect(stderr).to match /not a valid command/
     end
   end
   shared_context 'command accepts options' do
@@ -441,7 +441,7 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run!([command, '--help']) }.to raise_error(SystemExit)
         end
-        stderr.should =~ /Usage:/
+        expect(stderr).to match /Usage:/
       end
     end
     context 'when given an invalid option' do
@@ -449,7 +449,7 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run!([command, '--invalid-option']) }.to raise_error(SystemExit)
         end
-        stderr.should =~ /not a valid option/
+        expect(stderr).to match /not a valid option/
       end
     end
   end
@@ -463,21 +463,21 @@ describe Coquelicot, '.run!' do
     end
     context 'with default options' do
       it 'should daemonize' do
-        ::Unicorn::Launcher.should_receive(:daemonize!)
+        expect(::Unicorn::Launcher).to receive(:daemonize!)
         ::Rainbows::HttpServer.stub(:new).and_return(double('HttpServer').as_null_object)
         Coquelicot.run! %w{start}
       end
       it 'should start the web server' do
         ::Unicorn::Launcher.stub(:daemonize!)
         server = double('HttpServer')
-        server.should_receive(:start).and_return(double('Thread').as_null_object)
+        expect(server).to receive(:start).and_return(double('Thread').as_null_object)
         ::Rainbows::HttpServer.stub(:new).and_return(server)
         Coquelicot.run! %w{start}
       end
     end
     context 'when given the --no-daemon option' do
       it 'should not daemonize' do
-        ::Unicorn::Launcher.should_receive(:daemonize!).never
+        expect(::Unicorn::Launcher).to receive(:daemonize!).never
         ::Rainbows::HttpServer.stub(:new).and_return(double('HttpServer').as_null_object)
         Coquelicot.run! %w{start --no-daemon}
       end
@@ -486,15 +486,15 @@ describe Coquelicot, '.run!' do
         app.set :listen, ['127.0.0.1:42']
         ::Rainbows::HttpServer.any_instance.stub(:start) do
           server = ::Rainbows.server
-          server.config.set[:pid].should == @depot_path
-          server.config.set[:listeners].should == ['127.0.0.1:42']
+          expect(server.config.set[:pid]).to be == @depot_path
+          expect(server.config.set[:listeners]).to be == ['127.0.0.1:42']
           double('Thread').as_null_object
         end
         Coquelicot.run! %w{start --no-daemon}
       end
       it 'should start the web server' do
         server = double('HttpServer')
-        server.should_receive(:start).and_return(double('Thread').as_null_object)
+        expect(server).to receive(:start).and_return(double('Thread').as_null_object)
         ::Rainbows::HttpServer.stub(:new).and_return(server)
         Coquelicot.run! %w{start --no-daemon}
       end
@@ -513,7 +513,7 @@ describe Coquelicot, '.run!' do
         app.set :pid, "#{@depot_path}/pid"
       end
       it 'should stop the web server' do
-        Process.should_receive(:kill).with(:TERM, pid)
+        expect(Process).to receive(:kill).with(:TERM, pid)
         Coquelicot.run! %w{stop}
       end
     end
@@ -523,7 +523,7 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run! %w{stop} }.to raise_error(SystemExit)
         end
-        stderr.should =~ /Unable to read/
+        expect(stderr).to match /Unable to read/
       end
     end
     context 'when the pid file contains garbage' do
@@ -537,7 +537,7 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run! %w{stop} }.to raise_error(SystemExit)
         end
-        stderr.should =~ /Bad PID file/
+        expect(stderr).to match /Bad PID file/
       end
     end
   end
@@ -546,14 +546,14 @@ describe Coquelicot, '.run!' do
     include_context 'command accepts options'
 
     it 'should call gc!' do
-      Coquelicot.depot.should_receive(:gc!).once
+      expect(Coquelicot.depot).to receive(:gc!).once
       Coquelicot.run! %w{gc}
     end
   end
   context 'when given "migrate-jyraphe"' do
     let(:args) { %w{all args} }
     it 'should call the migrator' do
-      Coquelicot::JyrapheMigrator.should_receive(:run!).with(args)
+      expect(Coquelicot::JyrapheMigrator).to receive(:run!).with(args)
       Coquelicot.run!(%w{migrate-jyraphe} + args)
     end
   end

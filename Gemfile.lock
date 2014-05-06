@@ -114,6 +114,6 @@ DEPENDENCIES
   hpricot
   rack-test
   rake
-  rspec (~> 2.6)
+  rspec (~> 2.11)
   timecop
   tzinfo

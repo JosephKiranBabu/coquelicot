@@ -37,12 +37,12 @@ module Coquelicot::Rack
       context 'when receiving GET /' do
         let(:env) { { 'REQUEST_METHOD' => 'GET', 'PATH_INFO' => '/' } }
         it 'should pass the request to the lower app' do
-          subject.body.should == 'Lower'
+          expect(subject.body).to be == 'Lower'
         end
         it 'should ensure the forwarded rack.input is rewindable' do
           spec_app = double
-          spec_app.should_receive(:call) do |env|
-            env['rack.input'].should respond_to(:rewind)
+          expect(spec_app).to receive(:call) do |env|
+            expect(env['rack.input']).to respond_to(:rewind)
             [200, {'Content-Type' => 'text/plain'}, ['mock']]
           end
           input = StringIO.new('foo=bar&quux=blabb')
@@ -54,7 +54,7 @@ module Coquelicot::Rack
       context 'when called for GET /upload' do
         let(:env) { { 'REQUEST_METHOD' => 'GET', 'PATH_INFO' => '/upload' } }
         it 'should pass the request to the lower app' do
-          subject.body.should == 'Lower'
+          expect(subject.body).to be == 'Lower'
         end
       end
       context 'when called for POST /upload' do
@@ -70,7 +70,7 @@ module Coquelicot::Rack
           let(:input) { '' }
           it 'should log a warning during the first request' do
             logger = double('Logger')
-            logger.should_receive(:warn).with(/rewindable/).once
+            expect(logger).to receive(:warn).with(/rewindable/).once
             env['rack.logger'] = logger
             # set it to nil to stop Sinatra from messing up
             upload = Class.new(Upload) { set :logging, nil }.new(lower_app)
@@ -124,14 +124,14 @@ MULTIPART_DATA
             Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
           end
           it 'should issue a temporary redirect' do
-            subject.status.should satisfy{|s| [302,303].include?(s) }
+            expect(subject.status).to satisfy{|s| [302,303].include?(s) }
           end
           it 'should redirect to the ready page' do
-            subject.headers['Location'].should =~ %r{http://example\.org/ready/}
+            expect(subject.headers['Location']).to match %r{http://example\.org/ready/}
           end
           it 'should add a file to the depot' do
             filename = File.basename(file)
-            Coquelicot.depot.should_receive(:add_file).
+            expect(Coquelicot.depot).to receive(:add_file).
                 with(file_key, hash_including('Filename' => filename)).
                 and_yield.and_yield
             subject
@@ -148,13 +148,13 @@ MULTIPART_DATA
           end
           context 'when there is a request Content-Length header' do
             it 'should bail out with 413 (Request Entity Too Large)' do
-              subject.status.should == 413
+              expect(subject.status).to be == 413
             end
             it 'should display "File is bigger than maximum allowed size"' do
-              subject.body.should include('File is bigger than maximum allowed size')
+              expect(subject.body).to include('File is bigger than maximum allowed size')
             end
             it 'should display the maximum file size' do
-              subject.body.should include('100 B')
+              expect(subject.body).to include('100 B')
             end
           end
           context 'when there is no request Content-Length header' do
@@ -162,13 +162,13 @@ MULTIPART_DATA
               env['CONTENT_LENGTH'] = nil
             end
             it 'should bail out with 413 (Request Entity Too Large)' do
-              subject.status.should == 413
+              expect(subject.status).to be == 413
             end
             it 'should display "File is bigger than maximum allowed size"' do
-              subject.body.should include('File is bigger than maximum allowed size')
+              expect(subject.body).to include('File is bigger than maximum allowed size')
             end
             it 'should display the maximum file size' do
-              subject.body.should include('100 B')
+              expect(subject.body).to include('100 B')
             end
           end
           context 'when the request Content-Length header is lying to us' do
@@ -176,13 +176,13 @@ MULTIPART_DATA
               env['CONTENT_LENGTH'] = 99
             end
             it 'should bail out with 413 (Request Entity Too Large)' do
-              subject.status.should == 413
+              expect(subject.status).to be == 413
             end
             it 'should display "File is bigger than maximum allowed size"' do
-              subject.body.should include('File is bigger than maximum allowed size')
+              expect(subject.body).to include('File is bigger than maximum allowed size')
             end
             it 'should display the maximum file size' do
-              subject.body.should include('100 B')
+              expect(subject.body).to include('100 B')
             end
           end
         end
@@ -222,7 +222,7 @@ MULTIPART_DATA
             subject.status == 400
           end
           it 'should display "Bad Request: fields in unacceptable order"' do
-            subject.body.should include('Bad Request: fields in unacceptable order')
+            expect(subject.body).to include('Bad Request: fields in unacceptable order')
           end
         end
         context 'when authentication fails' do
@@ -234,7 +234,7 @@ MULTIPART_DATA
             subject.status == 403
           end
           it 'should display "Forbidden"' do
-            subject.body.should include('Forbidden')
+            expect(subject.body).to include('Forbidden')
           end
           it 'should not add a file' do
             expect { subject }.to_not change { Coquelicot.depot.size }
@@ -250,7 +250,7 @@ MULTIPART_DATA
             subject.status == 503
           end
           it 'should display the error message' do
-            subject.body.should include('Something bad happened!')
+            expect(subject.body).to include('Something bad happened!')
           end
           it 'should not add a file' do
             expect { subject }.to_not change { Coquelicot.depot.size }
@@ -281,22 +281,22 @@ MULTIPART_DATA
             Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
           end
           it 'should pass to the lower app' do
-            subject.body.should == 'Lower'
+            expect(subject.body).to be == 'Lower'
           end
           it 'should set X_COQUELICOT_FORWARD in env' do
             mock_app = double
-            mock_app.should_receive(:call).
+            expect(mock_app).to receive(:call).
                 with(hash_including('X_COQUELICOT_FORWARD')).
                 and_return([200, {'Content-Type' => 'text/plain'}, ['forward mock']])
             Upload.new(mock_app).call(env)
           end
           it 'should forward interesting params' do
             mock_app = double
-            mock_app.should_receive(:call) do
+            expect(mock_app).to receive(:call) do
               request = Sinatra::Request.new(env)
-              request.params['upload_password'].should == 'whatever'
-              request.params['expire'].should == '60'
-              request.params['one_time'].should == 'true'
+              expect(request.params['upload_password']).to be == 'whatever'
+              expect(request.params['expire']).to be == '60'
+              expect(request.params['one_time']).to be == 'true'
               [200, {'Content-Type' => 'text/plain'}, ['forward mock']]
             end
             Upload.new(mock_app).call(env)
@@ -315,7 +315,7 @@ MULTIPART_DATA
             subject.status == 403
           end
           it 'should display "Forbidden: expiration time too big"' do
-            subject.body.should include('Forbidden: expiration time too big')
+            expect(subject.body).to include('Forbidden: expiration time too big')
           end
           it 'should not add a file' do
             expect { subject }.to_not change { Coquelicot.depot.size }
