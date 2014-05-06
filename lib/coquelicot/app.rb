@@ -293,29 +293,55 @@ module Coquelicot
       haml :about_your_data
     end
 
-    get '/source' do
-      Gem::DefaultUserInteraction.ui = Gem::SilentUI.new
+    if defined? Gem::Package.build
+      get '/source' do
+        Gem::DefaultUserInteraction.ui = Gem::SilentUI.new
 
-      spec = Gem::loaded_specs['coquelicot'].clone
-      Dir.chdir(spec.full_gem_path) do
+        spec = Gem::loaded_specs['coquelicot'].clone
         spec.version = gem_version
-        spec.mark_version
-        spec.validate
         Tempfile.open('coquelicot-gem') do |gem_file|
-          Gem::Package.open(gem_file, 'w', nil) do |pkg|
-            pkg.metadata = spec.to_yaml
-            spec.files.each do |file|
-              next if File.directory?(file)
-              stat = File.stat(file)
-              mode = stat.mode & 0777
-              size = stat.size
-              pkg.add_file_simple(file, mode, size) do |tar_io|
-                tar_io.write(open(file, "rb") { |f| f.read })
+          Dir.mktmpdir('coquelicot-gen-gem') do |tmpdir|
+            Dir.chdir(spec.full_gem_path) do
+              spec.files.each do |file|
+                dest = "#{tmpdir}/#{file}"
+                FileUtils.mkdir_p(File.dirname(dest))
+                FileUtils.cp(file, dest)
               end
+            end
+            Dir.chdir("#{tmpdir}") do
+              filename = Gem::Package.build(spec)
+              gem_file.write(File.read(filename))
             end
           end
           send_file gem_file.path, :filename => spec.file_name
           gem_file.unlink
+        end
+      end
+    else
+      get '/source' do
+        Gem::DefaultUserInteraction.ui = Gem::SilentUI.new
+
+        spec = Gem::loaded_specs['coquelicot'].clone
+        Dir.chdir(spec.full_gem_path) do
+          spec.version = gem_version
+          spec.mark_version
+          spec.validate
+          Tempfile.open('coquelicot-gem') do |gem_file|
+            Gem::Package.open(gem_file, 'w', nil) do |pkg|
+              pkg.metadata = spec.to_yaml
+              spec.files.each do |file|
+                next if File.directory?(file)
+                stat = File.stat(file)
+                mode = stat.mode & 0777
+                size = stat.size
+                pkg.add_file_simple(file, mode, size) do |tar_io|
+                  tar_io.write(open(file, "rb") { |f| f.read })
+                end
+              end
+            end
+            send_file gem_file.path, :filename => spec.file_name
+            gem_file.unlink
+          end
         end
       end
     end

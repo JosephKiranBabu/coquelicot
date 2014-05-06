@@ -285,32 +285,65 @@ describe Coquelicot::Application do
       it 'should send a file with a proposed name correct for coquelicot gem' do
         page.response_headers['Content-Disposition'].should =~ /filename="coquelicot-.*\.gem"/
       end
-      context 'the downloaded gem' do
-        around(:each) do |example|
-          Gem::Package.open(StringIO.new(page.driver.response.body)) do |gem|
-            @gem = gem
-            example.run
+      if defined? Gem::Package.new
+        context 'the downloaded gem' do
+          around(:each) do |example|
+            Tempfile.open('coquelicot-downloaded-gem') do |gem_file|
+              gem_file.write(page.driver.response.body)
+              @gem = Gem::Package.new(gem_file.path)
+              example.run
+              gem_file.unlink
+            end
+          end
+          it 'should be named "coquelicot"' do
+            @gem.spec.name.should == 'coquelicot'
+          end
+          it "should have a version containing 'onecoolhostname' for the hostname" do
+            @gem.spec.version.to_s.should =~ /\.onecoolhostname\./
+          end
+          it "should have a version containing today's date" do
+            Timecop.freeze(Time.now) do
+              date_str = Date.today.strftime('%Y%m%d')
+              @gem.spec.version.to_s.should =~ /\.#{date_str}$/
+            end
+          end
+          it 'should at least contain this spec file' do
+            this_file = __FILE__.gsub(/^.*\/spec/, 'spec')
+            content = nil
+            @gem.spec.files.each do |file|
+              content = File.read(file, :encoding => 'binary') if file.end_with?(this_file)
+            end
+            content.should == File.read(__FILE__, :encoding => 'binary')
           end
         end
-        it 'should be named "coquelicot"' do
-          @gem.metadata.name.should == 'coquelicot'
-        end
-        it "should have a version containing 'onecoolhostname' for the hostname" do
-          @gem.metadata.version.to_s.should =~ /\.onecoolhostname\./
-        end
-        it "should have a version containing today's date" do
-          Timecop.freeze(Time.now) do
-            date_str = Date.today.strftime('%Y%m%d')
-            @gem.metadata.version.to_s.should =~ /\.#{date_str}$/
+      else
+        context 'the downloaded gem' do
+          around(:each) do |example|
+            Gem::Package.open(StringIO.new(page.driver.response.body)) do |gem|
+              @gem = gem
+              example.run
+            end
           end
-        end
-        it 'should at least contain this spec file' do
-          this_file = __FILE__.gsub(/^.*\/spec/, 'spec')
-          content = nil
-          @gem.each do |file|
-            content = file.read if file.full_name.end_with?(this_file)
+          it 'should be named "coquelicot"' do
+            @gem.metadata.name.should == 'coquelicot'
           end
-          content.should == File.open(__FILE__, 'rb').read
+          it "should have a version containing 'onecoolhostname' for the hostname" do
+            @gem.metadata.version.to_s.should =~ /\.onecoolhostname\./
+          end
+          it "should have a version containing today's date" do
+            Timecop.freeze(Time.now) do
+              date_str = Date.today.strftime('%Y%m%d')
+              @gem.metadata.version.to_s.should =~ /\.#{date_str}$/
+            end
+          end
+          it 'should at least contain this spec file' do
+            this_file = __FILE__.gsub(/^.*\/spec/, 'spec')
+            content = nil
+            @gem.each do |file|
+              content = file.read if file.full_name.end_with?(this_file)
+            end
+            content.should == File.open(__FILE__, 'rb').read
+          end
         end
       end
     end
