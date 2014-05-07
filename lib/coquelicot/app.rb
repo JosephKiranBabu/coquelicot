@@ -149,13 +149,16 @@ module Coquelicot
       rainbows_opts = {}
       ::Unicorn::Launcher.daemonize!(rainbows_opts) unless options[:no_daemon]
 
+      path = settings.path
       app = lambda do
               ::Rack::Builder.new do
                 Coquelicot.monkeypatch_half_close
                 use ::Rack::ContentLength
                 use ::Rack::Chunked
                 use ::Rack::CommonLogger, $stderr
-                run Application
+                map path do
+                  run Application
+                end
               end.to_app
             end
 
@@ -234,6 +237,7 @@ module Coquelicot
     set :pid, Proc.new { File.join(root, 'tmp/coquelicot.pid') }
     set :log, Proc.new { File.join(root, 'tmp/coquelicot.log') }
     set :listen, [ "127.0.0.1:51161" ]
+    set :path, '/'
     set :show_exceptions, false
     set :authentication_method, :name => :simplepass,
                                 :upload_password => 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'

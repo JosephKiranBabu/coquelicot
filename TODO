@@ -3,12 +3,6 @@ Future plans
 
 Here are a list of welcome changes to [Coquelicot]:
 
- * Handle sub-directory installations
-
-   A new setting could be added to support admins which would like to
-   make Coquelicot available from a sub-directory, e.g.
-   `https://example.org/dl/`.
-
  * Implement optional client-side encryption
 
    Using the new HTML 5FileAPI, encryption and decryption of the files

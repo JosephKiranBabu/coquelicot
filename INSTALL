@@ -60,6 +60,21 @@ modules must be enabled. A minimal configuration would then look like:
             RequestHeader set X-Forwarded-SSL "on"
     </VirtualHost>
 
+If you wish to have Coquelicot served from a “sub-directory”, `path` needs to
+be set in `settings.yml` to the proper value. For the following example,
+we use `/coquelicot`:
+
+    <VirtualHost *:443>
+            ServerName dl.example.org
+            SSLEngine on
+            […]
+            <Location /coquelicot>
+                    ProxyPass http://127.0.0.1:51161/coquelicot
+                    SetEnv proxy-sendchunks 1
+                    RequestHeader set X-Forwarded-SSL "on"
+            </Location>
+    </VirtualHost>
+
 [Apache]: http://httpd.apache.org/
 
 ### Nginx

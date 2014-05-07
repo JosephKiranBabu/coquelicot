@@ -103,6 +103,13 @@ log: "./tmp/coquelicot.log"
 listen:
  - "127.0.0.1:51161"
 
+# Path used URL to access the application.
+#
+#   As an example, if you want to make Coquelicot accessible from
+#   https://example.org/dl/ set `path` to `/dl`.
+#
+path: "/"
+
 # Display debugging data in the browser when an exception is raised
 #
 #   This should only be turned on when doing development.

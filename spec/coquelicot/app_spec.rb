@@ -495,6 +495,27 @@ describe Coquelicot, '.run!' do
         Coquelicot.run! %w{start --no-daemon}
       end
     end
+    context 'when the path setting is set to /coquelicot' do
+      before(:each) do
+        app.set :log, nil
+        $stderr = StringIO.new
+        app.set :path, '/coquelicot'
+      end
+      it 'should map the application to /coquelicot' do
+        ::Unicorn::Launcher.stub(:daemonize!)
+        Coquelicot.stub(:monkeypatch_half_close)
+        ::Rainbows::HttpServer.stub(:new) do |app, opts|
+          session = Rack::Test::Session.new(app.call)
+          session.get('/coquelicot/')
+          expect(session.last_response).to be_ok
+          expect(session.last_response.body).to match /Coquelicot/
+          session.get('/')
+          expect(session.last_response.status).to eql(404)
+          double('HttpServer').as_null_object
+        end
+        Coquelicot.run! %w{start}
+      end
+    end
   end
   context 'when given "stop"' do
     let(:command) { 'stop' }
