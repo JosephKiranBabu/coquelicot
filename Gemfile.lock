@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    coquelicot (0.9.2)
+    coquelicot (0.9.3)
       fast_gettext
       gettext (~> 3)
       haml (~> 3.1)

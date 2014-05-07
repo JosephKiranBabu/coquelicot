@@ -3,6 +3,34 @@ Release history
 
 Here is a list of changes that happened in each release of [Coquelicot]:
 
+Version 0.9.3
+-------------
+
+ * Support sub-directory installations. See updated installation
+   documentation for Apache and the new `path` setting.
+ * Always use the current source tree as the `coquelicot` gem.
+ * Fix an issue with the signature step in the release process.
+ * Document commands needed to serve the local Git clone.
+ * Fix a typo in footer when Coquelicot was installed from a gem.
+ * Add missing Debian packages to installation steps. Thanks Alexandre
+   Garreau for reporting the issue.
+ * Add Spanish translation. Thanks Loïc Raimbault!
+ * Stop spilling authentication errors to users. Thanks Rowan Thorpe for
+   the report.
+ * Add LDAP authentication (with uid lookup). Thanks Rowan Thorpe!
+ * Code cleanups:
+   - Drop support for Ruby 1.8.
+   - Stop using unsupported gem name for `activesupport`.
+   - Set a default time zone when running tests.
+   - Ensure same timezone when testing file creation time.
+   - Add support for generating gems using the newer Gem API.
+   - Add support for the Psych YAML engine.
+   - Switch to new RSpec expectation syntax.
+   - Switch to GetText::Tools:Task in Rakefile.
+   - Update bundle dependencies.
+
+Released 2013-05-07.
+
 Version 0.9.2
 -------------
 
