@@ -282,7 +282,7 @@ describe Coquelicot::Application do
       if defined? Gem::Package.new
         context 'the downloaded gem' do
           around(:each) do |example|
-            Tempfile.open('coquelicot-downloaded-gem') do |gem_file|
+            Tempfile.open('coquelicot-downloaded-gem', :encoding => 'binary') do |gem_file|
               gem_file.write(page.driver.response.body)
               @gem = Gem::Package.new(gem_file.path)
               example.run

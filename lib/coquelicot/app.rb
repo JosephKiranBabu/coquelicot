@@ -298,7 +298,7 @@ module Coquelicot
 
         spec = Gem::loaded_specs['coquelicot'].clone
         spec.version = gem_version
-        Tempfile.open('coquelicot-gem') do |gem_file|
+        Tempfile.open('coquelicot-gem', :encoding => 'binary') do |gem_file|
           Dir.mktmpdir('coquelicot-gen-gem') do |tmpdir|
             Dir.chdir(spec.full_gem_path) do
               spec.files.each do |file|
@@ -325,7 +325,7 @@ module Coquelicot
           spec.version = gem_version
           spec.mark_version
           spec.validate
-          Tempfile.open('coquelicot-gem') do |gem_file|
+          Tempfile.open('coquelicot-gem', :encoding => 'binary') do |gem_file|
             Gem::Package.open(gem_file, 'w', nil) do |pkg|
               pkg.metadata = spec.to_yaml
               spec.files.each do |file|

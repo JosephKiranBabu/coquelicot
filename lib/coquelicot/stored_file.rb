@@ -52,7 +52,7 @@ module Coquelicot
                    }
       cipher = get_cipher(pass, salt, :encrypt)
       length = 0
-      File.open("#{path}.content", File::WRONLY|File::EXCL|File::CREAT) do |dest|
+      File.open("#{path}.content", File::WRONLY|File::EXCL|File::CREAT, :encoding => 'binary') do |dest|
         until (buf = yield).nil?
           length += buf.bytesize
           dest.write(cipher.update(buf))
@@ -60,7 +60,7 @@ module Coquelicot
         dest.write(cipher.final)
       end
       cipher.reset
-      File.open(path, File::WRONLY|File::EXCL|File::CREAT) do |dest|
+      File.open(path, File::WRONLY|File::EXCL|File::CREAT, :encoding => 'binary') do |dest|
         dest.write(YAML.dump(clear_meta) + YAML_START)
         dest.write(cipher.update(
             YAML.dump(meta.merge('Created-at' => Time.now.to_i,
@@ -82,7 +82,7 @@ module Coquelicot
       paths.unshift "#{@path}.content" unless @features.include? :meta_include_content
       paths.each do |path|
         # zero the content before truncating
-        File.open(path, 'r+') do |f|
+        File.open(path, 'r+', :encoding => 'binary') do |f|
           f.seek 0, IO::SEEK_END
           length = f.tell
           f.rewind
@@ -110,7 +110,7 @@ module Coquelicot
         @initial_content = nil
         file = @file
       else
-        file = File.open("#{path}.content")
+        file = File.open("#{path}.content", :encoding => 'binary')
         @cipher.reset
       end
       unless file.eof?
@@ -161,7 +161,7 @@ module Coquelicot
 
     def initialize(path, pass)
       @path = path
-      @file = File.open(@path)
+      @file = File.open(@path, :encoding => 'binary')
       if @file.lstat.size == 0 then
         @expire_at = Time.now - 1
         return
