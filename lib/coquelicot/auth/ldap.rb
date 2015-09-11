@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2012-2014 potager.org <jardiniers@potager.org>
+# Copyright © 2012-2015 potager.org <jardiniers@potager.org>
 #           ©      2014 Rowan Thorpe <rowan@rowanthorpe.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -35,23 +35,16 @@ module Coquelicot
   module Auth
     class LdapAuthenticator < AbstractAuthenticator
       def authenticate(params)
-        if params[:ldap_user].empty? || params[:ldap_password].empty?
-          raise Coquelicot::Auth::Error.new('Empty username or password.')
-        end
+        return false if params[:ldap_user].empty? || params[:ldap_password].empty?
         # connect anonymously & lookup user to do authenticated bind_as() next
         ldap = Net::LDAP.new(:host => settings.ldap_server,
                              :port => settings.ldap_port,
                              :base => settings.ldap_base,
                              :encryption => :simple_tls,
                              :auth => { :method => :anonymous })
-        result = ldap.bind_as(:base => settings.ldap_base,
-                              :filter => "(uid=#{Net::LDAP::Filter.escape(params[:ldap_user])})",
-                              :password => params[:ldap_password])
-        unless result
-          raise Coquelicot::Auth::Error.new(
-                    'Failed authentication to LDAP server')
-        end
-        true
+        ldap.bind_as(:base => settings.ldap_base,
+                     :filter => "(uid=#{Net::LDAP::Filter.escape(params[:ldap_user])})",
+                     :password => params[:ldap_password])
       rescue Errno::ECONNREFUSED
         raise Coquelicot::Auth::Error.new(
                   'Unable to connect to LDAP server')

@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2012-2013 potager.org <jardiniers@potager.org>
+# Copyright © 2012-2015 potager.org <jardiniers@potager.org>
 #           © 2011 mh / immerda.ch <mh+coquelicot@immerda.ch>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,8 @@ module Coquelicot
         imap.login(params[:imap_user], params[:imap_password])
         imap.logout
         true
+      rescue Net::IMAP::NoResponseError
+        false
       rescue Errno::ECONNREFUSED
         raise Coquelicot::Auth::Error.new(
                   'Unable to connect to IMAP server')
