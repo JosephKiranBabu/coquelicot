@@ -78,19 +78,19 @@ module Coquelicot
             StoredFile.get_cipher('secret', 'salt', method)
           end
           it 'should set the key to lower part of the HMAC' do
-            OpenSSL::PKCS5.stub(:pbkdf2_hmac_sha1).
+            allow(OpenSSL::PKCS5).to receive(:pbkdf2_hmac_sha1).
               and_return(hmac)
             cipher = OpenSSL::Cipher.new 'AES-256-CBC'
             expect(cipher).to receive(:key=).with(hmac[0..key_len-1])
-            OpenSSL::Cipher.stub(:new).and_return(cipher)
+            allow(OpenSSL::Cipher).to receive(:new).and_return(cipher)
             StoredFile.get_cipher('secret', 'salt', method)
           end
           it 'should set the IV to the higher part of the HMAC' do
-            OpenSSL::PKCS5.stub(:pbkdf2_hmac_sha1).
+            allow(OpenSSL::PKCS5).to receive(:pbkdf2_hmac_sha1).
               and_return(hmac)
             cipher = OpenSSL::Cipher.new 'AES-256-CBC'
             expect(cipher).to receive(:iv=).with(hmac[key_len..-1])
-            OpenSSL::Cipher.stub(:new).and_return(cipher)
+            allow(OpenSSL::Cipher).to receive(:new).and_return(cipher)
             StoredFile.get_cipher('secret', 'salt', method)
           end
           it 'should return an OpenSSL::Cipher' do
@@ -180,7 +180,7 @@ module Coquelicot
         let(:test_salt) { "\0" * StoredFile::SALT_LEN }
         let(:expire_at) { Time.at(Time.now.to_i + 60) } # we need to round it at second-level
         before(:each) do
-          StoredFile.stub(:gen_salt).and_return(test_salt)
+          allow(StoredFile).to receive(:gen_salt).and_return(test_salt)
           create_stored_file('Expire-at' => expire_at)
         end
         let(:clear_meta) { read_meta(@stored_file_path) }
@@ -205,7 +205,7 @@ module Coquelicot
             def final; @content = @buf; ''; end
           end
           cipher = NullCipher.new
-          StoredFile.stub(:get_cipher).and_return(cipher)
+          allow(StoredFile).to receive(:get_cipher).and_return(cipher)
           @content = StringIO.new
           open = File.method(:open)
           expect(File).to receive(:open).at_least(1).times do |path, *args, &block|
@@ -411,7 +411,7 @@ module Coquelicot
         it 'should reset the cipher' do
           salt = Base64::decode64(read_meta(stored_file_path)['Salt'])
           cipher = StoredFile.get_cipher('secret', salt, :decrypt)
-          StoredFile.stub(:get_cipher).and_return(cipher)
+          allow(StoredFile).to receive(:get_cipher).and_return(cipher)
 
           stored_file = StoredFile.open(stored_file_path, 'secret')
           expect(cipher).to receive(:reset)

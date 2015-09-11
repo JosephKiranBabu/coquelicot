@@ -112,7 +112,7 @@ module Coquelicot
         end
         context 'when it generates a link name that is already taken' do
           before(:each) do
-            depot.stub(:gen_random_file_name).
+            allow(depot).to receive(:gen_random_file_name).
               and_return('file', 'link', 'another', 'link', 'another_link')
             # add 'link' pointing to 'file'
             add_file

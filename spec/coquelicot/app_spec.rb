@@ -192,7 +192,7 @@ describe Coquelicot::Application do
       before(:each) do
         # Might be pretty brittle… but will do for now
         Coquelicot::Helpers.module_eval('remove_class_variable :@@can_provide_git_repository if defined? @@can_provide_git_repository')
-        File.stub(:readable?).and_return(true)
+        allow(File).to receive(:readable?).and_return(true)
       end
       it 'should offer a "git clone" to the local URI' do
         visit '/'
@@ -203,9 +203,7 @@ describe Coquelicot::Application do
       before(:each) do
         # Might be pretty brittle… but will do for now
         Coquelicot::Helpers.module_eval('remove_class_variable :@@can_provide_git_repository')
-        File.stub(:readable?) do |p|
-          p.end_with?('.git')
-        end
+        allow(File).to receive(:readable?) { |p| p.end_with?('.git') }
       end
       it 'should offer a link to retrieve the source' do
         visit '/'
@@ -214,13 +212,13 @@ describe Coquelicot::Application do
       it 'should log a warning' do
         logger = double('Logger')
         expect(logger).to receive(:warn).with(/Unable to provide access to local Git repository/)
-        app.any_instance.stub(:logger).and_return(logger)
+        allow_any_instance_of(app).to receive(:logger).and_return(logger)
         visit '/'
       end
       it 'should log a warning only on the first request' do
         logger = double('Logger')
         expect(logger).to receive(:warn).once
-        app.any_instance.stub(:logger).and_return(logger)
+        allow_any_instance_of(app).to receive(:logger).and_return(logger)
         visit '/'
         visit '/'
       end
@@ -229,7 +227,7 @@ describe Coquelicot::Application do
       before(:each) do
         # Might be pretty brittle… but will do for now
         Coquelicot::Helpers.module_eval('remove_class_variable :@@can_provide_git_repository')
-        File.stub(:readable?).and_return(false)
+        allow(File).to receive(:readable?).and_return(false)
       end
       it 'should offer a link to retrieve the source' do
         visit '/'
@@ -271,7 +269,7 @@ describe Coquelicot::Application do
     context 'when the server hostname is one-cool-hostname' do
       before(:each) do
         Coquelicot::Helpers.module_eval('remove_class_variable :@@hostname if defined? @@hostname')
-        Socket.stub(:gethostname).and_return('one-cool-hostname')
+        allow(Socket).to receive(:gethostname).and_return('one-cool-hostname')
         visit '/source'
       end
       it 'should send a file to be saved' do
@@ -460,27 +458,27 @@ describe Coquelicot, '.run!' do
     context 'with default options' do
       it 'should daemonize' do
         expect(::Unicorn::Launcher).to receive(:daemonize!)
-        ::Rainbows::HttpServer.stub(:new).and_return(double('HttpServer').as_null_object)
+        allow(::Rainbows::HttpServer).to receive(:new).and_return(double('HttpServer').as_null_object)
         Coquelicot.run! %w{start}
       end
       it 'should start the web server' do
-        ::Unicorn::Launcher.stub(:daemonize!)
+        allow(::Unicorn::Launcher).to receive(:daemonize!)
         server = double('HttpServer')
         expect(server).to receive(:start).and_return(double('Thread').as_null_object)
-        ::Rainbows::HttpServer.stub(:new).and_return(server)
+        allow(::Rainbows::HttpServer).to receive(:new).and_return(server)
         Coquelicot.run! %w{start}
       end
     end
     context 'when given the --no-daemon option' do
       it 'should not daemonize' do
         expect(::Unicorn::Launcher).to receive(:daemonize!).never
-        ::Rainbows::HttpServer.stub(:new).and_return(double('HttpServer').as_null_object)
+        allow(::Rainbows::HttpServer).to receive(:new).and_return(double('HttpServer').as_null_object)
         Coquelicot.run! %w{start --no-daemon}
       end
       it 'should set the default configuration' do
         app.set :pid, @depot_path
         app.set :listen, ['127.0.0.1:42']
-        ::Rainbows::HttpServer.any_instance.stub(:start) do
+        allow_any_instance_of(::Rainbows::HttpServer).to receive(:start) do
           server = ::Rainbows.server
           expect(server.config.set[:pid]).to be == @depot_path
           expect(server.config.set[:listeners]).to be == ['127.0.0.1:42']
@@ -491,7 +489,7 @@ describe Coquelicot, '.run!' do
       it 'should start the web server' do
         server = double('HttpServer')
         expect(server).to receive(:start).and_return(double('Thread').as_null_object)
-        ::Rainbows::HttpServer.stub(:new).and_return(server)
+        allow(::Rainbows::HttpServer).to receive(:new).and_return(server)
         Coquelicot.run! %w{start --no-daemon}
       end
     end
@@ -502,9 +500,9 @@ describe Coquelicot, '.run!' do
         app.set :path, '/coquelicot'
       end
       it 'should map the application to /coquelicot' do
-        ::Unicorn::Launcher.stub(:daemonize!)
-        Coquelicot.stub(:monkeypatch_half_close)
-        ::Rainbows::HttpServer.stub(:new) do |app, opts|
+        allow(::Unicorn::Launcher).to receive(:daemonize!)
+        allow(Coquelicot).to receive(:monkeypatch_half_close)
+        allow(::Rainbows::HttpServer).to receive(:new) do |app, opts|
           session = Rack::Test::Session.new(app.call)
           session.get('/coquelicot/')
           expect(session.last_response).to be_ok

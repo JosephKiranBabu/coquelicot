@@ -321,7 +321,7 @@ module Coquelicot
     describe '.run!' do
       context 'when given no option' do
         before(:each) do
-          JyrapheMigrator.stub(:new).and_return(double.as_null_object)
+          allow(JyrapheMigrator).to receive(:new).and_return(double.as_null_object)
         end
         it 'should display usage and exit with an error' do
           stderr = capture(:stderr) do
@@ -346,7 +346,7 @@ module Coquelicot
       end
       context 'when given a path to a Jyraphe var directory' do
         it 'should use the default depot path' do
-          JyrapheMigrator.stub(:new).and_return(double.as_null_object)
+          allow(JyrapheMigrator).to receive(:new).and_return(double.as_null_object)
           capture(:stdout) do
             JyrapheMigrator.run! [@jyraphe_var_path]
           end
@@ -365,7 +365,7 @@ module Coquelicot
           migrator = double('JyrapheMigrator').as_null_object
           expect(migrator).to receive(:migrate!).ordered
           expect(migrator).to receive(:apache_rewrites).ordered.and_return('rules')
-          JyrapheMigrator.stub(:new).and_return(migrator)
+          allow(JyrapheMigrator).to receive(:new).and_return(migrator)
           stdout = capture(:stdout) do
             JyrapheMigrator.run! [@jyraphe_var_path]
           end
@@ -376,7 +376,7 @@ module Coquelicot
         it 'should print rewrite rules using the given prefix' do
           migrator = double('JyrapheMigrator').as_null_object
           expect(migrator).to receive(:apache_rewrites).with('/prefix/')
-          JyrapheMigrator.stub(:new).and_return(migrator)
+          allow(JyrapheMigrator).to receive(:new).and_return(migrator)
           capture(:stdout) do
             JyrapheMigrator.run! ['-p', '/prefix/', @jyraphe_var_path]
           end

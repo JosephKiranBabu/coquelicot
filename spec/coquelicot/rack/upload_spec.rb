@@ -121,7 +121,7 @@ MULTIPART_DATA
         context 'when options are correct' do
           include_context 'correct POST data'
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_return(true)
           end
           it 'should issue a temporary redirect' do
             expect(subject.status).to satisfy{|s| [302,303].include?(s) }
@@ -143,8 +143,8 @@ MULTIPART_DATA
         context 'when file is bigger than limit' do
           include_context 'correct POST data'
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
-            Coquelicot.settings.stub(:max_file_size).and_return(100)
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_return(true)
+            allow(Coquelicot.settings).to receive(:max_file_size).and_return(100)
           end
           context 'when there is a request Content-Length header' do
             it 'should bail out with 413 (Request Entity Too Large)' do
@@ -188,7 +188,7 @@ MULTIPART_DATA
         end
         context 'when receiving a request with other fields after file' do
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_return(true)
           end
           let(:file) { File.expand_path('../../../spec_helper.rb', __FILE__) }
           let(:file_content) { File.read(file) }
@@ -228,7 +228,7 @@ MULTIPART_DATA
         context 'when authentication fails' do
           include_context 'correct POST data'
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_return(false)
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_return(false)
           end
           it 'should bail out with code 403 (Forbidden)' do
             subject.status == 403
@@ -243,7 +243,7 @@ MULTIPART_DATA
         context 'when authentication is impossible' do
           include_context 'correct POST data'
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_raise(
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_raise(
               Coquelicot::Auth::Error.new('Something bad happened!'))
           end
           it 'should bail out with code 503 (Service Unavailable)' do
@@ -278,7 +278,7 @@ submit
 MULTIPART_DATA
           end
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_return(true)
           end
           it 'should pass to the lower app' do
             expect(subject.body).to be == 'Lower'
@@ -308,8 +308,8 @@ MULTIPART_DATA
         context 'when the expiration time is bigger than allowed' do
           include_context 'correct POST data'
           before(:each) do
-            Coquelicot.settings.authenticator.stub(:authenticate).and_return(true)
-            Coquelicot.settings.stub(:maximum_expire).and_return(5)
+            allow(Coquelicot.settings.authenticator).to receive(:authenticate).and_return(true)
+            allow(Coquelicot.settings).to receive(:maximum_expire).and_return(5)
           end
           it 'should bail out with 403 (Forbidden)' do
             subject.status == 403
