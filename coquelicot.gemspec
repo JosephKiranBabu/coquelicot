@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'sinatra', '~>1.4'
   s.add_runtime_dependency 'sinatra-contrib', '~>1.4'
-  s.add_runtime_dependency 'rack', '~>1.1'
+  s.add_runtime_dependency 'rack', '>=1.1', '<2'
   s.add_runtime_dependency 'haml', '~>3.1'
   s.add_runtime_dependency 'haml-magic-translations', '~>0.3'
   s.add_runtime_dependency 'gettext', '~>3'
