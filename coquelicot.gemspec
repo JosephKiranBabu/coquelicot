@@ -53,8 +53,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'tzinfo'
   s.add_development_dependency 'net-ldap'
 
-  s.add_runtime_dependency 'sinatra', '~>1.3'
-  s.add_runtime_dependency 'sinatra-contrib', '~>1.3'
+  s.add_runtime_dependency 'sinatra', '~>1.4'
+  s.add_runtime_dependency 'sinatra-contrib', '~>1.4'
   s.add_runtime_dependency 'rack', '~>1.1'
   s.add_runtime_dependency 'haml', '~>3.1'
   s.add_runtime_dependency 'haml-magic-translations', '~>0.3'

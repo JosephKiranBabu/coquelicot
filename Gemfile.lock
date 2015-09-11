@@ -14,8 +14,8 @@ PATH
       rack (~> 1.1)
       rainbows
       sass
-      sinatra (~> 1.3)
-      sinatra-contrib (~> 1.3)
+      sinatra (~> 1.4)
+      sinatra-contrib (~> 1.4)
       upr
 
 GEM
