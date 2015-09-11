@@ -67,5 +67,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rainbows'
   s.add_runtime_dependency 'multipart-parser'
   s.add_runtime_dependency 'upr'
-  s.add_runtime_dependency 'moneta', '~>0.7'
+  s.add_runtime_dependency 'moneta', '>=0.7', '<2'
 end

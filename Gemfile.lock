@@ -9,7 +9,7 @@ PATH
       json
       lockfile (~> 2)
       maruku
-      moneta (~> 0.7)
+      moneta (>= 0.7, < 2)
       multipart-parser
       rack (>= 1.1, < 2)
       rainbows
