@@ -18,6 +18,8 @@
 
 require 'lockfile'
 require 'sinatra/config_file'
+require 'tilt/haml'
+require 'tilt/sass'
 require 'sass'
 require 'digest/sha1'
 require 'fast_gettext'
