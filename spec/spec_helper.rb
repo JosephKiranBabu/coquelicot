@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2010-2013 potager.org <jardiniers@potager.org>
+# Copyright © 2010-2015 potager.org <jardiniers@potager.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -103,6 +103,12 @@ module CoquelicotSpecHelpers
     def slurp(path)
       File.read(path)
     end
+  end
+
+  # borrowed from https://gist.github.com/cyx/1325708
+  def xhr(path, params = {})
+    verb = params.delete(:as) || :get
+    send(verb, path, params, 'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest')
   end
 end
 

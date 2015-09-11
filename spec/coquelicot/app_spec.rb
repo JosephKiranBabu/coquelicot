@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2010-2013 potager.org <jardiniers@potager.org>
+# Copyright © 2010-2015 potager.org <jardiniers@potager.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -344,6 +344,30 @@ describe Coquelicot::Application do
   end
 
   describe 'post /authenticate' do
+    context 'when sending no password' do
+      before do
+        xhr '/authenticate', :as => :post
+      end
+      it 'should return 403' do
+        expect(last_response.status).to be == 403
+      end
+    end
+    context 'when giving the right password' do
+      before do
+        xhr '/authenticate', :as => :post, :upload_password => upload_password
+      end
+      it 'should return 200' do
+        expect(last_response.status).to be == 200
+      end
+    end
+    context 'when giving a wrong password' do
+      before do
+        xhr '/authenticate', :as => :post, :upload_password => 'wrong'
+      end
+      it 'should return 403' do
+        expect(last_response.status).to be == 403
+      end
+    end
     context 'when given a request with too much input' do
       before do
         # background image is bigger than 5 kiB

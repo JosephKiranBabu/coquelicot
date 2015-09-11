@@ -1,5 +1,5 @@
 # Coquelicot: "one-click" file sharing with a focus on users' privacy.
-# Copyright © 2010-2013 potager.org <jardiniers@potager.org>
+# Copyright © 2010-2015 potager.org <jardiniers@potager.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -46,10 +46,10 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~>3'
-  s.add_development_dependency 'hpricot'
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'rack-test'
   s.add_development_dependency 'capybara'
+  s.add_development_dependency 'cucumber'
   s.add_development_dependency 'activesupport'
   s.add_development_dependency 'tzinfo'
   s.add_development_dependency 'net-ldap'

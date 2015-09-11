@@ -22,6 +22,8 @@ Bundler.setup
 require 'bundler/gem_tasks'
 require 'gettext/tools/task'
 require 'haml/magic_translations/xgettext/haml_parser'
+require 'cucumber/rake/task'
+require 'rspec/core/rake_task'
 
 GetText::Tools::XGetText.add_parser(Haml::MagicTranslations::XGetText::HamlParser)
 GetText::Tools::Task.define do |task|
@@ -66,3 +68,11 @@ task :create_archive do
     end
   end
 end
+
+Cucumber::Rake::Task.new(:features) do |t|
+  t.cucumber_opts = "features --format pretty"
+end
+
+RSpec::Core::RakeTask.new(:spec)
+
+task :test => [:spec, :features]
