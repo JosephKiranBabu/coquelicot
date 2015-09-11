@@ -7,7 +7,7 @@ PATH
       haml (~> 4)
       haml-magic-translations
       json
-      lockfile (~> 2.0)
+      lockfile (~> 2)
       maruku
       moneta (~> 0.7)
       multipart-parser
