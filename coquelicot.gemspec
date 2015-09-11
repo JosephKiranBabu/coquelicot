@@ -20,6 +20,7 @@ require "coquelicot/version"
 Gem::Specification.new do |s|
   s.name        = 'coquelicot'
   s.version     = Coquelicot::VERSION
+  s.license     = 'AGPL-3.0'
   s.authors     = ['potager.org', 'mh / immerda.ch']
   s.email       = ['jardiniers@potager.org']
   s.homepage    = 'https://coquelicot.potager.org/'
