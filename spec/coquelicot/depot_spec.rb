@@ -165,7 +165,7 @@ module Coquelicot
     describe '#file_exists?' do
       subject { depot.file_exists?('link') }
       context 'when there is no link with the given name' do
-        it { should_not be_true }
+        it { should_not be true }
       end
       context 'when there is a link with the given name' do
         before(:each) do
@@ -173,7 +173,7 @@ module Coquelicot
             and_return('file', 'link')
           add_file
         end
-        it { should be_true }
+        it { should be true }
       end
       context 'when there is a link with no matching file' do
         before(:each) do
@@ -182,7 +182,7 @@ module Coquelicot
           add_file
           File.unlink File.expand_path('file', @tmpdir)
         end
-        it { should_not be_true }
+        it { should_not be true }
       end
     end
 

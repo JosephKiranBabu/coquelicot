@@ -122,7 +122,7 @@ module Coquelicot
           before(:each) { migrator.migrate! }
           subject { get_first_migrated_file }
           it 'should be labeled as "one-time only"' do
-            expect(subject.meta['One-time-only']).to be_true
+            expect(subject.meta['One-time-only']).to be true
           end
         end
       end

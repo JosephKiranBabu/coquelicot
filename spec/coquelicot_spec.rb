@@ -85,7 +85,7 @@ PART
     get '/'
     expect(last_response).to be_ok
     doc = Hpricot(last_response.body)
-    expect(doc/"form#upload").to have(1).items
+    expect((doc/"form#upload").size).to eql(1)
   end
 
   context "when I explicitely ask for french" do
@@ -110,7 +110,7 @@ PART
 
       it "should not store the file in cleartext" do
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        expect(files).to have(2).items
+        expect(files.size).to eql(2)
         expect(File.new(files[0]).read()).to_not include('should not store an uploaded file')
       end
 
@@ -121,13 +121,13 @@ PART
       it "should store the file with a different name than the one in URL" do
         url_name = @url.split('/')[-1]
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        expect(files).to have(2).items
+        expect(files.size).to eql(2)
         expect(url_name).to_not eql(File.basename(files[0]))
       end
 
       it "should encode the encryption key in URL as no password has been specified" do
         url_name = @url.split('/')[-1]
-        expect(url_name.split('-')).to have(2).items
+        expect(url_name.split('-').size).to eql(2)
       end
 
       it "should say 'not found' is password in URL is wrong" do
@@ -240,7 +240,7 @@ PART
 
       it "should have zero'ed the file on the server" do
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        expect(files).to have(2).items
+        expect(files.size).to eql(2)
         expect(File.lstat(files[0]).size).to eql(0)
       end
     end
@@ -252,7 +252,7 @@ PART
 
       it "should not return an URL with the encryption key" do
         url_name = @url.split('/')[-1]
-        expect(url_name.split('-')).to have(1).items
+        expect(url_name.split('-').size).to eql(1)
       end
 
       it "should offer a password form before download" do
@@ -260,7 +260,7 @@ PART
         expect(last_response).to be_ok
         expect(last_response['Content-Type']).to be == 'text/html;charset=utf-8'
         doc = Hpricot(last_response.body)
-        expect(doc/'input#file_key').to have(1).items
+        expect((doc/'input#file_key').size).to eql(1)
       end
 
       context "when given the correct password" do
@@ -305,12 +305,12 @@ PART
     it "should cleanup expired files" do
       url = upload :expire => 60, :file_key => 'test' # 1 hour
       url_name = url.split('/')[-1]
-      expect(Dir.glob("#{Coquelicot.depot.path}/*")).to have(2).items
+      expect(Dir.glob("#{Coquelicot.depot.path}/*").size).to eql(2)
       # let's be the day after tomorrow
       Timecop.travel(Date.today + 2) do
         Coquelicot.depot.gc!
         files = Dir.glob("#{Coquelicot.depot.path}/*")
-        expect(files).to have(2).items
+        expect(files.size).to eql(2)
         expect(File.lstat(files[0]).size).to eql(0)
         expect(Coquelicot.depot.get_file(url_name)).to be_expired
       end
