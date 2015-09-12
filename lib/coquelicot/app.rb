@@ -238,7 +238,7 @@ module Coquelicot
     set :depot_path, Proc.new { File.join(root, 'files') }
     set :cache_path, Proc.new { File.join(root, 'tmp/cache') }
     set :max_file_size, 5 * 1024 * 1024 # 5 MiB
-    set :default_expire, 60
+    set :default_expire, 60 * 24 # 1 day
     set :maximum_expire, 60 * 24 * 30 # 1 month
     set :gone_period, 60 * 24 * 7 # 1 week
     set :filename_length, 20

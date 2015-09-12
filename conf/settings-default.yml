@@ -19,7 +19,9 @@ max_file_size: 5242880
 # Default expiration time (if unspecified by users)
 # (in minutes)
 #
-default_expire: 60
+#   Default: 1440 = 60 * 24 ≈ 1 day
+#
+default_expire: 1440
 
 # Maximum expiration time that can be set by users
 # (in minutes)
