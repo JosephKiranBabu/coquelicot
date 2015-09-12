@@ -2,7 +2,7 @@
 .bundle
 vendor/bundle/
 Gemfile.lock
-.sass-cache/
+tmp/cache/
 pkg/*
 files/
 locale/

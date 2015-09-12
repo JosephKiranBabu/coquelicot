@@ -236,6 +236,15 @@ describe Coquelicot::Application do
     end
   end
 
+  describe 'get /style.css' do
+    before do
+      visit '/style.css'
+    end
+    it 'should send a stylesheet' do
+      expect(page).to have_content('background.jpg')
+    end
+  end
+
   describe 'get /README' do
     before do
       visit '/README'
@@ -412,7 +421,7 @@ describe Coquelicot, '.run!' do
       around(:each) do |example|
         settings = Tempfile.new('coquelicot')
         begin
-          settings.write(YAML.dump({ 'depot_path' => '/nonexistent' }))
+          settings.write(YAML.dump({ 'depot_path' => '/nonexistent/depot', 'cache_path' => '/nonexistent/cache' }))
           settings.close
           @settings_path = settings.path
           example.run
@@ -425,7 +434,14 @@ describe Coquelicot, '.run!' do
         stderr = capture(:stderr) do
           expect { Coquelicot.run! ['-c', @settings_path] }.to raise_error(SystemExit)
         end
-        expect(Coquelicot.settings.depot_path).to be == '/nonexistent'
+        expect(Coquelicot.settings.depot_path).to be == '/nonexistent/depot'
+      end
+      it 'should use the cache path defined in the given settings' do
+        # We don't give a command, so exit is expected
+        stderr = capture(:stderr) do
+          expect { Coquelicot.run! ['-c', @settings_path] }.to raise_error(SystemExit)
+        end
+        expect(Coquelicot.settings.cache_path).to be == '/nonexistent/cache'
       end
     end
     context 'when the given settings file does not exist' do

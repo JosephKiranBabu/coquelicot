@@ -45,8 +45,12 @@ shared_context 'with Coquelicot::Application' do
   around(:each) do |example|
     path = Dir.mktmpdir('coquelicot')
     begin
-      @depot_path = path
-      app.set :depot_path, path
+      @depot_path = File.join(path, 'depot')
+      FileUtils.mkdir(@depot_path)
+      app.set :depot_path, @depot_path
+      @cache_path = File.join(path, 'cache')
+      FileUtils.mkdir(@cache_path)
+      app.set :cache_path, @cache_path
       example.run
     ensure
       FileUtils.remove_entry_secure path

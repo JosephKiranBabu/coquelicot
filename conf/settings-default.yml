@@ -66,9 +66,14 @@ filename_length: 20
 #
 random_pass_length: 16
 
-# Directory in which Coquelicot will write its files
+# Directory in which Coquelicot will write the stored files
 #
 depot_path: "./files"
+
+# Directory in which Coquelicot will write cache files. The content is only
+# required to speed up operations and does not have to be stored permanently.
+#
+cache_path: "./tmp/cache"
 
 # Text to display on top of the upload form
 #

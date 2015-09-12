@@ -39,6 +39,14 @@ module Coquelicot
       @depot = Depot.new(settings.depot_path) if @depot.nil? || settings.depot_path != @depot.path
       @depot
     end
+    def sass_cache
+      if @sass_cache.nil?
+        @sass_cache = File.join(settings.cache_path, 'sass-cache')
+        FileUtils.mkdir_p(@sass_cache)
+      end
+      @sass_cache
+    end
+
     # Called by the +coquelicot+ script.
     def run!(args = [])
       parser = OptionParser.new do |opts|
@@ -228,6 +236,7 @@ module Coquelicot
 
     set :root, Proc.new { app_file && File.expand_path('../../..', app_file) }
     set :depot_path, Proc.new { File.join(root, 'files') }
+    set :cache_path, Proc.new { File.join(root, 'tmp/cache') }
     set :max_file_size, 5 * 1024 * 1024 # 5 MiB
     set :default_expire, 60
     set :maximum_expire, 60 * 24 * 30 # 1 month
@@ -276,7 +285,7 @@ module Coquelicot
 
     get '/style.css' do
       content_type 'text/css', :charset => 'utf-8'
-      sass :style
+      sass :style, :cache_location => Coquelicot.sass_cache
     end
 
     get '/' do
