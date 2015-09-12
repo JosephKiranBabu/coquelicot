@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require File.expand_path('../../../spec/spec_helper', __FILE__)
+require 'timecop'
 require 'capybara/cucumber'
 require 'cucumber/rspec/doubles'
 
