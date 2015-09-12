@@ -31,33 +31,6 @@
     {
      options.preloadImages[i] = $("<img>").attr("src", options.preloadImages[i]);
     }
-    /* tried to add iframe after submit (to not always load it) but it won't work.
-    safari can't get scripts properly while submitting files */
-    if($.browser.safari && top.document == document) {
-      /* iframe to send ajax requests in safari
-       thanks to Michele Finotto for idea */
-      iframe = document.createElement('iframe');
-      iframe.name = "progressFrame";
-      $(iframe).css({width: '0', height: '0', position: 'absolute', top: '-3000px'});
-      document.body.appendChild(iframe);
-      
-      var d = iframe.contentWindow.document;
-      d.open();
-      /* weird - safari won't load scripts without this lines... */
-      d.write('<html><head></head><body></body></html>');
-      d.close();
-      
-      var b = d.body;
-      var s = d.createElement('script');
-      s.src = options.jqueryPath;
-      /* must be sure that jquery is loaded */
-      s.onload = function() {
-        var s1 = d.createElement('script');
-        s1.src = options.uploadProgressPath;
-        b.appendChild(s1);
-      }
-      b.appendChild(s);
-    }
   });
   
   return this.each(function(){
@@ -77,7 +50,7 @@
       } else {
        $(this).attr("action", jQuery(this).attr("action") + "?X-Progress-ID=" + uuid);
       }
-      var uploadProgress = $.browser.safari ? progressFrame.jQuery.uploadProgress : jQuery.uploadProgress;
+      var uploadProgress = jQuery.uploadProgress;
       options.timer = window.setInterval(function() { uploadProgress(this, options) }, options.interval);
     });
   });
@@ -89,7 +62,7 @@ jQuery.uploadProgress = function(e, options) {
     url: options.progressUrl + "?X-Progress-ID=" + options.uuid,
     dataType: options.dataType,
     success: function(upload) {
-      var bar = $.browser.safari ? $(options.progressBar, parent.document) : $(options.progressBar);
+      var bar = $(options.progressBar);
       if (upload.state == 'uploading') {
         upload.percents = Math.floor((upload.received / upload.size)*1000)/10;
         
