@@ -3,6 +3,29 @@ Release history
 
 Here is a list of changes that happened in each release of [Coquelicot]:
 
+Version 0.9.4
+-------------
+
+ * Make the directory for cache files configurable. This adds a new
+   `cache_path` setting. Thanks to Rowan Thorpe for the original patch.
+ * Make the default selection for the expiration time match the default
+   setting.
+ * Switch the default expiration time to one day. This should be less surprising
+   to users uploading huge files. Thanks drkvg for prodding me long enough
+   to do this.
+ * Stop IMAP and LDAP authenticators to error out when authentication fails. They
+   now properly just deny the authentication requests as they should have.
+ * Make sure that we read and write binary files as such. This should improve
+   compatibilities with certain Ruby installations.
+ * Do proper integration testing using Cucumber.
+ * Update and clean up dependencies.
+ * Other minor improvements:
+   - Upgrade to RSpec 3 and fix the remaining deprecation warnings.
+   - Specify the license in the gemspec.
+   - Explicitly require on tilt/haml and tilt/sass to avoid race conditions.
+
+Released 2015-09-12.
+
 Version 0.9.3
 -------------
 
