@@ -56,6 +56,24 @@ describe Coquelicot::Application do
         expect(find(:xpath, '//label[@for="file"]')).
             to have_content("max. size: #{Coquelicot.settings.max_file_size.as_size}")
       end
+      context 'when the default expiration is one day' do
+        before do
+          allow(Coquelicot.settings).to receive(:default_expire).and_return(60 * 24)
+        end
+        it 'should have an expiration of one day pre-selected' do
+          visit '/'
+          expect(page).to have_select('expire', :selected => '1 day')
+        end
+      end
+      context 'when the default expiration is one month' do
+        before do
+          allow(Coquelicot.settings).to receive(:default_expire).and_return(60 * 24 * 30)
+        end
+        it 'should have an expiration of one month pre-selected' do
+          visit '/'
+          expect(page).to have_select('expire', :selected => '1 month')
+        end
+      end
       context 'when I explicitly request french' do
         it 'should display a page in french' do
           visit '/'
