@@ -3,6 +3,17 @@ Release history
 
 Here is a list of changes that happened in each release of [Coquelicot]:
 
+Version 0.9.5
+-------------
+
+ * Fix preselection of the expiration time set in the configuration.
+ * Remove usage of the deprecated $.browser in jQuery plugins. This
+   makes them compatible with jQuery 1.9+.
+ * Upgrade bundled jQuery to version 1.11.3.
+ * Add missing `require` for some Cucumber features.
+
+Released 2015-09-22.
+
 Version 0.9.4
 -------------
 
