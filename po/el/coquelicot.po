@@ -1,0 +1,293 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: coquelicot 0.9.6\n"
+"PO-Revision-Date: 2016-12-20 13:02+0100\n"
+"Last-Translator: Rowan Thorpe <rowan@rowanthorpe.com>\n"
+"Language-Team: potager.org <jardiniers@potager.org>\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/tebibyte
+#: lib/coquelicot/num.rb:26
+msgid "TiB"
+msgstr "TiB"
+
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/gibibyte
+#: lib/coquelicot/num.rb:28
+msgid "GiB"
+msgstr "GiB"
+
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/mebibyte
+#: lib/coquelicot/num.rb:30
+msgid "MiB"
+msgstr "MiB"
+
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/kibibyte
+#: lib/coquelicot/num.rb:32 views/layout.haml:41
+msgid "KiB"
+msgstr "KiB"
+
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/byte
+#: lib/coquelicot/num.rb:34
+msgid "B"
+msgstr "B"
+
+#: lib/coquelicot/rack/upload.rb:191
+msgid ""
+"File is bigger than maximum allowed size: %s would exceed the maximum "
+"allowed %s."
+msgstr ""
+"Το αρχείο είναι μεγαλύτερο από το μέγιστο επιτρεπόμενο μέγεθος: %s "
+"υπερβαίνει το μέγιστο επιτρεπόμενο %s."
+
+#: lib/coquelicot/rack/upload.rb:194
+msgid "File is bigger than maximum allowed size %s."
+msgstr "Το αρχείο είναι μεγαλύτερο από το μέγιστο επιτρεπόμενο μέγεθος %s."
+
+#: lib/coquelicot/rack/upload.rb:201
+msgid "File has no content"
+msgstr "Το αρχείο δεν έχει περιεχόμενο"
+
+#: views/about_your_data.haml:18 views/layout.haml:53
+msgid "About your data…"
+msgstr "Σχετικά με τα δεδομένα σας…"
+
+#: views/about_your_data.haml:20
+msgid ""
+"Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
+"with a little bit of privacy."
+msgstr ""
+"Καλώς ήρθατε στο *Coquelicot*. Ένας απλός τρόπος για να μοιραστείτε τα\n"
+"αρχεία με τους ανθρώπους που γνωρίζετε, διατηρώντας λίγη από την "
+"ιδιωτικότητά σας.\n"
+
+#: views/about_your_data.haml:23
+msgid "What should I expect from “a little bit of privacy”?"
+msgstr "Τι να περιμένω από το «διατηρώντας λίγη από την ιδιωτικότητά σας»;"
+
+#: views/about_your_data.haml:25
+msgid "Exchanges between your computer and %s are encrypted."
+msgstr ""
+"Οι ανταλλαγές μεταξύ του υπολογιστή σας και του %s είναι κρυπτογραφημένες."
+
+#: views/about_your_data.haml:26
+msgid ""
+"An attacker in-between will be able to see how much data is exchanged,\n"
+"but not its nature."
+msgstr ""
+"Ένας εισβολέας στο ενδιάμεσο θα είναι σε θέση να δεί πόσα δεδομένα "
+"ανταλλάσσονται,\n"
+"αλλά όχι τη φύση τους."
+
+#: views/about_your_data.haml:29
+msgid ""
+"Files are stored encrypted. In case someone gets access to the server\n"
+"storage, they will know the size, arrival and expiration dates of the\n"
+"files; but they will not be able to get their content without the\n"
+"password.\n"
+"\n"
+"In case no *download password* has been specified, the password might\n"
+"be kept in the server request logs. This means that the server might\n"
+"store enough information to retrieve the actual file content.\n"
+"\n"
+"When a *download password* has been specified, the password will not be\n"
+"stored anywhere on the server. This will prevent retrieval of the\n"
+"file content, except if the server has been actively compromised\n"
+"beforehand."
+msgstr ""
+"Τα αρχεία αποθηκεύονται κρυπτογραφημένα. Σε περίπτωση που κάποιος\n"
+"αποκτήσει πρόσβαση στην αποθήκη του διακομιστή, θα ξέρει\n"
+"το μέγεθος, την ημερομηνία άφιξης και λήξης των αρχείων - αλλά δεν θα είναι "
+"σε θέση να\n"
+"πάρει το περιεχόμενό τους χωρίς τον κωδικό πρόσβασης.\n"
+"\n"
+"Σε περίπτωση που δεν έχει καθοριστεί κανένας *κωδικός λήψης*, ο κωδικός\n"
+"πρόσβασης μπορεί να διατηρηθεί στα αρχεία αιτημάτων καταγραφής του "
+"διακομιστή.\n"
+"Αυτό σημαίνει ότι ο διακομιστής μπορεί να αποθηκεύσει αρκετές πληροφορίες\n"
+"για να ανακτήθεί το πραγματικό περιεχόμενο του αρχείου.\n"
+"\n"
+"Όταν έχει οριστεί ένας *κωδικός λήψης*, ο κωδικός πρόσβασης δεν θα\n"
+"αποθηκευτεί πουθενά στο διακομιστή. Αυτό θα αποτρέψει την ανάκτηση του\n"
+"περιεχομένου του αρχείου, εκτός εάν ο διακομιστής έχει προηγουμένως τεθεί σε "
+"κίνδυνο.\n"
+
+#: views/about_your_data.haml:43
+msgid "What if I don't trust the server admins?"
+msgstr ""
+"Τι μπορώ να κάνω εάν δεν εμπιστεύομαι τους διαχειριστές του διακομιστή;"
+
+#: views/about_your_data.haml:44
+msgid ""
+"You are [free](http://www.gnu.org/licenses/agpl.txt) to install Coquelicot\n"
+"on your own system. Please refer to the [README](README) if you wish to\n"
+"know how."
+msgstr ""
+"Είστε [ελεύθεροι](http://www.gnu.org/licenses/agpl.txt) να εγκαταστήσετε\n"
+"Coquelicot στο δικό σας σύστημα. Παρακαλείσθε να συμβουλευθείτε το\n"
+"[README](README) αν θέλετε να μάθετε το πώς."
+
+#: views/auth/imap.haml:20
+msgid "E-mail User:"
+msgstr "Χρήστης email:"
+
+#: views/auth/imap.haml:23 views/auth/ldap.haml:23 views/enter_file_key.haml:22
+msgid "Password:"
+msgstr "Κωδικός πρόσβασης:"
+
+#: views/auth/ldap.haml:20
+msgid "LDAP User:"
+msgstr "Χρήστης LDAP:"
+
+#: views/auth/simplepass.haml:19 views/auth/userpass.haml:23
+msgid "Upload password:"
+msgstr "Κωδικός πρόσβασης για μεταφόρτωση:"
+
+#: views/auth/userpass.haml:20
+msgid "Upload user:"
+msgstr "Χρήστης για μεταφόρτωση:"
+
+#: views/download_in_progress.haml:1
+msgid "Download in progress"
+msgstr "Λήψη σε εξέλιξη"
+
+#: views/download_in_progress.haml:2
+msgid "The requested file is currently being downloaded by another client."
+msgstr "Το αρχείο που ζητήθηκε αυτή τη στιγμή λαμβάνεται από άλλο πελάτη."
+
+#: views/enter_file_key.haml:18
+msgid "Enter download password…"
+msgstr "Εισάγετε τον κωδικό λήψης…"
+
+#: views/error.haml:1
+msgid "Error"
+msgstr "Σφάλμα:"
+
+#: views/error.haml:2
+msgid "Something bad happened: %s"
+msgstr "Κάτι κακό συνέβη: %s"
+
+#: views/expired.haml:18
+msgid "Too late…"
+msgstr "Πολύ αργά…"
+
+#: views/expired.haml:20
+msgid "Sorry, file has expired."
+msgstr "Συγγνώμη, το αρχείο έχει λήξει."
+
+#: views/forbidden.haml:1
+msgid "Forbidden"
+msgstr "Απαγορευμένο"
+
+#: views/forbidden.haml:2
+msgid "This password does not allow access to this resource."
+msgstr ""
+"Αυτός ο κωδικός πρόσβασης δεν επιτρέπει την πρόσβαση σε αυτόν τον πόρο."
+
+#: views/index.haml:22
+msgid "Share a file!"
+msgstr "Μοιραστείτε ένα αρχείο!"
+
+#: views/index.haml:32
+msgid "Available for:"
+msgstr "Διαθέσιμο για:"
+
+#: views/index.haml:34
+msgid "1 day"
+msgstr "1 ημέρα"
+
+#: views/index.haml:34
+msgid "1 hour"
+msgstr "1 ώρα"
+
+#: views/index.haml:34
+msgid "1 month"
+msgstr "1 μήνα"
+
+#: views/index.haml:34
+msgid "1 week"
+msgstr "1 εβδομάδα"
+
+#: views/index.haml:43
+msgid "Unlimited downloads until expiration"
+msgstr "Απεριόριστες λήψεις μέχρι τη λήξη"
+
+#: views/index.haml:46
+msgid "Remove after one download"
+msgstr "Αφαιρέστε μετά από μια λήψη"
+
+#: views/index.haml:48
+msgid "Download password (<em>optional</em>):"
+msgstr "Κωδικός πρόσβασης για λήψη (<em>προαιρετικό</em>):"
+
+#: views/index.haml:51
+msgid "File (<em>max. size: %s</em>):"
+msgstr "Αρχείο (<em>Μέγ. μέγεθος: %s</em>):"
+
+#: views/index.haml:55
+msgid "Share!"
+msgstr "Μοιραστείτε!"
+
+#: views/layout.haml:23
+msgid "Coquelicot"
+msgstr "Coquelicot"
+
+#: views/layout.haml:34
+msgid "Generate random"
+msgstr "Δημιουργήστε τυχαίο"
+
+#: views/layout.haml:35
+msgid "Generating…"
+msgstr "Δημιουργία…"
+
+#: views/layout.haml:36
+msgid "Don't forget to write it down!"
+msgstr "Μην ξεχάσετε να το σημειώσετε!"
+
+#: views/layout.haml:37
+msgid "Please try again!"
+msgstr "Παπακαλώ προσπαθήστε ξανα!"
+
+#: views/layout.haml:38
+msgid "Error:"
+msgstr "Σφάλμα:"
+
+#: views/layout.haml:39
+msgid "Upload starting..."
+msgstr "Η μεταφόρτωση έχει αρχίσει..."
+
+#: views/layout.haml:40
+msgid "Uploading: "
+msgstr "Μεταφόρτωση: "
+
+#: views/not_found.haml:1
+msgid "Not found"
+msgstr "Δε βρέθηκε"
+
+#: views/not_found.haml:2
+msgid "The requested URL %s was not found on this server."
+msgstr "Η ζητούμενη διεύθυνση URL %s δε βρέθηκε σε αυτόν το διακομιστή."
+
+#: views/ready.haml:18
+msgid "Share this!"
+msgstr "Μοιραστείτε αυτό!"
+
+#: views/ready.haml:23
+msgid "A password is required to download this file."
+msgstr "Απαιτείται κωδικός πρόσβασης για να κατεβάσετε το αρχείο αυτό."
+
+#: views/ready.haml:24
+msgid "The file will be available until %s."
+msgstr "Το αρχείο θα είναι διαθέσιμο μέχρι %s."
+
+#: views/ready.haml:26
+msgid "Share another file…"
+msgstr "Μοιραστείτε ένα άλλο αρχείο…"

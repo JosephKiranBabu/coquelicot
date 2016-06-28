@@ -20,7 +20,7 @@ require 'haml'
 require 'haml/magic_translations'
 
 module Coquelicot
-  AVAILABLE_LOCALES = %w(en es fr de)
+  AVAILABLE_LOCALES = %w(en es fr de el)
 
   class BaseApp < Sinatra::Base
     include FastGettext::Translation
