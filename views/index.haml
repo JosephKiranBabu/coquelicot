@@ -31,10 +31,10 @@
   .field
     %label{ :for => 'expire' } Available for:
     %select.input{ :id => 'expire',:name => 'expire' }
-      - { '1 hour'  => 60,
-          '1 day'   => 60 * 24,
-          '1 week'  => 60 * 24 * 7,
-          '1 month' => 60 * 24 * 30 }.each_pair do |v, k|
+      - { _('1 hour')  => 60,
+          _('1 day')   => 60 * 24,
+          _('1 week')  => 60 * 24 * 7,
+          _('1 month') => 60 * 24 * 30 }.each_pair do |v, k|
         %option{:value => k, :selected => k == Coquelicot.settings.default_expire}= v
   .field
     %fieldset
