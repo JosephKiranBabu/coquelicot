@@ -3,7 +3,6 @@ PATH
   specs:
     coquelicot (0.9.5)
       fast_gettext
-      gettext (~> 3)
       haml (~> 4)
       haml-magic-translations
       json
@@ -137,6 +136,7 @@ DEPENDENCIES
   capybara
   coquelicot!
   cucumber
+  gettext (~> 3)
   net-ldap
   rack-test
   rake
