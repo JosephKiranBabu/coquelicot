@@ -16,63 +16,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: views/expired.haml:20
-msgid "Sorry, file has expired."
-msgstr "Entschuldigung, die Datei ist nicht mehr verfügbar."
+#: lib/coquelicot/num.rb:25
+msgid "B"
+msgstr "B"
 
-#: views/expired.haml:18
-msgid "Too late…"
-msgstr "Zu spät…"
+#: lib/coquelicot/num.rb:25
+msgid "GiB"
+msgstr "GiB"
 
-#: views/forbidden.haml:1
-msgid "Forbidden"
-msgstr "Verboten"
+#: lib/coquelicot/num.rb:25
+msgid "KiB"
+msgstr "KiB"
 
-#: views/forbidden.haml:2
-msgid "This password does not allow access to this resource."
-msgstr "Dieses Passwort erlaubt keinen Zugang zu dieser Ressource."
+#: lib/coquelicot/num.rb:25
+msgid "MiB"
+msgstr "MiB"
 
-#: views/not_found.haml:1
-msgid "Not found"
-msgstr "Nit gefunden"
+#: lib/coquelicot/num.rb:25
+msgid "TiB"
+msgstr "TiB"
 
-#: views/not_found.haml:2
-msgid "The requested URL %s was not found on this server."
-msgstr "Die angeforderte URL %s wurde nicht auf dem Server gefunden."
+#: lib/coquelicot/rack/upload.rb:191
+msgid ""
+"File is bigger than maximum allowed size: %s would exceed the maximum "
+"allowed %s."
+msgstr ""
+"Die Datei ist größer als die maximal erlaubte Größe: %s würde die\n"
+"maximal erlaubten %s überschreiten."
 
-#: views/auth/simplepass.haml:19 views/auth/userpass.haml:23
-msgid "Upload password:"
-msgstr "Upload Passwort:"
+#: lib/coquelicot/rack/upload.rb:194
+msgid "File is bigger than maximum allowed size %s."
+msgstr "Die Datei ist größer als die maximal erlaubte Größe %s"
 
-#: views/auth/userpass.haml:20
-msgid "Upload user:"
-msgstr "Upload user:"
-
-#: views/auth/imap.haml:20
-msgid "E-mail User:"
-msgstr "Email User:"
-
-#: views/auth/ldap.haml:20
-msgid "LDAP User:"
-msgstr "LDAP User:"
-
-#: views/auth/imap.haml:23 views/auth/ldap.haml:23 views/enter_file_key.haml:22
-msgid "Password:"
-msgstr "Passwort:"
+#: lib/coquelicot/rack/upload.rb:201
+msgid "File has no content"
+msgstr "Die Datei hat keinen Inhalt"
 
 #: views/about_your_data.haml:18
 msgid "About your data…"
 msgstr "Über deine Daten..."
 
-#: views/about_your_data.haml:26
+#: views/about_your_data.haml:20
 msgid ""
-"An attacker in-between will be able to see how much data is exchanged,\n"
-"but not its nature."
-msgstr "Ein zwischengeschalteter Angreifer wird sehen können, wieviel Daten übermittelt werden, aber nicht welcher Art."
+"Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
+"with a little bit of privacy."
+msgstr ""
+"Willkommen bei *Coquelicot*. Ein einfacher Weg um Dateien mit Freunden zu "
+"teilen,\n"
+"mit ein bisschen Privatsphäre."
+
+#: views/about_your_data.haml:23
+msgid "What should I expect from “a little bit of privacy”?"
+msgstr "Was sollte ich von “ein bisschen Privatsphäre” erwarten?"
 
 #: views/about_your_data.haml:25
 msgid "Exchanges between your computer and %s are encrypted."
 msgstr "Der Austausch zwischen deinem Computer und %s sind verschlüsselt."
+
+#: views/about_your_data.haml:26
+msgid ""
+"An attacker in-between will be able to see how much data is exchanged,\n"
+"but not its nature."
+msgstr ""
+"Ein zwischengeschalteter Angreifer wird sehen können, wieviel Daten "
+"übermittelt werden, aber nicht welcher Art."
 
 #: views/about_your_data.haml:29
 msgid ""
@@ -90,7 +97,8 @@ msgid ""
 "file content, except if the server has been actively compromised\n"
 "beforehand."
 msgstr ""
-"Dateien werden verschlüsselt gespeichert. Falls jemand Zugriff auf den Server\n"
+"Dateien werden verschlüsselt gespeichert. Falls jemand Zugriff auf den "
+"Server\n"
 "erlangt, werden sie die Größe, Ankunfts- und Ablaufdaten der Files kennen,\n"
 " aber sie werden den Inhalt ohne das Passwort nicht sehen können.\n"
 "\n"
@@ -102,21 +110,9 @@ msgstr ""
 "gespeichert werden. Das wird die Abfrage des Datei-Inhalts verhindern,\n"
 "es sei denn der Server wurde vorher aktiv kompromitiert."
 
-#: views/about_your_data.haml:20
-msgid ""
-"Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
-"with a little bit of privacy."
-msgstr ""
-"Willkommen bei *Coquelicot*. Ein einfacher Weg um Dateien mit Freunden zu teilen,\n"
-"mit ein bisschen Privatsphäre."
-
 #: views/about_your_data.haml:43
 msgid "What if I don't trust the server admins?"
 msgstr "Was is, wenn ich den Server-Admins nicht vertraue?"
-
-#: views/about_your_data.haml:23
-msgid "What should I expect from “a little bit of privacy”?"
-msgstr "Was sollte ich von “ein bisschen Privatsphäre” erwarten?"
 
 #: views/about_your_data.haml:44
 msgid ""
@@ -125,8 +121,42 @@ msgid ""
 "know how."
 msgstr ""
 "Du bist [frei](http://www.gnu.org/licenses/agpl.txt) Coquelicot auf deinem\n"
-"Computer zu installieren. Bitte verwende das [README](README), wenn du wissen\n"
+"Computer zu installieren. Bitte verwende das [README](README), wenn du "
+"wissen\n"
 "möchtest wie."
+
+#: views/auth/imap.haml:20
+msgid "E-mail User:"
+msgstr "Email User:"
+
+#: views/auth/imap.haml:23 views/auth/ldap.haml:23 views/enter_file_key.haml:22
+msgid "Password:"
+msgstr "Passwort:"
+
+#: views/auth/ldap.haml:20
+msgid "LDAP User:"
+msgstr "LDAP User:"
+
+#: views/auth/simplepass.haml:19 views/auth/userpass.haml:23
+msgid "Upload password:"
+msgstr "Upload Passwort:"
+
+#: views/auth/userpass.haml:20
+msgid "Upload user:"
+msgstr "Upload user:"
+
+#: views/download_in_progress.haml:1
+msgid "Download in progress"
+msgstr "Download läuft"
+
+#: views/download_in_progress.haml:2
+msgid "The requested file is currently being downloaded by another client."
+msgstr ""
+"Die angeforderte Datei wird gerade von einem anderen Client heruntergeladen."
+
+#: views/enter_file_key.haml:18
+msgid "Enter download password…"
+msgstr "Gib das Download-Passwort ein…"
 
 #: views/error.haml:1
 msgid "Error"
@@ -136,53 +166,53 @@ msgstr "Fehler:"
 msgid "Something bad happened: %s"
 msgstr "Etwas schlechtes ist passiert: %s"
 
-#: views/download_in_progress.haml:1
-msgid "Download in progress"
-msgstr "Download läuft"
+#: views/expired.haml:18
+msgid "Too late…"
+msgstr "Zu spät…"
 
-#: views/download_in_progress.haml:2
-msgid "The requested file is currently being downloaded by another client."
-msgstr "Die angeforderte Datei wird gerade von einem anderen Client heruntergeladen."
+#: views/expired.haml:20
+msgid "Sorry, file has expired."
+msgstr "Entschuldigung, die Datei ist nicht mehr verfügbar."
 
-#: views/enter_file_key.haml:18
-msgid "Enter download password…"
-msgstr "Gib das Download-Passwort ein…"
+#: views/forbidden.haml:1
+msgid "Forbidden"
+msgstr "Verboten"
 
-#: views/ready.haml:23
-msgid "A password is required to download this file."
-msgstr "Ein Passwort ist notwendig, um diese Datei herunter zu laden."
+#: views/forbidden.haml:2
+msgid "This password does not allow access to this resource."
+msgstr "Dieses Passwort erlaubt keinen Zugang zu dieser Ressource."
 
-#: views/ready.haml:26
-msgid "Share another file…"
-msgstr "Verteile eine weitere Datei…"
+#: views/index.haml:22
+msgid "Share a file!"
+msgstr "Verteile eine Datei!"
 
-#: views/ready.haml:18
-msgid "Share this!"
-msgstr "Verteile dies!"
-
-#: views/ready.haml:24
-msgid "The file will be available until %s."
-msgstr "Diese Datei wird verfügbar sein bis %s"
-
-#: views/index.haml:36
-msgid "1 day"
-msgstr "1 Tag"
+#: views/index.haml:33
+msgid "Available for:"
+msgstr "Verfügbar für:"
 
 #: views/index.haml:35
 msgid "1 hour"
 msgstr "1 Stunde"
 
-#: views/index.haml:38
-msgid "1 month"
-msgstr "1 Monat"
+#: views/index.haml:36
+msgid "1 day"
+msgstr "1 Tag"
 
 #: views/index.haml:37
 msgid "1 week"
 msgstr "1 Woche"
 
-#: views/index.haml:33
-msgid "Available for:"
-msgstr "Verfügbar für:"
+#: views/index.haml:38
+msgid "1 month"
+msgstr "1 Monat"
+
+#: views/index.haml:43
+msgid "Unlimited downloads until expiration"
+msgstr "Unbeschränkte Downloads bis zum Ablaufdatum"
+
+#: views/index.haml:46
+msgid "Remove after one download"
+msgstr "Nach einem Download löschen"
 
 #: views/index.haml:48
 msgid "Download password (<em>optional</em>):"
@@ -192,33 +222,13 @@ msgstr "Download-Passwort (<em>optional</em>):"
 msgid "File (<em>max. size: %s</em>):"
 msgstr "Datei (<em>max. Größe: %s</em>):"
 
-#: views/index.haml:46
-msgid "Remove after one download"
-msgstr "Nach einem Download löschen"
-
-#: views/index.haml:22
-msgid "Share a file!"
-msgstr "Verteile eine Datei!"
-
 #: views/index.haml:55
 msgid "Share!"
 msgstr "Verteile!"
 
-#: views/index.haml:43
-msgid "Unlimited downloads until expiration"
-msgstr "Unbeschränkte Downloads bis zum Ablaufdatum"
-
 #: views/layout.haml:23
 msgid "Coquelicot"
 msgstr "Coquelicot"
-
-#: views/layout.haml:37
-msgid "Don't forget to write it down!"
-msgstr "Vergiss nicht es aufzuschreiben!"
-
-#: views/layout.haml:39
-msgid "Error:"
-msgstr "Fehler:"
 
 #: views/layout.haml:35
 msgid "Generate random"
@@ -228,9 +238,17 @@ msgstr "Generiere ein zufälliges"
 msgid "Generating…"
 msgstr "Generiere…"
 
+#: views/layout.haml:37
+msgid "Don't forget to write it down!"
+msgstr "Vergiss nicht es aufzuschreiben!"
+
 #: views/layout.haml:38
 msgid "Please try again!"
 msgstr "Bitte versuch's noch einmal!"
+
+#: views/layout.haml:39
+msgid "Error:"
+msgstr "Fehler:"
 
 #: views/layout.haml:40
 msgid "Upload starting..."
@@ -244,38 +262,26 @@ msgstr "Lade hoch: "
 msgid "kB"
 msgstr "kB"
 
-#: lib/coquelicot/num.rb:25
-msgid "TiB"
-msgstr "TiB"
+#: views/not_found.haml:1
+msgid "Not found"
+msgstr "Nit gefunden"
 
-#: lib/coquelicot/num.rb:25
-msgid "GiB"
-msgstr "GiB"
+#: views/not_found.haml:2
+msgid "The requested URL %s was not found on this server."
+msgstr "Die angeforderte URL %s wurde nicht auf dem Server gefunden."
 
-#: lib/coquelicot/num.rb:25
-msgid "MiB"
-msgstr "MiB"
+#: views/ready.haml:18
+msgid "Share this!"
+msgstr "Verteile dies!"
 
-#: lib/coquelicot/num.rb:25
-msgid "KiB"
-msgstr "KiB"
+#: views/ready.haml:23
+msgid "A password is required to download this file."
+msgstr "Ein Passwort ist notwendig, um diese Datei herunter zu laden."
 
-#: lib/coquelicot/num.rb:25
-msgid "B"
-msgstr "B"
+#: views/ready.haml:24
+msgid "The file will be available until %s."
+msgstr "Diese Datei wird verfügbar sein bis %s"
 
-#: lib/coquelicot/rack/upload.rb:191
-msgid ""
-"File is bigger than maximum allowed size: %s would exceed the maximum "
-"allowed %s."
-msgstr ""
-"Die Datei ist größer als die maximal erlaubte Größe: %s würde die\n"
-"maximal erlaubten %s überschreiten."
-
-#: lib/coquelicot/rack/upload.rb:194
-msgid "File is bigger than maximum allowed size %s."
-msgstr "Die Datei ist größer als die maximal erlaubte Größe %s"
-
-#: lib/coquelicot/rack/upload.rb:201
-msgid "File has no content"
-msgstr "Die Datei hat keinen Inhalt"
+#: views/ready.haml:26
+msgid "Share another file…"
+msgstr "Verteile eine weitere Datei…"
