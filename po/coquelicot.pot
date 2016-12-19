@@ -41,8 +41,12 @@ msgstr ""
 msgid "The requested URL %s was not found on this server."
 msgstr ""
 
-#: views/auth/simplepass.haml:19
+#: views/auth/simplepass.haml:19 views/auth/userpass.haml:23
 msgid "Upload password:"
+msgstr ""
+
+#: views/auth/userpass.haml:20
+msgid "Upload user:"
 msgstr ""
 
 #: views/auth/imap.haml:20

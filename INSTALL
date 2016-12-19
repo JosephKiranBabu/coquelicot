@@ -146,6 +146,9 @@ Further settings example:
  * `conf/settings-simplepass.yml`: shows how to change the default
    password for the "simplepass" mechanism.
 
+ * `conf/settings-imap.yml`: necessary configuration for the "userpass"
+   authentication mechanism.
+
  * `conf/settings-imap.yml`: necessary configuration for the "imap"
    authentication mechanism.
 
@@ -154,6 +157,9 @@ Further settings example:
 
 You can copy one of these examples to `conf/settings.yml` and adjust
 them according to your environment.
+
+Using the "userpass" authentication method requires the `bcrypt` gem to
+be installed manually.
 
 Using the LDAP authentication method requires the `net-ldap` gem
 to be installed manually.

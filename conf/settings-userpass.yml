@@ -1,0 +1,19 @@
+# Settings for the 'userpass' authentication method
+# -------------------------------------------
+#
+# When using the 'userpass' authentication method, users will
+# be asked for their username and a pre-shared password.
+
+authentication_method:
+  name: "userpass"
+
+  # Passwords are stored using BCrypt
+  #
+  #     You can compute them using:
+  #
+  #         $ echo 'secret' | ruby -rbcrypt -p -e 'puts BCrypt::Password.create($_).to_s'
+  #
+  credentials:
+    fred: "$2a$10$Xe8F9F.4vNBmuA6V/5hvK.Glw0ab4pJgcVPQlUN8dP/uhf4QCWAFW"
+    jenny: "$2a$10$mBAOGjcsIL9wyaAIGDdxf.rOyJEfCYeG2pAaXCrwjhXbis7k/Vcs."
+    abdul: "$2a$10$8NXS8SQdhkUlC7b2vog.FOm9Nob4t38v146rQHlAVoyClNJPiCnVa"

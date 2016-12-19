@@ -40,9 +40,13 @@ msgstr "Introuvable"
 msgid "The requested URL %s was not found on this server."
 msgstr "L'URL %s demandé est introuvable sur ce serveur."
 
-#: views/auth/simplepass.haml:19
+#: views/auth/simplepass.haml:19 views/auth/userpass.haml:23
 msgid "Upload password:"
 msgstr "Mot de passe pour envoyer :"
+
+#: views/auth/userpass.haml:20
+msgid "Upload user:"
+msgstr "Compte pour envoyer :"
 
 #: views/auth/imap.haml:20
 msgid "E-mail User:"

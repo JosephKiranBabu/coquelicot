@@ -40,9 +40,13 @@ msgstr "Nit gefunden"
 msgid "The requested URL %s was not found on this server."
 msgstr "Die angeforderte URL %s wurde nicht auf dem Server gefunden."
 
-#: views/auth/simplepass.haml:19
+#: views/auth/simplepass.haml:19 views/auth/userpass.haml:23
 msgid "Upload password:"
 msgstr "Upload Passwort:"
+
+#: views/auth/userpass.haml:20
+msgid "Upload user:"
+msgstr "Upload user:"
 
 #: views/auth/imap.haml:20
 msgid "E-mail User:"
