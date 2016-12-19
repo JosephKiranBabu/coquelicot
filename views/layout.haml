@@ -24,8 +24,7 @@
     %meta{ :"http-equiv" => "Content-Type", :content => "text/html; charset=UTF-8" }
     %meta{ :name => 'generator', :content => "Coquelicot #{Coquelicot::VERSION}" }
     %base{ :href => uri('/') }
-    %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css',
-           :media => "screen, projection" }
+    %link{ :rel => 'stylesheet', :href => "style.css", :type => 'text/css', :media => "screen, projection" }
     - unless settings.additional_css.empty?
       %link{ :rel => 'stylesheet', :href => "#{settings.additional_css}", :type => 'text/css', :media => "screen, projection" }
     %script{ :type => 'text/javascript', :src => 'javascripts/jquery.min.js' }

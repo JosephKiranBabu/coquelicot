@@ -22,8 +22,7 @@
 %h1 Share a file!
 - unless @error.nil?
   .error= @error
-%form#upload{ :enctype => 'multipart/form-data',
-              :action  => 'upload', :method => 'post' }
+%form#upload{ :enctype => 'multipart/form-data', :action  => 'upload', :method => 'post' }
   #upload-authentication
     - unless about_text.empty?
       %p.about= about_text
