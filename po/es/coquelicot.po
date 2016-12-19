@@ -112,7 +112,7 @@ msgid ""
 "Welcome to *Coquelicot*. A simple way to share files with people you know,\n"
 "with a little bit of privacy."
 msgstr ""
-""Bienvenido en *Coquelicot*. Una manera simple de compartir archivos con\n"
+"Bienvenido en *Coquelicot*. Una manera simple de compartir archivos con\n"
 "personas que conoce, con un poco de intimidad."
 
 #: views/about_your_data.haml:43
