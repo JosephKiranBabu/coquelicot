@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    coquelicot (0.9.5)
+    coquelicot (0.9.6)
       fast_gettext
       haml (~> 4)
       haml-magic-translations

@@ -3,6 +3,28 @@ Release history
 
 Here is a list of changes that happened in each release of [Coquelicot]:
 
+Version 0.9.6
+-------------
+
+ * Add `userpass` authentication contributed by Rowan Thrope. It stores
+   multiple login/password credentials in a configuration file. Password
+   are stored encrypted using bcrypt.
+ * Properly translate storage durations in upload form. Fix by Rowan Thrope.
+ * Use proper unit when reporting byte count during upload.
+ * Update and clean up dependencies.
+ * Minor improvements:
+   - Fix views that made the latest Haml parser unhappy.
+ * Translation improvements:
+   - Refresh translation template and catalogs
+   - Add bug report address to translation template
+   - Fix a syntax error in Spanish PO file.
+   - Add comments for translators regarding unit of storage abbreviations.
+   - Add Greek translations. Thanks to Rowan Thrope.
+ * Update authors in README
+ * Mention users and developers mailing list in documentation
+
+Released 2016-12-20.
+
 Version 0.9.5
 -------------
 
