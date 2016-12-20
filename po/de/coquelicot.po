@@ -5,9 +5,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: coquelicot 0.9\n"
-"POT-Creation-Date: 2013-03-13 18:10+0100\n"
-"PO-Revision-Date: 2013-03-13 19:02+0100\n"
+"Project-Id-Version: coquelicot 0.9.6\n"
+"PO-Revision-Date: 2016-12-20 12:58+0100\n"
 "Last-Translator: potager.org <jardiniers@potager.org>\n"
 "Language-Team: potager.org <jardiniers@potager.org>\n"
 "Language: \n"
@@ -16,25 +15,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: lib/coquelicot/num.rb:25
-msgid "B"
-msgstr "B"
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/tebibyte
+#: lib/coquelicot/num.rb:26
+msgid "TiB"
+msgstr "TiB"
 
-#: lib/coquelicot/num.rb:25
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/gibibyte
+#: lib/coquelicot/num.rb:28
 msgid "GiB"
 msgstr "GiB"
 
-#: lib/coquelicot/num.rb:25
-msgid "KiB"
-msgstr "KiB"
-
-#: lib/coquelicot/num.rb:25
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/mebibyte
+#: lib/coquelicot/num.rb:30
 msgid "MiB"
 msgstr "MiB"
 
-#: lib/coquelicot/num.rb:25
-msgid "TiB"
-msgstr "TiB"
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/kibibyte
+#: lib/coquelicot/num.rb:32 views/layout.haml:41
+msgid "KiB"
+msgstr "KiB"
+
+#. Abbreviated unit of storage. See https://en.wiktionary.org/wiki/byte
+#: lib/coquelicot/num.rb:34
+msgid "B"
+msgstr "B"
 
 #: lib/coquelicot/rack/upload.rb:191
 msgid ""
@@ -52,7 +56,7 @@ msgstr "Die Datei ist größer als die maximal erlaubte Größe %s"
 msgid "File has no content"
 msgstr "Die Datei hat keinen Inhalt"
 
-#: views/about_your_data.haml:18
+#: views/about_your_data.haml:18 views/layout.haml:53
 msgid "About your data…"
 msgstr "Über deine Daten..."
 
@@ -186,25 +190,25 @@ msgstr "Dieses Passwort erlaubt keinen Zugang zu dieser Ressource."
 msgid "Share a file!"
 msgstr "Verteile eine Datei!"
 
-#: views/index.haml:33
+#: views/index.haml:32
 msgid "Available for:"
 msgstr "Verfügbar für:"
 
-#: views/index.haml:35
-msgid "1 hour"
-msgstr "1 Stunde"
-
-#: views/index.haml:36
+#: views/index.haml:34
 msgid "1 day"
 msgstr "1 Tag"
 
-#: views/index.haml:37
-msgid "1 week"
-msgstr "1 Woche"
+#: views/index.haml:34
+msgid "1 hour"
+msgstr "1 Stunde"
 
-#: views/index.haml:38
+#: views/index.haml:34
 msgid "1 month"
 msgstr "1 Monat"
+
+#: views/index.haml:34
+msgid "1 week"
+msgstr "1 Woche"
 
 #: views/index.haml:43
 msgid "Unlimited downloads until expiration"
@@ -230,37 +234,33 @@ msgstr "Verteile!"
 msgid "Coquelicot"
 msgstr "Coquelicot"
 
-#: views/layout.haml:35
+#: views/layout.haml:34
 msgid "Generate random"
 msgstr "Generiere ein zufälliges"
 
-#: views/layout.haml:36
+#: views/layout.haml:35
 msgid "Generating…"
 msgstr "Generiere…"
 
-#: views/layout.haml:37
+#: views/layout.haml:36
 msgid "Don't forget to write it down!"
 msgstr "Vergiss nicht es aufzuschreiben!"
 
-#: views/layout.haml:38
+#: views/layout.haml:37
 msgid "Please try again!"
 msgstr "Bitte versuch's noch einmal!"
 
-#: views/layout.haml:39
+#: views/layout.haml:38
 msgid "Error:"
 msgstr "Fehler:"
 
-#: views/layout.haml:40
+#: views/layout.haml:39
 msgid "Upload starting..."
 msgstr "Upload startet..."
 
-#: views/layout.haml:41
+#: views/layout.haml:40
 msgid "Uploading: "
 msgstr "Lade hoch: "
-
-#: views/layout.haml:42
-msgid "kB"
-msgstr "kB"
 
 #: views/not_found.haml:1
 msgid "Not found"
