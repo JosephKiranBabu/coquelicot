@@ -102,7 +102,10 @@ Features
 Authors
 -------
 
-    Coquelicot © 2010-2013 potager.org <jardiniers@potager.org>
+    Coquelicot © 2010-2016 potager.org <jardiniers@potager.org>
+               © 2014-2016 Rowan Thorpe <rowan@rowanthorpe.com>
+               © 2010-2012 Jake Santee <jake@nadir.org>
+               © 2012 Silvio Rhatto <rhatto@riseup.net>
                © 2011 mh / immerda.ch  <mh+coquelicot@immerda.ch>
 
 Coquelicot is distributed under the [GNU Affero General Public License]
@@ -111,8 +114,6 @@ version 3 or (at your option) any later version.
 Background image (`public/images/background.jpg`) derived from:  
 [“coquelicot” picture] © 2008 Jean-Louis Zimmermann  
 Licensed under [Creative Commons Attributions 2.0 Generic]  
-
-LDAP authentication code initially provided by Rowan Thorpe.
 
 *jQuery* is © 2011 John Resig. Licensed under the [MIT license].  
 *jquery.uploadProgress* is © 2008 Piotr Sarnacki. Licensed under the
