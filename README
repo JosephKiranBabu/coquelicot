@@ -25,6 +25,8 @@ Features
 
     - "simplepass": uploading users need to provide a global,
       pre-shared, password;
+    - "userpass": users will need to provide a login and a
+      pre-shared password stored in a local configuration file;
     - "imap": users will need to provide a login and a password,
       that are used to authenticate against an existing IMAP server.
     - "ldap": users will need to provide a uid and a password,
