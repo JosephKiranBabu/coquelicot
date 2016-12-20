@@ -22,7 +22,16 @@ module Coquelicot::Num
 
   # found on: http://codereview.stackexchange.com/questions/9107/
   def as_size
-    prefix = [N_('TiB'), N_('GiB'), N_('MiB'), N_('KiB'), N_('B')]
+    prefix = [# TRANSLATORS: Abbreviated unit of storage. See https://en.wiktionary.org/wiki/tebibyte
+              N_('TiB'),
+              # TRANSLATORS: Abbreviated unit of storage. See https://en.wiktionary.org/wiki/gibibyte
+              N_('GiB'),
+              # TRANSLATORS: Abbreviated unit of storage. See https://en.wiktionary.org/wiki/mebibyte
+              N_('MiB'),
+              # TRANSLATORS: Abbreviated unit of storage. See https://en.wiktionary.org/wiki/kibibyte
+              N_('KiB'),
+              # TRANSLATORS: Abbreviated unit of storage. See https://en.wiktionary.org/wiki/byte
+              N_('B')]
     s = self.to_f
     i = prefix.length - 1
     while s > 512 && i > 0
