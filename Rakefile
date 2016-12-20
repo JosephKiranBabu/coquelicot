@@ -29,6 +29,7 @@ GetText::Tools::XGetText.add_parser(Haml::MagicTranslations::XGetText::HamlParse
 GetText::Tools::Task.define do |task|
   task.spec = Gem::Specification.load('coquelicot.gemspec')
   task.files = Dir.glob('views/**/*.{rb,haml}') + Dir.glob('lib/coquelicot/**/*.rb')
+  task.xgettext_options = ['--msgid-bugs-address=Coquelicot developers <coquelicot@potager.org>']
 end
 
 task :create_archive do
