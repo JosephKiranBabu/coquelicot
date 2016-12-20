@@ -99,6 +99,14 @@ Features
    to make it harder to retrieve its content through filesystem
    analysis, it is filled with zeros first.
 
+Reporting bugs
+--------------
+
+Please report bugs or suggest new features on the users and developers [mailing
+list].
+
+[mailing list]: https://listes.potager.org/listinfo/coquelicot
+
 Authors
 -------
 

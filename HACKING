@@ -193,6 +193,14 @@ is used. It contains a line for each file in the form:
   :    File content is in the same file as the metadata. Content is put in the
        after the metadata and an extra "--- \n".
 
+Sending patches
+---------------
+
+Please send patches to the users and developers [mailing list]. They are best
+prepared using `git format-patch`.
+
+[mailing list]: https://listes.potager.org/listinfo/coquelicot
+
 How to make a new release?
 --------------------------
 
