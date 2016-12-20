@@ -36,7 +36,7 @@ $(function($) {
     uploading: function(upload) {
       // update upload info on each /progress response
       jQuery('#received').html(i18n.uploading + parseInt(upload.received / 1024) + "/");
-      jQuery('#size').html(parseInt(upload.size / 1024) + ' ' + i18n.kb);
+      jQuery('#size').html(parseInt(upload.size / 1024) + ' ' + i18n.kib);
       jQuery('#percent').html(upload.percents + "%");
     },
     success: function(upload) {
