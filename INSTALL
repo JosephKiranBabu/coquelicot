@@ -146,7 +146,7 @@ Further settings example:
  * `conf/settings-simplepass.yml`: shows how to change the default
    password for the "simplepass" mechanism.
 
- * `conf/settings-imap.yml`: necessary configuration for the "userpass"
+ * `conf/settings-userpass.yml`: necessary configuration for the "userpass"
    authentication mechanism.
 
  * `conf/settings-imap.yml`: necessary configuration for the "imap"
