@@ -11,7 +11,7 @@ authentication_method:
   #
   #     You can compute them using:
   #
-  #         $ echo 'secret' | ruby -rbcrypt -p -e 'puts BCrypt::Password.create($_).to_s'
+  #         $ printf 'secret' | ruby -rbcrypt -p -e 'puts BCrypt::Password.create($_).to_s'
   #
   credentials:
     fred: "$2a$10$Xe8F9F.4vNBmuA6V/5hvK.Glw0ab4pJgcVPQlUN8dP/uhf4QCWAFW"
