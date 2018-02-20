@@ -12,3 +12,4 @@ conf/settings.yml
 public/layout
 bin/*
 !bin/coquelicot
+/tmp/coquelicot.pid
