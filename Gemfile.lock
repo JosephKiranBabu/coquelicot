@@ -68,15 +68,15 @@ GEM
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
-    mini_portile2 (2.1.0)
+    mini_portile2 (2.3.0)
     minitest (5.10.1)
     moneta (0.8.1)
     multi_json (1.12.1)
     multi_test (0.1.2)
     multipart-parser (0.1.1)
-    net-ldap (0.15.0)
-    nokogiri (1.6.8.1)
-      mini_portile2 (~> 2.1.0)
+    net-ldap (0.16.0)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
     public_suffix (2.0.4)
     rack (1.6.5)
     rack-protection (1.5.3)
@@ -147,4 +147,4 @@ DEPENDENCIES
   tzinfo
 
 BUNDLED WITH
-   1.12.5
+   1.16.1
